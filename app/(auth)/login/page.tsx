@@ -1,5 +1,10 @@
-export default function LoginPage() {
+import { LoginForm } from "@/components/authentication/LoginForm"
+
+const LoginPage = () => {
+
     return (
-        <span>Login page!</span>
+        <LoginForm/ >
     )
 }
+
+export default LoginPage;
