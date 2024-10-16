@@ -13,7 +13,7 @@ export const BackButton = ({
     backButtonHref }: BackButtonProps) => {
 
     return (
-        <Button variant="link" className="font-normal w-full flex items-start justify-start" size="sm" asChild>
+        <Button variant="link" className="font-normal w-full flex items-start" size="sm" asChild>
             <Link href={backButtonHref}>
                 {backButtonText}
             </Link>
