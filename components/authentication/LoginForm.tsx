@@ -18,7 +18,7 @@ export const LoginForm = () => {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
-
+  
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -39,7 +39,6 @@ export const LoginForm = () => {
                 })
         });
     }
-
     return (
         <CardWrapper headerName="Welcome Back! Sign in into your account" backButtonText="Don't you have an account? Register now!" backButtonHref="/register" socialOptionsEnabled>
             <Form {...form}>
@@ -85,6 +84,5 @@ export const LoginForm = () => {
                 </form>
             </Form>
         </CardWrapper>
-
     );
 }
