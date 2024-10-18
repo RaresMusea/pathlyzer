@@ -76,7 +76,7 @@ export const LoginForm = () => {
                             </FormItem>
                         )} />
                     </section>
-                    <FormSuccess message={success} />
+                    <FormSuccess message={success}/>
                     <FormError message={error} />
                     <Button type="submit" className="w-full" disabled={isPending}>
                         Log In
