@@ -11,6 +11,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../FormError";
 import { FormSuccess } from "../FormSuccess";
+import { register } from "@/actions/Register";
 
 
 export const RegisterForm = () => {
@@ -33,6 +34,11 @@ export const RegisterForm = () => {
         setError("");
 
         startTransition(() => {
+            register(values)
+            .then(data => {
+                setError(data.error);
+                setSuccess(data.success); 
+            })
         });
     }
     return (
