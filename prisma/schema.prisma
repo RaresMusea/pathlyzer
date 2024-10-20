@@ -17,7 +17,8 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
-  image         String? 
+  image         String?
+  password      String? 
   accounts Account[]
 }
 
@@ -38,6 +39,5 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
  
   @@unique([provider, providerAccountId])
-  @@map("accounts")
 }
  
