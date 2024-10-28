@@ -41,6 +41,7 @@ export const RegisterForm = () => {
             })
         });
     }
+    
     return (
         <CardWrapper headerName="Create an account" backButtonText="Have an account already? Sign in now!" backButtonHref="/login">
             <Form {...form}>
