@@ -1,5 +1,27 @@
-import GitHub from "next-auth/providers/github"
+import Credentials from "next-auth/providers/credentials"
 import type { NextAuthConfig } from "next-auth"
-import Google from "next-auth/providers/google"
+import bcrypt from "bcryptjs";
+import { LoginSchema } from "./schemas/AuthValidation"
+import { getUserByEmail } from "./persistency/data/User";
  
-export default { providers: [GitHub, Google] } satisfies NextAuthConfig
+export default { providers: [Credentials({
+    async authorize(credentials) {
+        const validatedFields = LoginSchema.safeParse(credentials);
+
+        if (validatedFields.success) {
+            const {email, password} = validatedFields.data;
+            const user = await getUserByEmail(email);
+
+            if (!user || !user.password) { 
+               return; 
+            }
+
+            const passwordsMatch: boolean = await bcrypt.compare(password, user.password);
+            
+            if (passwordsMatch) {
+                return user;
+            }
+        }
+        return;
+    }
+})] } satisfies NextAuthConfig

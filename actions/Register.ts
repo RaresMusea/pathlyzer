@@ -2,7 +2,7 @@
 
 import { RegisterSchema } from '@/schemas/AuthValidation';
 import * as z from 'zod'
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import { db } from '@/persistency/Db';
 import { getUserByEmail } from '@/persistency/data/User';
 
