@@ -11,9 +11,9 @@ export default { providers: [Credentials({
         if (validatedFields.success) {
             const {email, password} = validatedFields.data;
             const user = await getUserByEmail(email);
-
+            
             if (!user || !user.password) { 
-               return; 
+               return null; 
             }
 
             const passwordsMatch: boolean = await bcrypt.compare(password, user.password);
@@ -22,6 +22,6 @@ export default { providers: [Credentials({
                 return user;
             }
         }
-        return;
+        return null;
     }
 })] } satisfies NextAuthConfig

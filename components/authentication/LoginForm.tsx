@@ -11,7 +11,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../FormError";
 import { FormSuccess } from "../FormSuccess";
-import { login } from "@/actions/Login";
+import { login, LoginResult } from "@/actions/Login";
 
 
 export const LoginForm = () => {
@@ -33,9 +33,9 @@ export const LoginForm = () => {
 
         startTransition(() => {
             login(values)
-                .then(data => {
-                    setError(data.error)
-                    setSuccess(data.success)
+                .then((data: LoginResult | undefined) => {
+                    setError(data?.error);
+                    setSuccess(data?.success);
                 })
         });
     }
