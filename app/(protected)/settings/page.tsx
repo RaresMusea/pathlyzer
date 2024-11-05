@@ -7,9 +7,9 @@ const SettingsPage = async () => {
     return (
         <div className="flex flex-col gap-4 items-center justify-center">
             <div>{JSON.stringify(session)}</div>
-            <form action={async () => { 
+            <form action={async () => {
                 "use server";
-                await signOut({redirectTo: '/login', redirect: true});
+                await signOut({ redirectTo: '/login', redirect: true });
             }} >
                 <Button type="submit">
                     Sign out
