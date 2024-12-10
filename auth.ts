@@ -1,9 +1,20 @@
-import NextAuth from "next-auth"
+import NextAuth, {DefaultSession} from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/persistency/Db"
 import { getUserById } from "@/persistency/data/User";
 
 import authConfig from "./auth.config";
+import { UserRole } from "@prisma/client";
+
+export type ExtendedUser = DefaultSession["user"] & {
+  role: UserRole;
+};
+
+declare module "next-auth" {
+  interface Session {
+    user: ExtendedUser;
+  }
+};
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
@@ -28,7 +39,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
 
       if (token.role && session.user) {
-        session.user.role = token.role;
+        session.user.role = token.role as UserRole;
       }
 
       return session;
