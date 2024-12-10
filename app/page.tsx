@@ -18,7 +18,7 @@ export default function Home() {
         <Image src={image} alt="Opening image" width={400} height={400} className="m-auto" />
       </div>
       <div className="w-[50%] mx-auto text-center mt-6">
-        <SignUpButton>
+        <SignUpButton mode={"redirect"}>
           <Button size="lg" className="drop-shadow-md">
             Sign In
           </Button>
