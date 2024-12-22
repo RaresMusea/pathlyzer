@@ -21,6 +21,13 @@ export const RegisterSchema = z.object({
     }).max(15, {
         message: "The name cannot be longer than 15 characters."
     }),
+    username: z.string().min(4, {
+        message: "The username must contain at least 4 characters."
+    }).max(30, {
+        message: "The username cannot be longer than 30 characters."
+    }).refine((value) => !/\s/.test(value), {
+        message: "The username must not contain spaces."
+    }),
     passwordConfirmation: z.string().min(6, {
         message: "The password confirmation cannot be empty"
     })

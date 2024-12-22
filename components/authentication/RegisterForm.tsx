@@ -18,13 +18,14 @@ export const RegisterForm = () => {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
-  
+
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
             email: "",
             password: "",
             name: "",
+            username: "",
             passwordConfirmation: ""
         }
     });
@@ -35,13 +36,13 @@ export const RegisterForm = () => {
 
         startTransition(() => {
             register(values)
-            .then(data => {
-                setError(data.error);
-                setSuccess(data.success); 
-            })
+                .then(data => {
+                    setError(data.error);
+                    setSuccess(data.success);
+                })
         });
     }
-    
+
     return (
         <CardWrapper headerName="Create an account" backButtonText="Have an account already? Sign in now!" backButtonHref="/login">
             <Form {...form}>
@@ -49,7 +50,7 @@ export const RegisterForm = () => {
                     className="space-y-6"
                     onSubmit={form.handleSubmit(onSubmit)}>
                     <section className="space-y-4">
-                    <FormField control={form.control} name="name" render={({ field }) => (
+                        <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
@@ -57,6 +58,21 @@ export const RegisterForm = () => {
                                         {...field}
                                         disabled={isPending}
                                         placeholder="Enter your name"
+                                        type="text"
+                                    />
+                                </FormControl>
+                                <FormMessage></FormMessage>
+                            </FormItem>
+                        )} />
+
+                        <FormField control={form.control} name="username" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Username</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        disabled={isPending}
+                                        placeholder="Enter your username"
                                         type="text"
                                     />
                                 </FormControl>
@@ -109,7 +125,7 @@ export const RegisterForm = () => {
                             </FormItem>
                         )} />
                     </section>
-                    <FormSuccess message={success}/>
+                    <FormSuccess message={success} />
                     <FormError message={error} />
                     <Button type="submit" className="w-full" disabled={isPending}>
                         Register
