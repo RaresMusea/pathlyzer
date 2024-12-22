@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { CardWrapper } from "../CardWrapper";
 import { LoginSchema } from "@/schemas/AuthValidation";
 import { useForm } from "react-hook-form";
@@ -15,6 +16,9 @@ import { login, LoginResult } from "@/actions/Login";
 
 
 export const LoginForm = () => {
+    const searchParams = useSearchParams();
+    const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "The email was already used for logging in another account, with a different provider!" : "";
+
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
@@ -77,7 +81,7 @@ export const LoginForm = () => {
                         )} />
                     </section>
                     <FormSuccess message={success} />
-                    <FormError message={error} />
+                    <FormError message={error || urlError} />
                     <Button type="submit" className="w-full" disabled={isPending}>
                         Log In
                     </Button>
