@@ -1,4 +1,4 @@
-import NextAuth, {DefaultSession} from "next-auth"
+import NextAuth, { DefaultSession } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/persistency/Db"
 import { getUserById } from "@/persistency/data/User";
@@ -18,7 +18,7 @@ declare module "next-auth" {
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
-    async jwt({token}) {
+    async jwt({ token }) {
       if (!token.sub) {
         return token;
       }
@@ -33,7 +33,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return token;
     },
 
-    async session({token, session}) {
+    async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
