@@ -6,7 +6,8 @@ export const publicRoutes: string[] = [
 export const authRoutes: string[] = [
     "/login",
     "/register",
-    "/error"
+    "/error",
+    "/reset",
 ];
 
 //never blocked

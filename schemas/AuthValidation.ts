@@ -40,3 +40,9 @@ export const RegisterSchema = z.object({
         });
     }
 });
+
+export const PasswordResetSchema = z.object({
+    email: z.string().email({
+        message: "Please enter a valid email address."
+    }),
+});

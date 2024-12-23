@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { FormError } from "../FormError";
 import { FormSuccess } from "../FormSuccess";
 import { login, LoginResult } from "@/actions/Login";
+import Link from "next/link";
 
 
 export const LoginForm = () => {
@@ -43,6 +44,7 @@ export const LoginForm = () => {
                 })
         });
     }
+    
     return (
         <CardWrapper headerName="Welcome Back! Sign in into your account" backButtonText="Don't you have an account? Register now!" backButtonHref="/register" socialOptionsEnabled>
             <Form {...form}>
@@ -76,6 +78,9 @@ export const LoginForm = () => {
                                         type="password"
                                     />
                                 </FormControl>
+                                <Button size="sm" variant="link" asChild className="px-0 font-normal">
+                                    <Link href="/reset">Forgot password?</Link>
+                                </Button>
                                 <FormMessage></FormMessage>
                             </FormItem>
                         )} />
