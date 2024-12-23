@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs"
 import { db } from '@/persistency/Db';
 import { getUserByEmail } from '@/persistency/data/User';
 import { generateEmailVerifToken } from '@/lib/TokenGenerator';
+import { sendVerificationEmail } from '@/lib/Email';
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
     const validatedFields = RegisterSchema.safeParse(values);
@@ -36,7 +37,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
     const verificationToken = await generateEmailVerifToken(email);
 
-    //@TODO Send email
+    await sendVerificationEmail(verificationToken.email, verificationToken.token, name);
 
     return {
         success: `A verification email was successfully sent to ${email}!`

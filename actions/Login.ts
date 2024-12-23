@@ -7,6 +7,7 @@ import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
 import { AuthError } from 'next-auth';
 import { generateEmailVerifToken } from '@/lib/TokenGenerator';
 import { getUserByEmail } from '@/persistency/data/User';
+import { sendVerificationEmail } from '@/lib/Email';
 
 export interface LoginResult {
     error?: string;
@@ -55,6 +56,8 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
 
     if (!existingUser.emailVerified) {
         const verificationToken = await generateEmailVerifToken(existingUser.email!);
+        await sendVerificationEmail(verificationToken.email, verificationToken.token, existingUser.name!);
+        
         return {
             success: `A verification email was successfully sent to ${existingUser.email}!`
         }
