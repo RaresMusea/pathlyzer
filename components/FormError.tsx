@@ -20,7 +20,7 @@ export const FormError = ({ message }: FormErrorProps) => {
     
     return (
         <section className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-small text-destructive">
-            <ExclamationTriangleIcon className="h-20 w-20" />
+            <ExclamationTriangleIcon className="h-15 w-15" />
             <p>{message}</p>
             <button
                 onClick={() => setVisible(!visible)}

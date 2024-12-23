@@ -16,6 +16,8 @@ export const EmailVerificationForm = () => {
 
 
     const onSubmit = useCallback(() => {
+        if (success || error) return;
+
         if (!token) {
             setError("The token is missing!");
         }
@@ -32,7 +34,7 @@ export const EmailVerificationForm = () => {
             .catch(err => {
                 setError(`Something went wrong while attempting to verify your email: ${err}.`);
             });
-    }, [token]);
+    }, [token, success, error]);
 
     useEffect(() => {
         onSubmit();
@@ -47,7 +49,10 @@ export const EmailVerificationForm = () => {
                     !success && !error && (<BeatLoader />)
                 }
                 <FormSuccess message={success} />
-                <FormError message={error} />
+                {
+                    !success && 
+                    ( <FormError message={error} /> )
+                }
             </div>
         </CardWrapper>
     )

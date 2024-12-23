@@ -41,7 +41,7 @@ const verifyToken = async (token: string) => {
 
     if (!existingToken) {
         return { 
-            error: "This email address has already been verified or the verification link is invalid. Please try again or contact support if the issue persists." 
+            error: "This email address has already been verified or the verification link is invalid." 
         };
     }
 
