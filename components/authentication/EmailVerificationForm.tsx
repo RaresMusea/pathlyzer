@@ -48,10 +48,10 @@ export const EmailVerificationForm = () => {
                 {
                     !success && !error && (<BeatLoader />)
                 }
-                <FormSuccess message={success} />
+                <FormSuccess message={success} hasCloseButton={false} />
                 {
                     !success && 
-                    ( <FormError message={error} /> )
+                    ( <FormError message={error} hasCloseButton={false} /> )
                 }
             </div>
         </CardWrapper>
