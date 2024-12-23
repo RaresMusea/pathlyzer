@@ -18,7 +18,7 @@ export const FormSuccess = ({message}: FormSuccessProps) => {
 
     return(
         <div className="bg-emerald-500/15 p-3 rounded-md flex items-center gap-x-2 text-small text-emerald-500">
-            <CheckCircledIcon className="h-5 w-5" />
+            <CheckCircledIcon className="h-20 w-20" />
             <p>{message}</p>
             <button
                 onClick={() => setVisible(!visible)}

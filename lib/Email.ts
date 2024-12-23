@@ -1,12 +1,10 @@
 import { Resend } from 'Resend';
-import path from 'path';
-import fs from 'fs';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const logoUrl: string = "https://i.imgur.com/5jDoLFE.png";
 
 export const sendVerificationEmail = async (email: string, token: string, name: string) => {
-    const confirmLink = `http://localhost:3000/auth/new-verification?token=${token}`;
+    const confirmLink = `http://localhost:3000/email-verification?token=${token}`;
 
     await resend.emails.send({
         from: "onboarding@resend.dev",
