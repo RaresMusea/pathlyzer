@@ -5,6 +5,7 @@ import { getUserById } from "@/persistency/data/User";
 
 import authConfig from "./auth.config";
 import { UserRole } from "@prisma/client";
+import { Truculenta } from "next/font/google";
 
 export type ExtendedUser = DefaultSession["user"] & {
   role: UserRole;
@@ -34,6 +35,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }
   },
   callbacks: {
+    async signIn({user, account}) {
+      if (account?.provider !== 'credentials') {
+        return true;
+      }
+
+      const existingUser = await getUserById(user.id!);
+
+      if (!existingUser?.emailVerified) {
+        return false;
+      }
+
+      return true;
+    },
     async jwt({ token }) {
       if (!token.sub) {
         return token;

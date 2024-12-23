@@ -5,6 +5,8 @@ import * as z from 'zod'
 import bcrypt from "bcryptjs"
 import { db } from '@/persistency/Db';
 import { getUserByEmail } from '@/persistency/data/User';
+import { generateEmailVerifToken } from '@/lib/TokenGenerator';
+import { sendVerificationEmail } from '@/lib/Email';
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
     const validatedFields = RegisterSchema.safeParse(values);
@@ -33,9 +35,11 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
         }
     })
 
-    //TODO: Sent verification token via email
+    const verificationToken = await generateEmailVerifToken(email);
+
+    await sendVerificationEmail(verificationToken.email, verificationToken.token, name);
 
     return {
-        success: "User created successfully!"
+        success: `A verification email was successfully sent to ${email}!`
     }
 }
