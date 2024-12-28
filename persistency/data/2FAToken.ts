@@ -2,7 +2,7 @@ import { db } from "../Db";
 
 export const getBy2FAToken = async (token: string)  => {
     try {
-        const twoFactorToken = await db.twoFactoToken.findUnique({
+        const twoFactorToken = await db.twoFactorToken.findUnique({
             where: {token}
         });
 
@@ -15,7 +15,7 @@ export const getBy2FAToken = async (token: string)  => {
 
 export const getTokenByEmail = async (email: string)  => {
     try {
-        const twoFactorToken = await db.twoFactoToken.findFirst({
+        const twoFactorToken = await db.twoFactorToken.findFirst({
             where: {email}
         });
 

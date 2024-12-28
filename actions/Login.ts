@@ -7,11 +7,14 @@ import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
 import { AuthError } from 'next-auth';
 import { generateEmailVerifToken } from '@/lib/TokenGenerator';
 import { getUserByEmail } from '@/persistency/data/User';
-import { sendVerificationEmail } from '@/lib/Email';
+import { sendVerificationEmail, send2FATokenEmail } from '@/lib/Email';
+import { generate2FAToken } from '@/lib/TokenGenerator';
+import { TwoFactorToken } from '@prisma/client';
 
 export interface LoginResult {
     error?: string;
     success?: string;
+    twoFactor?: string;
 }
 
 const valudateFields = (values: z.infer<typeof LoginSchema>) => {
@@ -57,10 +60,17 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
     if (!existingUser.emailVerified) {
         const verificationToken = await generateEmailVerifToken(existingUser.email!);
         await sendVerificationEmail(verificationToken.email, verificationToken.token, existingUser.name!);
-        
+
         return {
             success: `A verification email was successfully sent to ${existingUser.email}!`
         }
+    }
+
+    if (existingUser.is2FAEnabled && existingUser.email) {
+        const twoFactorOtp: TwoFactorToken = await generate2FAToken(existingUser.email);
+        await send2FATokenEmail(twoFactorOtp.email, twoFactorOtp.token, existingUser.name);
+
+        return { twoFactor: twoFactorOtp.token }
     }
 
     try {

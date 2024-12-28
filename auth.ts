@@ -5,6 +5,7 @@ import { getUserById } from "@/persistency/data/User";
 
 import authConfig from "./auth.config";
 import { UserRole } from "@prisma/client";
+import { getTwoFactorConfirmationByUserId } from "./persistency/data/2FAConfirmation";
 
 export type ExtendedUser = DefaultSession["user"] & {
   role: UserRole;
@@ -34,7 +35,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }
   },
   callbacks: {
-    async signIn({user, account}) {
+    async signIn({ user, account }) {
       if (account?.provider !== 'credentials') {
         return true;
       }
@@ -43,6 +44,18 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       if (!existingUser?.emailVerified) {
         return false;
+      }
+
+      if (existingUser.is2FAEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
+
+        if (!twoFactorConfirmation) {
+          return false;
+        }
+
+        await db.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id }
+        });
       }
 
       return true;

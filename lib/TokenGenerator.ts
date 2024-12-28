@@ -4,6 +4,7 @@ import { db } from "@/persistency/Db";
 import { getPasswordResetTokenByEmail } from "@/persistency/data/PasswordReset";
 import crypto from "crypto";
 import { getTokenByEmail } from "@/persistency/data/2FAToken";
+import { TwoFactorToken } from "@prisma/client";
 
 export const generateEmailVerifToken = async (email: string) => {
     const token: string = uuidv4();
@@ -59,19 +60,19 @@ export const generatePasswordResetToken = async (email: string) => {
     return verificationToken;
 };
 
-export const generate2FAToken = async (email: string) => {
+export const generate2FAToken = async (email: string): Promise<TwoFactorToken> => {
     const token = crypto.randomInt(100_000, 1_000_000).toString();
     const expires = new Date(new Date().getTime() + 15 * 60 * 1000);
 
     const existingToken = await getTokenByEmail(email);
 
     if (existingToken) {
-        await db.twoFactoToken.delete({
+        await db.twoFactorToken.delete({
             where: { id: existingToken.id }
         });
     }
 
-    const twoFactorToken = await db.twoFactoToken.create({
+    const twoFactorToken = await db.twoFactorToken.create({
         data: {
             email,
             token,

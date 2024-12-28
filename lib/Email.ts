@@ -52,7 +52,7 @@ export const sendPasswordResetEmail = async (email: string, token: string, name:
     });
 };
 
-export const send2FATokenEmail = async (email: string, token: string, name: string) => {
+export const send2FATokenEmail = async (email: string, token: string, name: string | null) => {
     await resend.emails.send({
         from: "onboarding@resend.dev",
         to: email,
@@ -63,13 +63,13 @@ export const send2FATokenEmail = async (email: string, token: string, name: stri
             <p style="text-align:center;font-size:1.2em;">
                 Use the following OTP to access your Pathlyzer account:
             </p>
-                <div style="width:55%; margin: 0 auto;">
-                    <span>${token[0]}</span>
-                    <span>${token[1]}</span>
-                    <span>${token[2]}</span>
-                    <span>${token[3]}</span>
-                    <span>${token[4]}</span>
-                    <span>${token[5]}</span>
+                <div style="text-align:center; font-weight:bolder; font-size:3em; color: #233dff;">
+                    <span><strong>${token[0]}</strong></span>
+                    <span><strong>${token[1]}</strong></span>
+                    <span><strong>${token[2]}</strong></span>
+                    <span><strong>${token[3]}</strong></span>
+                    <span><strong>${token[4]}</strong></span>
+                    <span><strong>${token[5]}</strong></span>
                 </div>
             <p>Best regards, <br/> Pathlyzer Team</p>
             <br>`
