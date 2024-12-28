@@ -15,7 +15,7 @@ export const FormSuccess = ({ message, hasCloseButton = true }: FormSuccessProps
         }
     }, [message]);
 
-    if (!message) return null;
+    if (!message || !visible) return null;
 
     return (
         <div className="bg-emerald-500/15 p-3 rounded-md flex items-center gap-x-2 text-small text-emerald-500">

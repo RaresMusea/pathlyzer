@@ -27,3 +27,27 @@ export const sendVerificationEmail = async (email: string, token: string, name: 
             <br>`
     });
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string, name: string) => {
+    const resetLink = `http://localhost:3000/change-password?token=${token}`;
+
+    await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: email,
+        subject: "Pathlyzer Password Reset",
+        html: `
+            <img src="${logoUrl}" alt="Detailed Logo" style="display: block; margin: 0 auto;" />
+            <h1 style="text-align:center">Hello, ${name}!</h1>
+            <p style="text-align:center;font-size:1.2em;">
+                We received a request to reset your password. Click the link below in order to reset your password:
+            </p>
+                <div style="width:55%; margin: 0 auto;">
+                    <a href="${resetLink}" style="display: block; margin: 0 auto; background-color: #233dff; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; font-size: 1.3em; margin: 4px 2px; cursor: pointer; font-weight: bolder;">
+                        Reset password
+                    </a>
+                </div>
+            <p style="margin-top:4em;">If you did not requested a password reset, please ignore this email.</p>
+            <p>Best regards, <br/> Pathlyzer Team</p>
+            <br>`
+    });
+};
