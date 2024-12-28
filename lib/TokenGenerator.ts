@@ -2,10 +2,12 @@ import { getVerifTokenByEmail } from "@/persistency/data/EmailVerification";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "@/persistency/Db";
 import { getPasswordResetTokenByEmail } from "@/persistency/data/PasswordReset";
+import crypto from "crypto";
+import { getTokenByEmail } from "@/persistency/data/2FAToken";
 
 export const generateEmailVerifToken = async (email: string) => {
     const token: string = uuidv4();
-    const expiresAt: Date = new Date(new Date().getTime() + 3600 * 1000);
+    const expires = new Date(new Date().getTime() + 15 * 60 * 1000);
 
     const existingToken = await getVerifTokenByEmail(email);
 
@@ -20,10 +22,10 @@ export const generateEmailVerifToken = async (email: string) => {
     }
 
     const verificationToken = await db.verificationToken.create({
-        data :{
+        data: {
             email,
             token,
-            expiresAt
+            expiresAt: expires
         }
     });
 
@@ -32,7 +34,7 @@ export const generateEmailVerifToken = async (email: string) => {
 
 export const generatePasswordResetToken = async (email: string) => {
     const token: string = uuidv4();
-    const expiresAt: Date = new Date(new Date().getTime() + 3600 * 1000);
+    const expires = new Date(new Date().getTime() + 15 * 60 * 1000);
 
     const existingToken = await getPasswordResetTokenByEmail(email);
 
@@ -47,12 +49,35 @@ export const generatePasswordResetToken = async (email: string) => {
     }
 
     const verificationToken = await db.passwordResetToken.create({
-        data :{
+        data: {
             email,
             token,
-            expiresAt
+            expiresAt: expires
         }
     });
 
     return verificationToken;
+};
+
+export const generate2FAToken = async (email: string) => {
+    const token = crypto.randomInt(100_000, 1_000_000).toString();
+    const expires = new Date(new Date().getTime() + 15 * 60 * 1000);
+
+    const existingToken = await getTokenByEmail(email);
+
+    if (existingToken) {
+        await db.twoFactoToken.delete({
+            where: { id: existingToken.id }
+        });
+    }
+
+    const twoFactorToken = await db.twoFactoToken.create({
+        data: {
+            email,
+            token,
+            expiresAt: expires
+        }
+    });
+
+    return twoFactorToken;
 };

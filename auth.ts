@@ -5,7 +5,6 @@ import { getUserById } from "@/persistency/data/User";
 
 import authConfig from "./auth.config";
 import { UserRole } from "@prisma/client";
-import { Truculenta } from "next/font/google";
 
 export type ExtendedUser = DefaultSession["user"] & {
   role: UserRole;
