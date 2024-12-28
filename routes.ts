@@ -8,6 +8,7 @@ export const authRoutes: string[] = [
     "/register",
     "/error",
     "/reset",
+    "/change-password",
 ];
 
 //never blocked

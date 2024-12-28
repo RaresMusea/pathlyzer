@@ -3,6 +3,8 @@
 import * as z from "zod";
 import { PasswordResetSchema } from "@/schemas/AuthValidation";
 import { getUserByEmail } from "@/persistency/data/User";
+import { generatePasswordResetToken } from "@/lib/TokenGenerator";
+import { sendPasswordResetEmail } from "@/lib/Email";
 
 export interface PasswordResetResult {
     error?: string;
@@ -26,6 +28,9 @@ export const resetPassword = async (values: z.infer<typeof PasswordResetSchema>)
             error: "User not found!"
         };
     }
+
+    const passwordResetToken = await generatePasswordResetToken(email);
+    await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token, user.name!);
 
     return {
         success: `A password reset email has been sent to ${email}.`

@@ -46,3 +46,20 @@ export const PasswordResetSchema = z.object({
         message: "Please enter a valid email address."
     }),
 });
+
+export const ChangePasswordSchema = z.object({
+    password: z.string().min(6, {
+        message: "Minimum password length is 6 characters."
+    }),
+    passwordConfirmation: z.string().min(6, {
+        message: "The password confirmation cannot be empty"
+    })
+}).superRefine((data, ctx) => {
+    if (data.password !== data.passwordConfirmation) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["passwordConfirmation"],
+            message: "Passwords do not match."
+        });
+    }
+});

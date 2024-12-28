@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/persistency/Db";
-import { getUserByEmail } from "@/persistency/data/User";
 import { getVerificationByToken } from "@/persistency/data/EmailVerification";
+import { verifyUser } from "./globals/Generics";
 
 export const verifiyEmail = async (token: string) => {
     const tokenResult = await verifyToken(token);
@@ -52,16 +52,4 @@ const verifyToken = async (token: string) => {
     }
 
     return { token: existingToken };
-};
-
-const verifyUser = async (email: string) => {
-    const existingUser = await getUserByEmail(email);
-
-    if (!existingUser) {
-        return {
-            error: "The user/email associated to this token does not exist!"
-        }
-    }
-
-    return { user: existingUser };
 };
