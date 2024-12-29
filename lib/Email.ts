@@ -64,12 +64,7 @@ export const send2FATokenEmail = async (email: string, token: string, name: stri
                 Use the following OTP to access your Pathlyzer account:
             </p>
                 <div style="text-align:center; font-weight:bolder; font-size:3em; color: #233dff;">
-                    <span><strong>${token[0]}</strong></span>
-                    <span><strong>${token[1]}</strong></span>
-                    <span><strong>${token[2]}</strong></span>
-                    <span><strong>${token[3]}</strong></span>
-                    <span><strong>${token[4]}</strong></span>
-                    <span><strong>${token[5]}</strong></span>
+                ${token.split("").map((digit) => `<span>${digit}</span>`).join("")}
                 </div>
             <p>Best regards, <br/> Pathlyzer Team</p>
             <br>`

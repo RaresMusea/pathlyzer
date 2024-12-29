@@ -6,6 +6,8 @@ import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } from 
 
 export default auth((req) => {
   const { nextUrl } = req;
+  console.log("Auth middleware triggered for:", nextUrl.pathname);
+  console.log("Auth status:", req.auth);
   const isLoggedIn: boolean = !!req.auth;
   const isApiAuthRoute: boolean = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute: boolean = publicRoutes.includes(nextUrl.pathname);

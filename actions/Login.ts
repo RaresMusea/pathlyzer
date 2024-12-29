@@ -52,6 +52,7 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
     }
 
     const { email, password, twoFactorOtp } = validationResult.data;
+    console.log(validationResult.data);
     const userCheck = await checkForExistingUser(email);
 
     if ('error' in userCheck) {

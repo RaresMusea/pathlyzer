@@ -15,8 +15,8 @@ import { FormSuccess } from "../FormSuccess";
 import { login, LoginResult } from "@/actions/Login";
 import Link from "next/link";
 import React from "react";
-import { OtpInput } from "./OtpInput";
 import { REGEXP_ONLY_DIGITS } from "input-otp"
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp";
 
 
 export const LoginForm = () => {
@@ -106,23 +106,35 @@ export const LoginForm = () => {
                             </React.Fragment>
                         )}
                         {show2FA && (
-                        <div className="flex items-center justify-center">
-                            <FormField control={form.control} name="twoFactorOtp" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Type in the OTP Code provided via email</FormLabel>
-                                    <FormControl>
-                                        <OtpInput maxLength={6} useSeparators={true} pattern={REGEXP_ONLY_DIGITS} />
-                                    </FormControl>
-                                    <FormMessage></FormMessage>
-                                </FormItem>
-                            )} />
-                        </div>
+                            <div className="flex items-center justify-center">
+                                <FormField control={form.control} name="twoFactorOtp" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Type in the OTP Code provided via email</FormLabel>
+                                        <FormControl>
+                                            <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
+                                                <InputOTPGroup>
+                                                    {Array.from({ length: 6 }).map((_, index) => (
+                                                        <React.Fragment key={index}>
+                                                            <InputOTPSlot data-otp-slot
+                                                                index={index}
+                                                                className="font-extrabold"
+                                                            />
+                                                            {index < 5 && <InputOTPSeparator />}
+                                                        </React.Fragment>
+                                                    ))}
+                                                </InputOTPGroup>
+                                            </InputOTP>
+                                        </FormControl>
+                                        <FormMessage></FormMessage>
+                                    </FormItem>
+                                )} />
+                            </div>
                         )}
                     </section>
                     <FormSuccess message={success} />
                     <FormError message={error || urlError} />
                     <Button type="submit" className="w-full" disabled={isPending}>
-                        { show2FA ? 'Confirm' : 'Log In' }
+                        {show2FA ? 'Confirm' : 'Log In'}
                     </Button>
                 </form>
             </Form>
