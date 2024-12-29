@@ -1,10 +1,14 @@
 export const publicRoutes: string[] = [
-    "/"
+    "/",
+    "/email-verification"
 ];
 
 export const authRoutes: string[] = [
     "/login",
-    "/register"
+    "/register",
+    "/error",
+    "/reset",
+    "/change-password",
 ];
 
 //never blocked
