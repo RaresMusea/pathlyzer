@@ -5,8 +5,16 @@ export const LoginSchema = z.object({
         message: "Please enter a valid email address."
     }),
     password: z.string().min(1, {
-        message: "The password cannot be empty"
-    })
+        message: "The password cannot be empty!"
+    }),
+    twoFactorOtp: z
+    .string()
+    .length(6, {
+      message: "Invalid OTP code! It must be exactly 6 characters.",
+    }).refine((value) => /^\d+$/.test(value), {
+        message: "The OTP code must contain only numeric digits.",
+      })
+    .optional(),
 });
 
 export const RegisterSchema = z.object({
