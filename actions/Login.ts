@@ -9,7 +9,10 @@ import { generateEmailVerifToken } from '@/lib/TokenGenerator';
 import { getUserByEmail } from '@/persistency/data/User';
 import { sendVerificationEmail, send2FATokenEmail } from '@/lib/Email';
 import { generate2FAToken } from '@/lib/TokenGenerator';
-import { TwoFactorToken } from '@prisma/client';
+import { TwoFactorConfirmation, TwoFactorToken } from '@prisma/client';
+import { getTokenByEmail } from '@/persistency/data/2FAToken';
+import { db } from '@/persistency/Db';
+import { getTwoFactorConfirmationByUserId } from '@/persistency/data/2FAConfirmation';
 
 export interface LoginResult {
     error?: string;
@@ -48,7 +51,7 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
         return validationResult;
     }
 
-    const { email, password } = validationResult.data;
+    const { email, password, twoFactorOtp } = validationResult.data;
     const userCheck = await checkForExistingUser(email);
 
     if ('error' in userCheck) {
@@ -67,10 +70,47 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
     }
 
     if (existingUser.is2FAEnabled && existingUser.email) {
-        const twoFactorOtp: TwoFactorToken = await generate2FAToken(existingUser.email);
-        await send2FATokenEmail(twoFactorOtp.email, twoFactorOtp.token, existingUser.name);
+        if (twoFactorOtp) {
+            const twoFactorToken = await getTokenByEmail(existingUser.email);
 
-        return { twoFactor: twoFactorOtp.token }
+            if (!twoFactorToken) {
+                return { error: 'The provided OTP code is invalid!' };
+            }
+
+            if (twoFactorToken.token !== twoFactorOtp) {
+                return { error: "Invalid OTP code!" };
+            }
+
+            const tokenExpired: boolean = new Date(twoFactorToken.expiresAt) < new Date();
+            
+            if (tokenExpired) {
+                return { error: "The OTP code has expired!" };
+            }
+
+            await db.twoFactorToken.delete({
+                where: {id: twoFactorToken.id}
+            });
+
+            const existingConfirmationToken = await getTwoFactorConfirmationByUserId(existingUser.id);
+
+            if (existingConfirmationToken) {
+                await db.twoFactorConfirmation.delete({
+                    where: {id: existingConfirmationToken.id}
+                });
+            }
+            
+            await db.twoFactorConfirmation.create({
+                data: {
+                    userId: existingUser.id
+                }
+            });
+        }
+        else {
+            const generatedTwoFactorOtp: TwoFactorToken = await generate2FAToken(existingUser.email);
+            await send2FATokenEmail(generatedTwoFactorOtp.email, generatedTwoFactorOtp.token, existingUser.name);
+
+            return { twoFactor: generatedTwoFactorOtp.token }
+        }
     }
 
     try {

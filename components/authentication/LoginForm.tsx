@@ -16,6 +16,7 @@ import { login, LoginResult } from "@/actions/Login";
 import Link from "next/link";
 import React from "react";
 import { OtpInput } from "./OtpInput";
+import { REGEXP_ONLY_DIGITS } from "input-otp"
 
 
 export const LoginForm = () => {
@@ -110,7 +111,7 @@ export const LoginForm = () => {
                                 <FormItem>
                                     <FormLabel>Type in the OTP Code provided via email</FormLabel>
                                     <FormControl>
-                                        <OtpInput></OtpInput>
+                                        <OtpInput maxLength={6} useSeparators={true} pattern={REGEXP_ONLY_DIGITS} />
                                     </FormControl>
                                     <FormMessage></FormMessage>
                                 </FormItem>
@@ -121,7 +122,7 @@ export const LoginForm = () => {
                     <FormSuccess message={success} />
                     <FormError message={error || urlError} />
                     <Button type="submit" className="w-full" disabled={isPending}>
-                        Log In
+                        { show2FA ? 'Confirm' : 'Log In' }
                     </Button>
                 </form>
             </Form>

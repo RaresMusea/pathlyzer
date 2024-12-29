@@ -4,24 +4,25 @@ import {
     InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
-import { REGEXP_ONLY_DIGITS } from "input-otp"
+import React from "react";
 
-export const OtpInput = () => {
+interface OtpInputProps {
+    maxLength: number;
+    pattern: string;
+    useSeparators: boolean;
+}
+
+export const OtpInput = ({ maxLength, pattern, useSeparators }: OtpInputProps) => {
     return (
-        <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+        <InputOTP maxLength={maxLength} pattern={pattern}>
             <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSeparator />
-                <InputOTPSlot index={1} />
-                <InputOTPSeparator />
-                <InputOTPSlot index={2} />
-                <InputOTPSeparator />
-                <InputOTPSlot index={3} />
-                <InputOTPSeparator />
-                <InputOTPSlot index={4} />
-                <InputOTPSeparator />
-                <InputOTPSlot index={5} />
+                {Array.from({ length: maxLength }).map((_, index) => (
+                    <React.Fragment key={index}>
+                        <InputOTPSlot index={index} />
+                        {useSeparators && index < maxLength - 1 && <InputOTPSeparator />}
+                    </React.Fragment>
+                ))}
             </InputOTPGroup>
         </InputOTP>
-    )
+    );
 };
