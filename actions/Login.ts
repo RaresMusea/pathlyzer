@@ -13,6 +13,7 @@ import { TwoFactorConfirmation, TwoFactorToken } from '@prisma/client';
 import { getTokenByEmail } from '@/persistency/data/2FAToken';
 import { db } from '@/persistency/Db';
 import { getTwoFactorConfirmationByUserId } from '@/persistency/data/2FAConfirmation';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 export interface LoginResult {
     error?: string;
@@ -127,6 +128,10 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
             return {
                 error: error.type === "CredentialsSignin" ? "Invalid login credentials!" : "An error occurred while attempting to sign you in."
             }
+        }
+
+        if (isRedirectError(error)) {
+            throw error;
         }
 
         throw error;

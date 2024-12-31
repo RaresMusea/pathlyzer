@@ -1,20 +1,19 @@
-import { auth, signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+"use client";
 
-const SettingsPage = async () => {
-    const session = await auth();
+import { signOut } from "next-auth/react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { Navbar } from "../_components/Navbar";
+
+const SettingsPage = () => {
+    const currentUser = useCurrentUser();
+
+    const onClick = () => {
+        signOut();
+    }
+
     return (
         <div className="flex flex-col gap-4 items-center justify-center">
-            <div>{JSON.stringify(session)}</div>
-            <form action={async () => {
-                "use server";
-                await signOut({ redirectTo: '/login', redirect: true });
-            }} >
-                <Button type="submit">
-                    Sign out
-                </Button>
-            </form>
+            <Navbar /> 
         </div>
     )
 }
