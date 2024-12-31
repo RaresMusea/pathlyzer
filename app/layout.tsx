@@ -3,8 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { ThemeProvider } from "next-themes";
-import { Poppins } from "next/font/google";
+import { ThemeProvider } from "@/components/provider/ThemeProvider";
+import { Nunito, Poppins } from "next/font/google";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,10 +18,17 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const font = Poppins({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["600"]
-})
+  weight: ["600"],
+  variable: "--font-poppins",
+});
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: "--font-nunito"
+});
 
 export const metadata: Metadata = {
   title: "Pathlyzer",
@@ -39,7 +46,7 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} ${poppins.variable} antialiased`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

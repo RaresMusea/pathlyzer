@@ -65,6 +65,10 @@ const config: Config = {
 		  animation: {
 			"caret-blink": "caret-blink 1.25s ease-out infinite",
 		  },
+		  fontFamily: {
+			nunito: ['Nunito', 'sans-serif'],
+			poppins: ['Poppins', 'sans-serif'],
+		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
