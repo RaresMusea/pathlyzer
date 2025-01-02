@@ -57,7 +57,7 @@ export const LoginForm = () => {
                     }
                 })
                 .catch(e => {
-                    setError("Something went wrong while attempting to log you in.");
+                    setError(`Something went wrong while attempting to log you in.\nMore details: ${e}.`);
                 })
         });
     }
