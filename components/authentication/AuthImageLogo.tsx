@@ -6,7 +6,6 @@ import Image from "next/image";
 
 export const AuthImageLogo = () => {
     const theme = useTheme();
-    console.log("IMAGE LOGO", theme);
 
     return (
         <div className="relative hidden bg-muted md:block">

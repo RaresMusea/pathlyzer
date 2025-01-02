@@ -28,13 +28,17 @@ export function AuthAlert({ message, hasCloseButton = false, type}: AlertProps) 
 
     if (!message || !visible) return null;
 
+    if(type === AlertType.SUCCESS) {
+        console.log(message);
+    }
+
     return (
         <InViewWrapper type={InviewType.NORMAL}>
             <Alert variant={type === AlertType.ERROR? "destructive" : "success"}>
                 <div className="flex items-center">
                     <AlertCircle className="h-4 w-4" />
                     <div className="flex flex-col ml-3">
-                        <AlertTitle>{type === AlertType.ERROR? "Error" : "Success"}</AlertTitle>
+                        <AlertTitle>{type === AlertType.ERROR ? "Error" : "Success"}</AlertTitle>
                         <AlertDescription>
                             {message}
                         </AlertDescription>
@@ -42,7 +46,7 @@ export function AuthAlert({ message, hasCloseButton = false, type}: AlertProps) 
                     {hasCloseButton && (
                         <button
                             onClick={() => setVisible(!visible)}
-                            className="ml-auto text-destructive-500 hover:text-destructive-700"
+                            className={`ml-auto ${type === AlertType.ERROR ? 'text-destructive-500' : 'text-success-600'} hover:${type === AlertType.ERROR ? 'text-destructive-700' : 'text-success-700'}`}
                         >
                             &times;
                         </button>

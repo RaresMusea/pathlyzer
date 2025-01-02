@@ -3,8 +3,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SocialAuthMethods } from "./SocialAuthMethods"
-import Image from "next/image";
-import { useTheme } from "next-themes"
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Form } from "../ui/form";
@@ -20,12 +18,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { AlertType, AuthAlert } from "./Alerts";
 
-export const LoginForm = ({
-    className,
-    ...props
-}: React.ComponentProps<"div">) => {
-
-    const theme = useTheme();
+export const LoginForm = () => {
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>("");
