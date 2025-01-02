@@ -9,6 +9,8 @@ import {
   renderSimpleIcon,
   SimpleIcon,
 } from "react-icon-cloud";
+import Image from "next/image";
+import React from "react";
 
 export type DynamicCloudProps = {
   iconSlugs?: string[]; // Made iconSlugs optional
@@ -45,7 +47,6 @@ export const cloudProps: Omit<ICloud, "children"> = {
 export const renderCustomIcon = (
   icon: SimpleIcon,
   theme: string,
-  imageArray?: string[],
 ) => {
   const bgHex = theme === "light" ? "#f3f2ef" : "#080510";
   const fallbackHex = theme === "light" ? "#6e6e73" : "#ffffff";
@@ -91,20 +92,19 @@ export default function IconCloud({
   }, [data, theme]);
 
   return (
-    // @ts-ignore
     <Cloud {...cloudProps}>
-      <>
-        <>{renderedIcons}</>
-        {imageArray &&
-          imageArray.length > 0 &&
-          imageArray.map((image, index) => {
-            return (
-              <a key={index} href="#" onClick={(e) => e.preventDefault()}>
-                <img height="42" width="42" alt="A globe" src={image} />
-              </a>
-            );
-          })}
-      </>
+      <React.Fragment>
+        {renderedIcons}
+      </React.Fragment>
+      {imageArray &&
+        imageArray.length > 0 &&
+        imageArray.map((image, index) => {
+          return (
+            <a key={index} href="#" onClick={(e) => e.preventDefault()}>
+              <Image height="42" width="42" alt="A globe" src={image} />
+            </a>
+          );
+        })}
     </Cloud>
   );
 }

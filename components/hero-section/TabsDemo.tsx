@@ -1,6 +1,5 @@
 "use client";
  
-import Image from "next/image";
 import { Tabs } from "../ui/tabs";
 import { CodeBlockDemo } from "./CodeBlockDemo";
 import { cCodeSnippet, cppCodeSnippet, cSharpCodeSnippet, javaCodeSnippet, pythonScript, typeScriptCodeSnippet } from "@/lib/CodeSnippets";
@@ -70,15 +69,3 @@ export function TabsDemo() {
     </div>
   );
 }
- 
-const DummyContent = () => {
-  return (
-    <Image
-      src="/linear.webp"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};

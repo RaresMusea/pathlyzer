@@ -5,7 +5,7 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
     const session = await auth();
     return (
         <SessionProvider session={session}>
-        <div className="h-full w-full flex flex-col items-center justify-center">
+        <div className="w-full flex flex-col items-baseline justify-center">
             {children}
         </div>
         </SessionProvider>

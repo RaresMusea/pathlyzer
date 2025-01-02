@@ -11,7 +11,6 @@ export default function CycleText({ wordsList, transitionTimeoutMs }: CycleTextP
     const [index2, setIndex2] = useState(0);
 
     const functions: string[] = ['console.log("', 'printf("', 'Console.WriteLine("', 'echo "', 'System.out.println("', 'std::cout << "'];
-    const colors: string[] = ['text-blue-700', 'text-green-700', 'text-yellow-700', 'text-red-700', 'text-purple-700', 'text-pink-700'];
 
     const total = wordsList.length;
 
@@ -28,7 +27,7 @@ export default function CycleText({ wordsList, transitionTimeoutMs }: CycleTextP
             clearInterval(interval);
             clearInterval(secondInterval);
         };
-    }, [total]);
+    }, [total, functions.length, transitionTimeoutMs]);
 
     return (
         <div className="p-2 font-mono flex items-center justify-center gap-x-5">
