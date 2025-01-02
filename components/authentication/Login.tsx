@@ -71,9 +71,10 @@ export function Login({
     };
 
     return (
-        <div className={cn("flex flex-col gap-2 sm:w-9/12 md:w-9/12 lg:w-9/12 xl:w-7/12", className)} {...props}>
-            <Card className="overflow-hidden w-full">
-                <CardContent className="grid p-0 md:grid-cols-2">
+        <>
+        {/* // <div className={cn("flex flex-col gap-2 sm:w-9/12 md:w-9/12 lg:w-9/12 xl:w-7/12", className)} {...props}>
+        //     <Card className="overflow-hidden w-full">
+        //         <CardContent className="grid p-0 md:grid-cols-2"> */}
                     <Form {...form}>
                         <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
                             <div className="flex flex-col gap-6">
@@ -166,26 +167,15 @@ export function Login({
                                 <SocialAuthMethods />
                                 <div className="text-center text-sm">
                                     Don&apos;t have an account?{" "}
-                                    <a href="#" className="underline underline-offset-4">
+                                    <Link href="#" className="underline underline-offset-4">
                                         Sign up
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </form>
                     </Form>
-                    <div className="relative hidden bg-muted md:block">
-                        <Image
-                            src={theme?.theme === 'dark' ? logoDetailedDark : logoDetailedLight}
-                            alt="Image"
-                            className="absolute inset-0 h-full w-full object-cover"
-                        />
-                    </div>
-                </CardContent>
-            </Card>
-            <div className="text-balance my-10 text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-                By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-                and <a href="#">Privacy Policy</a>.
-            </div>
-        </div>
+                {/* </CardContent>
+            </Card> */}
+        </>
     )
 }
