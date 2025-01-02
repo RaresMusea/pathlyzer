@@ -28,10 +28,6 @@ export function AuthAlert({ message, hasCloseButton = false, type}: AlertProps) 
 
     if (!message || !visible) return null;
 
-    if(type === AlertType.SUCCESS) {
-        console.log(message);
-    }
-
     return (
         <InViewWrapper type={InviewType.NORMAL}>
             <Alert variant={type === AlertType.ERROR? "destructive" : "success"}>

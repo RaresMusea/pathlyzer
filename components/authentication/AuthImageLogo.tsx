@@ -12,8 +12,8 @@ export const AuthImageLogo = () => {
             <Image
                 src={theme?.theme === 'dark' ? logoDetailedDark : logoDetailedLight}
                 alt="Image"
-                width={20}
-                height={20}
+                width={10}
+                height={10}
                 className="absolute inset-0 h-full w-full object-cover"
             />
         </div>
