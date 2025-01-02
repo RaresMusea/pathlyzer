@@ -8,9 +8,9 @@ import { ThemeToggle } from "../ThemeToggle";
 export const Navbar = () => {
     const theme = useTheme();
     return (
-        <main className="mx-4 flex items-center justify-between gap-x-5 sticky">
-            <Image src={theme?.theme === "light" ? navLogoLight : navLogoDark} width={120} height={120} alt="Logo" />
+        <nav className="mx-4 flex items-center justify-between sticky">
+            <Image src={theme?.theme === "light" ? navLogoLight : navLogoDark} width={100} height={120} alt="Logo" />
             <ThemeToggle />
-        </main>
+        </nav>
     );
 };

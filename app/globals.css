@@ -74,6 +74,15 @@ body {
   }
 }
 
+.scrollbar-hide {
+  scrollbar-width: none; 
+  -overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @layer base {
   * {
     @apply border-border;
