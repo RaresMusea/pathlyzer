@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 const AuthenticationLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <>
-            <div className="flex h-[700px] items-center justify-center">
-                <div className={cn("flex flex-col gap-2 sm:w-9/12 md:w-9/12 lg:w-9/12 xl:w-7/12")}>
+            <div className="flex w-full h-[750px] items-center justify-center font-nunito">
+                <div className={cn("flex flex-col w-full sm:w-5/12 md:w-5/12 lg:w-9/12 xl:w-8/12")}>
                     <Card className="overflow-hidden w-full">
                         <CardContent className="grid p-0 md:grid-cols-2">
                             {children}
