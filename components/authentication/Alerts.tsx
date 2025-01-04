@@ -14,10 +14,11 @@ type AlertProps = {
     message?: string;
     hasCloseButton?: boolean;
     type: AlertType;
+    inviewType?: InviewType;
 };
 
 
-export function AuthAlert({ message, hasCloseButton = false, type}: AlertProps) {
+export function AuthAlert({ message, hasCloseButton = false, type, inviewType=InviewType.NORMAL}: AlertProps) {
     const [visible, setVisible] = useState<boolean>(true);
 
     useEffect(() => {
@@ -29,7 +30,7 @@ export function AuthAlert({ message, hasCloseButton = false, type}: AlertProps) 
     if (!message || !visible) return null;
 
     return (
-        <InViewWrapper type={InviewType.NORMAL}>
+        <InViewWrapper type={inviewType}>
             <Alert variant={type === AlertType.ERROR? "destructive" : "success"}>
                 <div className="flex items-center">
                     <AlertCircle className="h-4 w-4" />

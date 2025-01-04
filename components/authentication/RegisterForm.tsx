@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 import { AlertType, AuthAlert } from "./Alerts";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { InviewType } from "../hero-section/InView";
 
 export const RegisterForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -142,8 +143,8 @@ export const RegisterForm = () => {
                             )} />
                         </React.Fragment>
                     </div>
-                    <AuthAlert message={success} hasCloseButton={true} type={AlertType.SUCCESS} />
-                    <AuthAlert message={error} hasCloseButton={true} type={AlertType.ERROR} />
+                    <AuthAlert message={success} hasCloseButton={true} type={AlertType.SUCCESS} inviewType={InviewType.NONE} />
+                    <AuthAlert message={error} hasCloseButton={true} type={AlertType.ERROR} inviewType={InviewType.NONE} />
                     <Button type="submit" className="w-[60%] text-center m-auto font-extrabold">
                         Register
                     </Button>

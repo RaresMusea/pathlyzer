@@ -57,7 +57,8 @@ const handleEmailVerify = async (user: {email: string; name?: string}) => {
 const handleTwoFactorAuth = async (user: {id: string; email: string; name?: string}, providedOtp?: string) => {
     if (providedOtp) {
         const twoFactorToken = await getTokenByEmail(user.email);
-        
+        console.log(twoFactorToken);
+
         if (!twoFactorToken) {
             return { error: 'The provided OTP code is invalid!' };
         }
@@ -113,6 +114,10 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
 
     if (existingUser.is2FAEnabled && existingUser.email) {
        const twoFactorResult = await handleTwoFactorAuth({ id: existingUser.id, email: existingUser.email, name: existingUser.name || undefined }, twoFactorOtp);
+       
+       if (twoFactorResult) {
+           return twoFactorResult;
+       }
     }
 
     try {

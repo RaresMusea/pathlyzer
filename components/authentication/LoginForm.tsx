@@ -117,10 +117,10 @@ export const LoginForm = () => {
                             </>
                         )}
                         {show2FA && (
-                            <div className="grid gap-2">
+                            <div className="flex items-center justify-center">
                                 <FormField control={form.control} name="twoFactorOtp" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Type in the OTP Code provided via email</FormLabel>
+                                        <FormLabel className="text-center">Type in the OTP Code provided via email: </FormLabel>
                                         <FormControl>
                                             <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
                                                 <InputOTPGroup>
