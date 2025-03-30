@@ -1,7 +1,7 @@
 import { Resend } from 'Resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const logoUrl: string = "https://i.imgur.com/5jDoLFE.png";
+const logoUrl: string = "https://i.imgur.com/xQaKAhT.png";
 
 export const sendVerificationEmail = async (email: string, token: string, name: string) => {
     const confirmLink = `http://localhost:3000/email-verification?token=${token}`;
