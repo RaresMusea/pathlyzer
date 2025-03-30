@@ -1,11 +1,10 @@
-"use client";
+ "use client";
 
 import { signOut } from "next-auth/react";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { Navbar } from "../_components/Navbar";
+import { Button } from "@/components/ui/button";
 
 const SettingsPage = () => {
-    const currentUser = useCurrentUser();
+    //const currentUser = useCurrentUser();
 
     const onClick = () => {
         signOut();
@@ -13,9 +12,9 @@ const SettingsPage = () => {
 
     return (
         <div className="flex flex-col gap-4 items-center justify-center">
-            <Navbar /> 
+            <Button onClick={() => onClick()}>Sign Out</Button>
         </div>
     )
-}
+};
 
 export default SettingsPage;
