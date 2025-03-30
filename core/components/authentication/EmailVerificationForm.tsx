@@ -1,13 +1,9 @@
 "use client";
 
-import { CardWrapper } from "../CardWrapper";
-import { FormSuccess } from "../FormSuccess";
-import { FormError } from "../FormError";
 import { BeatLoader } from 'react-spinners';
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { verifiyEmail } from "@/actions/EmailVerification";
-import { Form } from "react-hook-form";
 import { AlertType, AuthAlert } from "./Alerts";
 import Link from "next/link";
 
