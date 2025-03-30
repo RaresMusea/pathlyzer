@@ -8,7 +8,7 @@ interface SignUpButtonProps {
     asChild?: boolean;
 };
 
-export const SignUpButton = ({ children, mode = "redirect", asChild }: SignUpButtonProps) => {
+export const SignUpButton = ({ children, mode = "redirect" }: SignUpButtonProps) => {
     const router = useRouter();
 
     const onClick = () => {
