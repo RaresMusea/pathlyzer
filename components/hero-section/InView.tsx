@@ -5,6 +5,7 @@ export enum InviewType {
     NORMAL,
     WITH_MARGIN,
     WITH_FADE_IN,
+    NONE,
 };
 
 type InViewWrapperProps = {
@@ -76,5 +77,8 @@ export function InViewWrapper({ children, type }: InViewWrapperProps) {
                 {children}
             </InView>
         );
+    }
+    if (type === InviewType.NONE) {
+        return <>{children}</>;
     }
 };
