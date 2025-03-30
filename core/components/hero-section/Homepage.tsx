@@ -28,10 +28,6 @@ export const Homepage = () => {
                     <p className="font-nunito mt-10 mx-3 font-bold text-center text-base sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-8">How we will do that? Click on the card below to learn more.</p>
                 </InViewWrapper>
 
-                {/* <InViewWrapper type={InviewType.WITH_FADE_IN}>
-                    
-                </InViewWrapper> */}
-
                 <InViewWrapper type={InviewType.NORMAL}>
                     <div className="my-5 mb-10">
                         <SpreadableCards />
