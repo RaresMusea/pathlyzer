@@ -6,7 +6,7 @@ import logo from "../static/5.svg";
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 
-export const MonacoEditor = () => {
+export const CodeEditor = () => {
     const { selectedFile, socket, updateOpenedFileProps } = useCodeEditor();
     const [language, setLanguage] = useState<string | undefined>(undefined);
     const theme = useTheme();
