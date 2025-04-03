@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { ThemeProvider } from "@/components/provider/ThemeProvider";
 import { Nunito, Poppins } from "next/font/google";
 import { Navbar } from "@/components/navbar/Navbar";
+import { Toaster } from "sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -56,6 +57,7 @@ export default async function RootLayout({
           >
             <Navbar/>
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

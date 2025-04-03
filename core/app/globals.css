@@ -83,6 +83,42 @@ body {
   display: none;
 }
 
+.tabBorderUnselected {
+  border-bottom: 3px solid #2e2e2e;
+}
+
+.tabBorderSelected {
+  border-bottom: 3px solid gray;
+}
+
+.xterm-viewport {
+  overflow: hidden !important;
+}
+
+.terminalPanel {
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  outline: none !important;
+  scrollbar-width: none !important;
+}
+
+.terminalPanel::-webkit-scrollbar {
+  display: none !important;
+}
+
+.element-clasa::-webkit-scrollbar {
+  display: none;
+}
+
+.noScroll::-webkit-scrollbar {
+  display: none !important;
+}
+
+.tabClose:hover {
+  background-color: red !important;
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -37,7 +37,7 @@ export const CreateProject = () => {
 
     return (
         <>
-            <Button className="bg-[#00084D] hover:bg-[#1D63ED]" onClick={() => setOpen(true)}>
+            <Button className="bg-[#00084D] text-white hover:bg-[#1D63ED] dark:bg-[#1D63ED] dark:hover:bg-[#00084D] " onClick={() => setOpen(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Create Project
             </Button>
