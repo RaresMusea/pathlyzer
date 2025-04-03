@@ -99,7 +99,7 @@ export const CreationModal: React.FC<CreationModalProps> = ({ handleCreation, pa
                                         {...field}
                                         autoComplete="off"
                                         placeholder={entityType === "file" ? entityType + "Name.extension" : entityType + "Name"}
-                                        className="mt-1 border bg-[#c4c4c4] border-gray-500 shadow-sm outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#00084D]"
+                                        className="mt-1 border shadow-sm outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#00084D]"
                                         autoFocus
                                     />
                                 </FormControl>
@@ -107,7 +107,7 @@ export const CreationModal: React.FC<CreationModalProps> = ({ handleCreation, pa
                             </FormItem>
                         )} />
                         <DialogFooter className="mt-3">
-                            <Button className="bg-[#00084D] hover:bg-[#1D63ED]" type="submit">Create</Button>
+                            <Button className="bg-[#00084D] hover:bg-[#1D63ED] dark:bg-[#1D63ED] dark:hover:bg-[#00084D] text-white" type="submit">Create</Button>
                             <Button variant="secondary" onClick={onClose}>Cancel</Button>
                         </DialogFooter>
                     </form>

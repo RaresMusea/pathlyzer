@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import Image from 'next/image'
 import { Directory, IFile, Type } from '@/types/types';
 import { sortDir, sortFile } from '@/lib/FileManager';
+import { useTheme } from 'next-themes';
 
 const CHEVRON_WIDTH: number = 16;
 
@@ -29,7 +30,7 @@ const SubTree = (props: SubTreeProps) => {
     const { onSelect } = useCodeEditor();
 
     return (
-        <div className='bg-[#1e1e1e] text-white'>
+        <div className=''>
             {
                 props.directory?.dirs
                     .sort(sortDir)
@@ -145,12 +146,14 @@ const FileDiv = ({ file, open, onClick }: {
 
     const isSelected = (selectedFile && selectedFile.id === file.id) as boolean;
     const depth = file.depth;
+    const theme = useTheme().theme;
 
     return (
         <Dialog open={openDialog()} onOpenChange={(open) => !open && setModalType(undefined)}>
             <ContextMenu modal={false}>
                 <ContextMenuTrigger>
                     <Div
+                        theme={theme || ''}
                         depth={depth}
                         file={file}
                         isSelected={isSelected}
@@ -315,14 +318,16 @@ const Div = styled.div<{
     file: IFile | Directory;
     depth: number;
     isSelected: boolean;
+    theme: string
     selectedContextMenuFile?: IFile;
 }>
     `
     display: flex;
     align-items: center;
+    color: ${props => props.theme === 'dark' ? 'white' : (props.isSelected ? 'white' : 'black')};
     padding-left: ${props => props.depth * 16 + (props.file.type === Type.FILE ? CHEVRON_WIDTH : 0)}px;;
-    background-color: ${props => props.isSelected ? "#00084D" : "transparent"};
-    border: ${props => props.selectedContextMenuFile?.name === props.file.name ? '2px solid #1D63ED' : '2px solid transparent'};
+    background-color: ${props => props.isSelected ? (props.theme === 'dark' ? "#00084D" : "#1D63ED") : "transparent"};
+    border: ${props => props.selectedContextMenuFile?.name === props.file.name ? (props.theme === 'dark' || props.theme === 'system'? '2px solid #1D63ED' : '2px solid #00084D') : '2px solid transparent'};
     box-shadow: ${props => props.isSelected ? 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px' : 'none'};
   
     :hover {

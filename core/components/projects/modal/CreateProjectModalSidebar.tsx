@@ -5,9 +5,9 @@ export const CreateProjectModalSidebar = () => {
     const { steps, currentStep } = useProjectCreator();
 
     return (
-        <div className="w-[200px] bg-gray-100 border-r">
+        <div className="w-[200px] bg-gray-100 border-r dark:bg-[#17191E] text-white">
             <div className="p-6">
-                <h3 className="font-semibold mb-4">Create Project</h3>
+                <h3 className="font-semibold mb-4 dark:text-white text-black">Create Project</h3>
                 <div className="space-y-4">
                     {steps.map((item) => (
                         <div

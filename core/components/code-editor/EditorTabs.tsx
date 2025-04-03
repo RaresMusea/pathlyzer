@@ -7,17 +7,24 @@ import { useEditorTabs } from "@/context/EditorTabsContext"
 export const EditorTabs: React.FC = () => {
     const { tabs, closeTab, currentTab, setActiveTab } = useEditorTabs();
 
+    console.log("Current tab", currentTab);
+
+    console.log(tabs);
+
     return (
         <div className="flex overflow-x-auto">
             {tabs?.map((tab) => (
                 <div
                     key={tab.id}
-                    className={`flex items-center text-white tabBorder px-4 py-2 border-b-8 cursor-pointer border-r-4 border-transparent shadow-deep-right ${currentTab === tab.id ? "bg-[#00084D] tabBorderSelected hover:bg-[#001C80] font-semibold" : "bg-[#1e1e1e] tabBorderUnselected hover:bg-[#2e2e2e]"
-                        }`}
+                    className={`flex items-center text-black dark:text-white border-b-3 
+                   ${currentTab === tab.id
+                            ? 'bg-[#1D63ED] text-white font-bold border-b-3 border-r-2 border-[#00084D] dark:border-[#1D63ED] dark:bg-[#00084D]'
+                            : 'bg-slate-100 dark:bg-[#17191E] border-b-3 border-slate-400 dark:border-[#2e2e2e]'}
+                   px-4 py-2 cursor-pointer shadow-deep-right`}
                     onClick={() => setActiveTab(tab.id)}
                 >
                     <span className="mr-2">
-                        <Image width={20} height={20} src={tab.imageUrl} alt="Tab ref image"/>
+                        <Image width={20} height={20} src={tab.imageUrl} alt="Tab ref image" />
                     </span>
                     <span className="mr-2">{tab.name}</span>
                     <button
