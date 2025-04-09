@@ -16,6 +16,11 @@ enum UserRole {
   ADMINISTRATOR
 }
 
+enum ProjectVisibility {
+  PUBLIC
+  PRIVATE
+}
+
 model User {
   id                String                 @id @default(cuid())
   name              String?
@@ -28,6 +33,7 @@ model User {
   accounts          Account[]
   is2FAEnabled      Boolean                @default(false)
   TwoFAConfirmation TwoFactorConfirmation?
+  Project           Project[]
 }
 
 model Account {
@@ -82,4 +88,19 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model Project {
+  id              String            @id @default("")
+  name            String
+  description     String?
+  ownerId         String            @map("owner_id")
+  template        String
+  framework       String?
+  visibility      ProjectVisibility @default(PRIVATE)
+  awsRelativePath String            @map("aws_relative_path") @unique
+  createdAt       DateTime          @default(now()) @map("created_at")
+  user            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([name])
 }
