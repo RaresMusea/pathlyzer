@@ -205,14 +205,14 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
         try {
             resetStateBeforeCreation();
             const projectData: ProjectCreationPayload = getProjectPayload();
-            console.log("Project data", projectData);
-            //To be modified with acutal userId once hitting a db
-            await projectExists(projectData.projectName, 'sourceforopen')
-
-            console.log('Exited project exists')
-            const { data } = await createProjectRequest(projectData);
             const session = useSession();
-            await saveProject({ projectData, projectId: data.projectId, projectPath: data.projectPath, ownerId: session.data?.user?.id || 'sourceforopen' });
+            const userId: string = session.data?.user?.id || 'sourceforopen';
+
+            await projectExists(projectData.projectName, userId);
+
+            const { data } = await createProjectRequest(projectData, userId);
+
+            await saveProject({ projectData, projectId: data.projectId, projectPath: data.projectPath, ownerId: userId });
 
             await simulateWorkspaceCreation();
             await finalizeProjectSetup(data.projectPath);
@@ -230,8 +230,8 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
         visibility: projectConfig.visibility
     });
 
-    const createProjectRequest = async (projectData: ProjectCreationPayload) => {
-        return axios.post(`http://localhost:3000/api/proxy/project`, projectData);
+    const createProjectRequest = async (projectData: ProjectCreationPayload, ownerId: string) => {
+        return axios.post(`http://localhost:3000/api/proxy/project`, { ...projectData, ownerId });
     }
 
     const saveProject = async (projectData: ProjectCreationDto) => {
