@@ -39,7 +39,14 @@ router.get("/", async (request: Request, response: Response) => {
 });
 
 router.post('/', async (request: Request, response: Response) => {
-    const { projectName, template, framework, description } = request.body;
+    const expectedKey: string = process.env.CLIENT_TOKEN as string;
+    const key = request.headers['X-API-KEY'] as string;
+
+    if (!key || key !== expectedKey) {
+        return response.status(401).json({ message: 'Unauthorized!' });
+    }
+
+    const { projectName, template, framework, description, ownerId } = request.body;
     const validationResult: ValidationResult = validateProjectCreation({ projectName, template, framework: framework, description });
 
     if (!validationResult.isValid) {
