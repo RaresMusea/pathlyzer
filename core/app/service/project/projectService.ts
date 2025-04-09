@@ -1,4 +1,6 @@
-import { ENDPOINT_ROOT, Project } from "@/types/types";
+import { ENDPOINT_ROOT, Project, ProjectCreationDto, ProjectCreationPayload } from "@/types/types";
+import { db } from "@/persistency/Db";
+import { ProjectVisibility } from "@prisma/client";
 
 export async function getProjects(key: string): Promise<Project[] | null> {
     if (!key) {
@@ -18,5 +20,36 @@ export async function getProjects(key: string): Promise<Project[] | null> {
     } catch (error) {
         console.error(error);
         return null;
+    }
+}
+
+export async function projectAlreadyExists(projectName: string, userId: string): Promise<boolean> {
+    const project = await db.project.findFirst({
+        where: {
+            name: projectName,
+            ownerId: userId
+        }
+    });
+
+    return !!project;
+}
+
+export async function createProject(payload: ProjectCreationDto) {
+    try {
+        return await db.project.create({
+            data: {
+                id: payload.projectId,
+                name: payload.projectData.projectName,
+                template: payload.projectData.template,
+                framework: payload.projectData.framework,
+                description: payload.projectData.description || "",
+                visibility: payload.projectData.visibility.toUpperCase() as ProjectVisibility,
+                awsRelativePath: payload.projectPath,
+                ownerId: payload.ownerId,
+            }
+        });
+    } catch (error) {
+        console.error("Error creating project:", error);
+        throw new error('Database error occurred while creating the project!');
     }
 }

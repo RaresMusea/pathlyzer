@@ -91,14 +91,14 @@ model TwoFactorConfirmation {
 }
 
 model Project {
-  id              String            @id @default("")
+  id              String            @id
   name            String
   description     String?
   ownerId         String            @map("owner_id")
   template        String
   framework       String?
   visibility      ProjectVisibility @default(PRIVATE)
-  awsRelativePath String            @map("aws_relative_path") @unique
+  awsRelativePath String            @unique @map("aws_relative_path")
   createdAt       DateTime          @default(now()) @map("created_at")
   user            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
