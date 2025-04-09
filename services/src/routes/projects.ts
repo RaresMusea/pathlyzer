@@ -62,7 +62,7 @@ router.post('/', async (request: Request, response: Response) => {
         return response.status(500).json({ message: 'An error has occurred while attempting to copy the project files. Please try again.' });
     }
 
-    return response.status(201).json({ projectPath: `code/sourceforopen/${projectId}/${projectName}` });
+    return response.status(201).json({ projectPath: `code/sourceforopen/${projectId}/${projectName}`, projectId });
 });
 
 export default router;

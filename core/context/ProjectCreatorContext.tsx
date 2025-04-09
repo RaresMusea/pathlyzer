@@ -1,12 +1,13 @@
 "use client";
 import { ProjectInfoStep } from "@/components/projects/modal/ProjectInfoStep";
 import { ProjectTechStackStep } from "@/components/projects/modal/ProjectTechStackStep";
-import { Project, ProjectCreationPayload } from "@/types/types";
+import { Project, ProjectCreationDto, ProjectCreationPayload } from "@/types/types";
 import { blankLogo, cppLogo, javaLogo, nextJsLogo, springLogo, typescriptLogo } from "@/exporters/LogoExporter";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface ProjectCreatorContextProps {
     open: boolean;
@@ -210,6 +211,8 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
 
             console.log('Exited project exists')
             const { data } = await createProjectRequest(projectData);
+            const session = useSession();
+            await saveProject({ projectData, projectId: data.projectId, projectPath: data.projectPath, ownerId: session.data?.user?.id || 'sourceforopen' });
 
             await simulateWorkspaceCreation();
             await finalizeProjectSetup(data.projectPath);
@@ -229,6 +232,27 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
 
     const createProjectRequest = async (projectData: ProjectCreationPayload) => {
         return axios.post(`http://localhost:3000/api/proxy/project`, projectData);
+    }
+
+    const saveProject = async (projectData: ProjectCreationDto) => {
+        setProgress(40);
+        setLoadingStep('Saving project...');
+
+        try {
+            const response = await axios.post(`http://localhost:3000/api/editor/project`, projectData);
+
+            if (response.status === 201) {
+                setProgress(55);
+                setLoadingStep('Project saved successfully!');
+                setLoadingDetails('Finalizing setup...');
+                return;
+            }
+
+            throw new Error('Failed to save project!');
+        } catch (error) {
+            setLoadingStep("An error occurred while saving the project.");
+            setLoadingDetails(error.response.data as string);
+        }
     }
 
     const projectExists = async (projectName: string, userId: string) => {
