@@ -47,6 +47,11 @@ router.post('/', async (request: Request, response: Response) => {
     }
 
     const { projectName, template, framework, description, ownerId } = request.body;
+
+    if (!ownerId) {
+        return response.status(400).json({ message: 'Missing project owner!' });
+    }
+
     const validationResult: ValidationResult = validateProjectCreation({ projectName, template, framework: framework, description });
 
     if (!validationResult.isValid) {
@@ -63,13 +68,13 @@ router.post('/', async (request: Request, response: Response) => {
     const projectId: string = cuid();
 
     try {
-        await copyS3Folder(`base/${template}/${projectType}`, `code/sourceforopen/${projectId}/${projectName}`);
+        await copyS3Folder(`base/${template}/${projectType}`, `code/${ownerId}/${projectId}/${projectName}`);
     } catch (error) {
         logger.error(`Failed to copy project files.\nReason: ${error}`);
         return response.status(500).json({ message: 'An error has occurred while attempting to copy the project files. Please try again.' });
     }
 
-    return response.status(201).json({ projectPath: `code/sourceforopen/${projectId}/${projectName}`, projectId });
+    return response.status(201).json({ projectPath: `code/${ownerId}/${projectId}/${projectName}`, projectId });
 });
 
 export default router;
