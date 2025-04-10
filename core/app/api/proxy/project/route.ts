@@ -4,7 +4,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-    const session = auth();
+    const session = await auth();
 
     if (!session) {
         return NextResponse.json({ message: "Unauthorized!" }, { status: 401 });
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             }
         });
 
-        return NextResponse.json({ projectPath: response.data.projectPath }, { status: 201 });
+        return NextResponse.json({ projectPath: response.data.projectPath, projectId: response.data.projectId }, { status: 201 });
     } catch (error) {
         return new NextResponse(error.response?.data?.message || "Internal Server Error", { status: error.response?.status || 500 });
     }

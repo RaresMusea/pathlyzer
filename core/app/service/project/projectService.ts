@@ -8,7 +8,17 @@ export async function getProjects(key: string): Promise<Project[] | null> {
     }
 
     try {
-        const res = await fetch(`${ENDPOINT_ROOT}/project?q=${encodeURIComponent(key)}`);
+        const token = process.env.EXPRESS_API_SECRET_KEY as string;
+        const res = await fetch(`${ENDPOINT_ROOT}/project?q=${encodeURIComponent(key)}`, {
+            headers: {
+                'X-API-KEY': token,
+            }
+        });
+
+        if (res.status === 404) {
+            console.log("STATUS 404");
+            return [];
+        }
 
         if (!res.ok) {
             throw new Error('An error occurred while attempting to fetch all of your projects.');
