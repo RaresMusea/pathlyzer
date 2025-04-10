@@ -10,7 +10,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ message: "Unauthorized!" }, { status: 401 });
     }
 
-    const { newProject }: { newProject: ProjectCreationDto } = await request.json();
+    const { projectData, projectId, ownerId, projectPath } = await request.json();
+
+    const newProject: ProjectCreationDto = {
+        projectData,
+        projectId,
+        projectPath,
+        ownerId,
+    };
+
+    if (!newProject) {
+        return NextResponse.json({ message: "Missing project data!" }, { status: 400 });
+    }
 
     if (await projectAlreadyExists(newProject.projectData.projectName, newProject.ownerId)) {
         return NextResponse.json({ message: "A project with the same name already exists!" }, { status: 409 });
