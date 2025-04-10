@@ -16,9 +16,7 @@ interface FolderDetails {
     name: string;
     path: string;
     lastModified: string | null;
-}
-
-const replId = 'sourceforopen'; //TO BE CHANGED
+};
 
 const s3 = new S3Client({
     region: process.env.AWS_REGION,
@@ -44,46 +42,6 @@ export const getFolderDetails = async (key: string): Promise<FolderDetails[] | u
         const command = new ListObjectsV2Command(params);
         const response = await s3.send(command);
 
-        //     const folderDetails: FolderDetails[] = response.Contents
-        //         ? (await Promise.all(
-        //             response.Contents.map(async (elem) => {
-        //                 const elemKeyTokens = elem.Key?.split('/');
-        //                 let folderName: string = '';
-
-        //                 if (elemKeyTokens && elemKeyTokens.length >= 4) {
-        //                     folderName = elemKeyTokens[3];
-        //                     console.log(folderName);
-
-        //                     const subParams = {
-        //                         Bucket: process.env.S3_BUCKET ?? '',
-        //                         Prefix: elem.Key
-        //                     };
-
-        //                     const subCommand = new ListObjectsV2Command(subParams);
-        //                     const subResponse = await s3.send(subCommand);
-
-        //                     const lastModified = subResponse.Contents
-        //                         ?.map(item => item.LastModified)
-        //                         .filter(Boolean)
-        //                         .sort((a, b) => b!.getTime() - a!.getTime())[0] || null;
-
-        //                     console.log(lastModified);
-
-        //                     return {
-        //                         name: folderName,
-        //                         lastModified: lastModified ? lastModified.toDateString() : null
-        //                     };
-        //                 }
-        //             })
-        //         )).filter((item): item is FolderDetails => item !== undefined)
-        //         : [];
-        //     return folderDetails;
-        // } catch (error) {
-        //     logger.error(error as string);
-        //     return [];
-        // }
-
-        // console.log(folders);
         if (response.Contents) {
             const projects: FolderDetails[] = (await Promise.all(
                 response.Contents?.map(async (elem) => {
