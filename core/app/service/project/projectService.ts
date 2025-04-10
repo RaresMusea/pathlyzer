@@ -1,4 +1,4 @@
-import { ENDPOINT_ROOT, Project, ProjectCreationDto, ProjectCreationPayload } from "@/types/types";
+import { ENDPOINT_ROOT, Project, ProjectCreationDto } from "@/types/types";
 import { db } from "@/persistency/Db";
 import { ProjectVisibility } from "@prisma/client";
 
@@ -16,7 +16,6 @@ export async function getProjects(key: string): Promise<Project[] | null> {
         });
 
         if (res.status === 404) {
-            console.log("STATUS 404");
             return [];
         }
 

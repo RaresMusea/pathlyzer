@@ -36,7 +36,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ message: "Project created successfully!" }, { status: 201 });
         }
     } catch (error) {
-        return NextResponse.json({ message: "An error occurred while creating the project!" }, { status: 500 });
+        return NextResponse.json({ message: error.response?.data?.message || "An error occurred while creating the project!" }, { status: 500 });
     }
 
     return NextResponse.json({ message: "Unexpected error!" }, { status: 500 });
