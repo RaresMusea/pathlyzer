@@ -7,20 +7,28 @@ import { Project } from "@/types/types";
 import { getProjects } from "@/app/service/project/projectService";
 import ErrorPage from "./error";
 import Link from "next/link";
+import { auth } from "@/auth";
+import NotFound from "@/components/projects/NotFound";
 
 
 export default async function Projects() {
-    const projects: Project[] | null = await getProjects('code/sourceforopen/');
+    const session = await auth();
+    const projects: Project[] | null = await getProjects(`code/${session?.user.id}/`);
 
-    if (!projects) {
-        return <ErrorPage/>
+    console.log(projects);
+    if (projects === null) {
+        return <ErrorPage />
+    }
+
+    if (projects.length === 0) {
+        return <NotFound userFirstName={session?.user.name || ''} userId={session?.user.id || ''} />
     }
 
     return (
         <div className='container mx-auto py-6 pt-6'>
             <div className='flex items-center justify-between mb-6'>
                 <h1 className="text-4xl">Projects</h1>
-                <ProjectCreatorProvider existingProjects={projects}>
+                <ProjectCreatorProvider existingProjects={projects} userId={session?.user.id || ''}>
                     <CreateProject />
                 </ProjectCreatorProvider>
             </div>
