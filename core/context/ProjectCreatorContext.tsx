@@ -1,7 +1,7 @@
 "use client";
 import { ProjectInfoStep } from "@/components/projects/modal/ProjectInfoStep";
 import { ProjectTechStackStep } from "@/components/projects/modal/ProjectTechStackStep";
-import { Project, ProjectCreationPayload } from "@/types/types";
+import { Project, ProjectCreationDto, ProjectCreationPayload } from "@/types/types";
 import { blankLogo, cppLogo, javaLogo, nextJsLogo, springLogo, typescriptLogo } from "@/exporters/LogoExporter";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -83,7 +83,7 @@ interface ProjectConfig {
 
 const ProjectCreatorContext = createContext<ProjectCreatorContextProps | undefined>(undefined);
 
-export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, existingProjects: Project[] | null }> = ({ children, existingProjects }) => {
+export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, existingProjects: Project[] | null, userId: string }> = ({ children, existingProjects, userId }) => {
     const router = useRouter();
     const [open, setOpen] = useState<boolean>(false);
     const [currentStep, setCurrentStep] = useState<number>(1);
@@ -204,17 +204,19 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
         try {
             resetStateBeforeCreation();
             const projectData: ProjectCreationPayload = getProjectPayload();
-            console.log("Project data", projectData);
-            //To be modified with acutal userId once hitting a db
-            await projectExists(projectData.projectName, 'sourceforopen')
+            console.log("USER ID", userId);
 
-            console.log('Exited project exists')
-            const { data } = await createProjectRequest(projectData);
+            await projectExists(projectData.projectName, userId);
+
+            const { data } = await createProjectRequest(projectData, userId);
+
+            await saveProject({ projectData, projectId: data.projectId, projectPath: data.projectPath, ownerId: userId });
 
             await simulateWorkspaceCreation();
             await finalizeProjectSetup(data.projectPath);
 
         } catch (error: any) {
+            console.error(error);
             handleCreationErrors(error);
         }
     }
@@ -227,8 +229,22 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
         visibility: projectConfig.visibility
     });
 
-    const createProjectRequest = async (projectData: ProjectCreationPayload) => {
-        return axios.post(`http://localhost:3000/api/proxy/project`, projectData);
+    const createProjectRequest = async (projectData: ProjectCreationPayload, ownerId: string) => {
+        return axios.post(`http://localhost:3000/api/proxy/project`, { ...projectData, ownerId });
+    }
+
+    const saveProject = async (projectData: ProjectCreationDto) => {
+        setProgress(40);
+        setLoadingStep('Saving project...');
+
+        const response = await axios.post(`http://localhost:3000/api/editor/project`, projectData);
+
+        if (response.status === 201) {
+            setProgress(55);
+            setLoadingStep('Project saved successfully!');
+            setLoadingDetails('Finalizing setup...');
+            return;
+        }
     }
 
     const projectExists = async (projectName: string, userId: string) => {
