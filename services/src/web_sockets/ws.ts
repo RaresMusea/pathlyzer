@@ -10,7 +10,6 @@ import { validateDeletion, validateRenaming, ValidationResult } from "../validat
 import { logger } from "../logging/logger";
 
 const terminalManager = new TerminalManager();
-//const replId = 'sourceforopen';
 
 const localRoot: string = '../../tmp';
 
@@ -24,11 +23,11 @@ export function initWs(httpServer: HttpServer) {
     });
 
     io.on("connection", async (socket) => {
-        // Auth checks should happen here
+        // TODO: Auth checks should happen here
+
         logger.debug(`Connected socket with ID ${socket}`);
         const projectId: string = socket.handshake.query.roomId as string;
         const projectRoot = projectId.slice(0, projectId.lastIndexOf("/"));
-        console.log(projectRoot);
 
         if (!projectId) {
             socket.disconnect();
@@ -38,8 +37,7 @@ export function initWs(httpServer: HttpServer) {
 
         const localProjectId: string = projectRoot.replace('code/', '');
 
-        //Before: code/sourceforopen/TestProj
-
+        
         const s3Prefix: string = `${projectId}`;
         const localDir: string = path.join(__dirname, `${localRoot}/${localProjectId}`);
         const editorRoot: string = path.join(__dirname, `${localRoot}/${localProjectId}`);

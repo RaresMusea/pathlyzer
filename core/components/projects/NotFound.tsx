@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { FolderPlus, Search, Frown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { auth } from "@/auth"
+import { Search, Frown } from "lucide-react"
 import { ProjectCreatorProvider } from "@/context/ProjectCreatorContext"
 import { CreateProject } from "./CreateProject"
 
@@ -14,18 +12,10 @@ interface NoProjectsProps {
     userId: string;
 }
 
-export default function NotFound({ onCreateNew = () => { }, userFirstName, userId }: NoProjectsProps) {
+export default function NotFound({ userFirstName, userId }: NoProjectsProps) {
     const [isVisible, setIsVisible] = useState(false);
-    const [session, setSession] = useState<any>(null);
 
     useEffect(() => {
-        const fetchSession = async () => {
-            const userSession = await auth();
-            setSession(userSession);
-        };
-
-        fetchSession();
-
         const timer = setTimeout(() => {
             setIsVisible(true);
         }, 300);
@@ -85,7 +75,7 @@ export default function NotFound({ onCreateNew = () => { }, userFirstName, userI
                 transition={{ delay: 0.7, duration: 0.5 }}
                 className="text-muted-foreground mb-6 max-w-md"
             >
-                Hey, {userFirstName?.split(' ')[0]}. It seems you don't have any projects associated at the moment. Start by creating your first project.
+                Hey, {userFirstName?.split(' ')[0]}. It seems you don&apos;t have any projects associated at the moment. Start by creating your first project.
             </motion.p>
 
             <motion.div
