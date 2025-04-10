@@ -7,7 +7,6 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useState 
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 interface ProjectCreatorContextProps {
     open: boolean;
@@ -84,7 +83,7 @@ interface ProjectConfig {
 
 const ProjectCreatorContext = createContext<ProjectCreatorContextProps | undefined>(undefined);
 
-export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, existingProjects: Project[] | null }> = ({ children, existingProjects }) => {
+export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, existingProjects: Project[] | null, userId: string }> = ({ children, existingProjects, userId }) => {
     const router = useRouter();
     const [open, setOpen] = useState<boolean>(false);
     const [currentStep, setCurrentStep] = useState<number>(1);
@@ -205,8 +204,7 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
         try {
             resetStateBeforeCreation();
             const projectData: ProjectCreationPayload = getProjectPayload();
-            const session = useSession();
-            const userId: string = session.data?.user?.id || 'sourceforopen';
+            console.log("USER ID", userId);
 
             await projectExists(projectData.projectName, userId);
 
@@ -218,6 +216,7 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
             await finalizeProjectSetup(data.projectPath);
 
         } catch (error: any) {
+            console.error(error);
             handleCreationErrors(error);
         }
     }
@@ -238,20 +237,13 @@ export const ProjectCreatorProvider: React.FC<{ children: React.ReactNode, exist
         setProgress(40);
         setLoadingStep('Saving project...');
 
-        try {
-            const response = await axios.post(`http://localhost:3000/api/editor/project`, projectData);
+        const response = await axios.post(`http://localhost:3000/api/editor/project`, projectData);
 
-            if (response.status === 201) {
-                setProgress(55);
-                setLoadingStep('Project saved successfully!');
-                setLoadingDetails('Finalizing setup...');
-                return;
-            }
-
-            throw new Error('Failed to save project!');
-        } catch (error) {
-            setLoadingStep("An error occurred while saving the project.");
-            setLoadingDetails(error.response.data as string);
+        if (response.status === 201) {
+            setProgress(55);
+            setLoadingStep('Project saved successfully!');
+            setLoadingDetails('Finalizing setup...');
+            return;
         }
     }
 
