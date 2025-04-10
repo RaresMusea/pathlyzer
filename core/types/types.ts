@@ -7,11 +7,21 @@ export const EXECUTION_ENGINE_URI: string = `ws://localhost:3001`;
 // #region Project-related types
 
 export type Project = {
-    name: string
-    description?: string
+    name: string;
     path: string
     lastModified: string
 };
+
+export type ProjectDetails = {
+    id: string;
+    description?: string;
+    template: string;
+    framework?: string;
+    visibility: string
+    path: string;
+};
+
+export type ProjectData = Project & ProjectDetails;
 
 export type ProjectCreationPayload = {
     projectName: string,
@@ -74,3 +84,10 @@ export interface Tab {
 }
 
 // #endregion
+
+export type ProjectCreationDto = {
+    projectData: ProjectCreationPayload;
+    projectId: string;
+    projectPath: string;
+    ownerId: string;
+}

@@ -5,7 +5,6 @@ import { getProjectType } from "../utils/projectTypeRetriever";
 import { logger } from "../logging/logger";
 import cuid from "cuid";
 
-
 const router = Router();
 
 router.head('/', async (request: Request, response: Response) => {
@@ -28,6 +27,13 @@ router.head('/', async (request: Request, response: Response) => {
 
 router.get("/", async (request: Request, response: Response) => {
     const key = request.query.q as string;
+    const token = request.headers['x-api-key'] as string;
+    const expectedToken: string = process.env.CLIENT_TOKEN as string;
+    
+    if (!token || expectedToken !== token) {
+        logger.error(`Unauthorized access attempt with key: ${token || 'no key'}.`);
+        return response.status(401).json({ message: 'Unauthorized!' });
+    }
 
     if (typeof key !== "string") {
         return response.status(400).json({ error: "Invalid key parameter" });
@@ -35,11 +41,28 @@ router.get("/", async (request: Request, response: Response) => {
 
     const projects = await getFolderDetails(key);
 
+    if (!projects) {
+        return response.status(404).json({ message: "No projects found!" });
+    }
+
     return response.status(200).json(projects);
 });
 
 router.post('/', async (request: Request, response: Response) => {
-    const { projectName, template, framework, description } = request.body;
+    const expectedKey: string = process.env.CLIENT_TOKEN as string;
+    const key = request.headers['x-api-key'] as string;
+
+    if (!key || key !== expectedKey) {
+        logger.error(`Unauthorized access attempt with key: ${key || 'no key'}.`);
+        return response.status(401).json({ message: 'Unauthorized!' });
+    }
+
+    const { projectName, template, framework, description, ownerId } = request.body;
+
+    if (!ownerId) {
+        return response.status(400).json({ message: 'Missing project owner!' });
+    }
+
     const validationResult: ValidationResult = validateProjectCreation({ projectName, template, framework: framework, description });
 
     if (!validationResult.isValid) {
@@ -56,13 +79,13 @@ router.post('/', async (request: Request, response: Response) => {
     const projectId: string = cuid();
 
     try {
-        await copyS3Folder(`base/${template}/${projectType}`, `code/sourceforopen/${projectId}/${projectName}`);
+        await copyS3Folder(`base/${template}/${projectType}`, `code/${ownerId}/${projectId}/${projectName}`);
     } catch (error) {
         logger.error(`Failed to copy project files.\nReason: ${error}`);
         return response.status(500).json({ message: 'An error has occurred while attempting to copy the project files. Please try again.' });
     }
 
-    return response.status(201).json({ projectPath: `code/sourceforopen/${projectId}/${projectName}` });
+    return response.status(201).json({ projectPath: `code/${ownerId}/${projectId}/${projectName}`, projectId });
 });
 
 export default router;

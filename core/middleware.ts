@@ -8,10 +8,15 @@ export default (auth as unknown as (handler: any) => any)((req: any, ctx: any) =
   const { nextUrl } = req;
   const isLoggedIn: boolean = !!req.auth;
   const isApiAuthRoute: boolean = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isRouteHandler: boolean = nextUrl.pathname.startsWith("/api");
   const isPublicRoute: boolean = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute: boolean = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
+    return null;
+  }
+
+  if (isRouteHandler) {
     return null;
   }
 
