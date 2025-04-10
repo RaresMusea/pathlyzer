@@ -74,3 +74,10 @@ export interface Tab {
 }
 
 // #endregion
+
+export type ProjectCreationDto = {
+    projectData: ProjectCreationPayload;
+    projectId: string;
+    projectPath: string;
+    ownerId: string;
+}
