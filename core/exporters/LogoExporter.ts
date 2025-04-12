@@ -2,6 +2,7 @@ import logo5 from "@/resources/logos/5.svg";
 import logo6 from "@/resources/logos/6.svg";
 import logo2 from "@/resources/logos/2.svg";
 import logo1 from "@/resources/logos/1.svg";
+import logo3 from "@/resources/logos/3.svg";
 import javaIcon from '@/resources/languages/java-icon.svg'
 import blankIconDark from '@/resources/languages/blank-icon.svg'
 import blankIconLight from '@/resources/languages/blank-icon-light.svg'
@@ -23,6 +24,16 @@ export const cppLogo: string = cppIcon;
 export const typescriptLogo: string = typescriptIcon;
 export const nextJsLogo: string = nextjsIcon;
 
+export const getAppNavLogo = (theme: string): string => {
+    switch (theme) {
+        case "dark":
+            return navLogoDark;
+        case "light":
+            return navLogoLight;
+        default:
+            return navLogoLight;
+    }
+}
 
 export const getLogoBasedOnTech = (template: string, theme: string): string => {
     switch (template) {
