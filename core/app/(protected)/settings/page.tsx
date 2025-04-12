@@ -19,6 +19,7 @@ const SettingsPage = () => {
             <p>User details: {session.data?.user.email}, {session.data?.user.name}, {session.data?.user.username}</p>
             <Button onClick={() => deauth()}>Sign Out</Button>
             <Button variant="outline" onClick={() => router.push('/projects')}>View my projects</Button>
+            <Button variant="outline" onClick={() => router.push('/learning/courses/create')}>Go to Course Creation</Button>
         </div>
     )
 };

@@ -10,7 +10,7 @@ import { SpreadableCards } from "./SpreadableCards";
 export const Homepage = () => {
 
     return (
-        <main>
+        <main className="bg-background">
             <Pathgrid />
             <div className="flex justify-center items-center flex-col">
                 <InViewWrapper type={InviewType.NORMAL}>
