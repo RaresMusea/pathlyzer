@@ -14,6 +14,7 @@ export const CoursePreview = (props: CoursePreviewProps) => {
     const [processedContent, setProcessedContent] = useState<JSX.Element | null>(null)
 
     useEffect(() => {
+        console.log(props.content);
         const convert = async () => {
             const result: string = await serializeCouseContent(props.content)
             setHtml(result)
@@ -27,6 +28,7 @@ export const CoursePreview = (props: CoursePreviewProps) => {
         if (!html) return
 
         const tempDiv = document.createElement("div")
+        tempDiv.classList.add('leading-relaxed')
         tempDiv.innerHTML = html
 
         const codeBlocks = tempDiv.querySelectorAll("[data-code-block]")

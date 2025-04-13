@@ -8,6 +8,8 @@ import { createHighlighter } from "shiki"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getIconForFile } from "vscode-icons-js";
+import { getAppNavLogo, getMinimalLogo } from "@/exporters/LogoExporter";
+import { useTheme } from "next-themes";
 
 const THEMES = {
     dark: [
@@ -49,6 +51,7 @@ interface CodeBlockProps {
 };
 
 export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
+    const theme: string = useTheme().theme || 'light';
     const [copied, setCopied] = useState<boolean>(false);
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
@@ -168,7 +171,7 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
         <>
             <div
                 ref={codeBlockRef}
-                className={`relative overflow-hidden rounded-xl border shadow-md transition-all duration-300 ${darkModeClasses}`}
+                className={`relative overflow-hidden mt-3 mb-3 rounded-xl border shadow-md transition-all duration-300 ${darkModeClasses}`}
             >
                 {/* Blue top accent bar */}
                 <div className="h-1 w-full bg-[var(--pathlyzer-table-border)]"></div>
@@ -205,8 +208,8 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                             size="sm"
                             onClick={copyToClipboard}
                             className={`h-7 md:h-8 gap-1 px-2 text-xs ${copied
-                                    ? `bg-green-500/20 dark:text-green-400 text-green-700 hover:bg-green-500/30`
-                                    : ""
+                                ? `bg-green-500/20 dark:text-green-400 text-green-700 hover:bg-green-500/30`
+                                : ""
                                 }`}
                         >
                             {copied ? (
@@ -229,10 +232,10 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                     <div ref={codeContentRef} className="flex max-h-[60vh] md:max-h-[70vh] overflow-auto scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
                         {/* Line numbers */}
                         <div
-                            className={`line-numbers flex flex-col items-end border-r px-2 py-4 text-xs shrink-0 ${darkModeLineNumbersClasses}`}
+                            className={`line-numbers flex flex-col items-end border-r px-2 py-4 text-xs md:text-sm lg:text-medium shrink-0 ${darkModeLineNumbersClasses}`}
                         >
                             {Array.from({ length: lineCount }).map((_, i) => (
-                                <div key={i} className="leading-5">
+                                <div key={i} className="leading-6">
                                     {i + 1}
                                 </div>
                             ))}
@@ -245,7 +248,7 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                         >
                             <div
                                 dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-                                className="text-xs md:text-sm leading-5 whitespace-pre overflow-x-auto"
+                                className="text-xs md:text-sm lg:text-medium leading-5 whitespace-pre overflow-x-auto"
                             />
                         </div>
                     </div>
@@ -259,7 +262,9 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                 {/* Footer with theme selector */}
                 <div className={`border-t px-3 py-2 md:px-4 md:py-2 text-xs ${darkModeFooterClasses}`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span>Syntax highlighting: Shiki</span>
+                        <div className="flex items-center justify-start">
+                            <span>Powered by Pathlyzer SenseLayer</span>
+                        </div>
                         <div className="flex items-center gap-2">
                             <span className="hidden sm:inline">Theme:</span>
                             <Select value={currentTheme} onValueChange={handleThemeChange}>
@@ -306,10 +311,10 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
             >
                 <div
                     className={`relative max-h-[95vh] w-[95vw] overflow-hidden rounded-xl border shadow-lg transition-all duration-300 ${darkModeClasses} ${isAnimating && isFullscreen
-                            ? "scale-100 opacity-100"
-                            : isAnimating
-                                ? "scale-95 opacity-0"
-                                : "scale-100 opacity-100"
+                        ? "scale-100 opacity-100"
+                        : isAnimating
+                            ? "scale-95 opacity-0"
+                            : "scale-100 opacity-100"
                         }`}
                 >
                     {/* Blue top accent bar */}
@@ -343,8 +348,8 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                                 size="sm"
                                 onClick={copyToClipboard}
                                 className={`h-7 md:h-8 gap-1 px-2 text-xs ${copied
-                                        ? `bg-green-500/20 dark:text-green-400 text-green-700 hover:bg-green-500/30`
-                                        : ""
+                                    ? `bg-green-500/20 dark:text-green-400 text-green-700 hover:bg-green-500/30`
+                                    : ""
                                     }`}
                             >
                                 {copied ? (
@@ -379,7 +384,7 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                         <div className="overflow-auto py-4 pl-8 pr-4 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
                             <div
                                 dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-                                className="font-mono text-xs md:text-sm leading-5"
+                                className="font-mono text-sm md:text-medium lg:text-large lg leading-5"
                             />
                         </div>
                     </div>
@@ -387,7 +392,9 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                     {/* Footer with theme selector */}
                     <div className={`border-t px-3 py-2 md:px-4 md:py-2 text-xs ${darkModeFooterClasses}`}>
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                            <span>Syntax highlighting: Shiki</span>
+                            <span>
+                                Powered by Pathlyzer SenseLayer
+                            </span>
                             <div className="flex items-center gap-2">
                                 <span className="hidden sm:inline">Theme:</span>
                                 <Select value={currentTheme} onValueChange={handleThemeChange}>

@@ -25,6 +25,7 @@ import {
     ListChecks,
     Underline,
     Code2Icon,
+    Group,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
@@ -53,13 +54,11 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
     }
 
     const setCodeBlock = () => {
-        // Ensure there's a blank line before and after the code block
         editor
             .chain()
             .focus()
             .command(({ tr, dispatch }) => {
                 if (dispatch) {
-                    // If we're not at the start of a paragraph, insert a new paragraph before
                     if (!editor.isActive("paragraph") || !editor.state.selection.empty) {
                         tr.insert(tr.selection.from, editor.schema.nodes.paragraph.create())
                     }
@@ -70,7 +69,20 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
             .run()
     }
 
+    const addCodeGroup = () => {
+        editor.chain().focus().insertContent([
+            {
+                type: 'codeGroup',
+                content: []
+            },
+            {
+                type: 'paragraph'
+            }
+        ]).run()
+    };
+
     const isCodeBlock = editor.isActive("codeBlock")
+    const isCodeGroup = editor.isActive('codeGroup');
 
     return (
         <div className="border-b p-2 flex flex-wrap items-center gap-1 bg-gray-50 dark:bg-[#2A2D33] text-gray-900 dark:text-white">
@@ -81,25 +93,6 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
                 disabled={!editor.can().undo()}
             >
                 <Undo className="h-4 w-4" />
-            </Button>
-
-            <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                    editor.chain().focus().insertContent([
-                        {
-                            type: 'codeGroup',
-                            content: [] // sau poți pune un snippet default dacă vrei
-                        },
-                        {
-                            type: 'paragraph'
-                        }
-                    ]).run()
-                }}
-            >
-                <Code2Icon />
-                Add a code group
             </Button>
 
             <Button
@@ -240,6 +233,10 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
 
             <Toggle size="sm" pressed={isCodeBlock} onPressedChange={setCodeBlock} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeBlock ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
                 <Code className="h-4 w-4" />
+            </Toggle>
+
+            <Toggle size="sm" pressed={isCodeGroup} onPressedChange={addCodeGroup} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeBlock ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
+                <Group className="h-4 w-4 mr-1" /> Code Group
             </Toggle>
 
             {isCodeBlock && (
