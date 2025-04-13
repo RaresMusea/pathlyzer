@@ -1,60 +1,106 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import Table from "@tiptap/extension-table";
 import TableCell from "@tiptap/extension-table-cell";
 import Image from "@tiptap/extension-image";
+import Paragraph from "@tiptap/extension-paragraph";
+import Heading from "@tiptap/extension-heading";
 import ImageResize from "tiptap-extension-resize-image";
 import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import CodeBlockShiki from 'tiptap-extension-code-block-shiki'
 import { Button } from "@/components/ui/button";
 import { FileCode } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { all, createLowlight } from "lowlight";
-import css from 'highlight.js/lib/languages/css'
-import js from 'highlight.js/lib/languages/javascript'
-import ts from 'highlight.js/lib/languages/typescript'
-import html from 'highlight.js/lib/languages/xml'
-import java from 'highlight.js/lib/languages/java';
-import python from 'highlight.js/lib/languages/python'
-import json from 'highlight.js/lib/languages/json'
-
-const lowlight = createLowlight(all);
-
-lowlight.register("html", html);
-lowlight.register("css", css);
-lowlight.register("javascript", js);
-lowlight.register("typescript", ts);
-lowlight.register("java", java);
-lowlight.register("json", json);
-lowlight.register("python", python);
+import CourseEditorToolbar from "./course-editor/CourseEditorToolbar";
+import TiptapAlert from "./course-editor/tiptap/TiptapAlert";
+import { CoursePreview } from "./course-editor/CoursePreview";
+import { CodeGroupExtension } from "./course-editor/tiptap/CodeGroupExtension";
 
 
 export const CourseBuilder = () => {
-    const [exportedContent, setExportedContent] = useState<string>("");
+    const [exportedContent, setExportedContent] = useState<JSONContent>();
+    const [language, setLanguage] = useState<string>('javascript');
 
     const editor = useEditor({
         editorProps: {
             attributes: {
                 class: "focus:outline-none",
+                spellcheck: 'false',
             },
         },
         extensions: [
-            StarterKit,
+            StarterKit.configure({ codeBlock: false, paragraph: false, heading: false }),
             TaskItem.configure({
                 nested: true,
             }),
+            Paragraph.extend({
+                addAttributes() {
+                    return {
+                        textAlign: {
+                            default: 'left',
+                            parseHTML: element => element.style.textAlign || 'left',
+                            renderHTML: attributes => {
+                                return { style: `text-align: ${attributes.textAlign}` }
+                            },
+                        },
+                    }
+                },
+            }),
+            Heading.configure({
+                levels: [1, 2, 3],
+            }),
+            Heading.extend({
+                addAttributes() {
+                    return {
+                        level: {
+                            default: 1,
+                            parseHTML: element => {
+                                const tagName = element.tagName.toLowerCase();
+                                const match = tagName.match(/^h(\d+)$/);
+                                return match ? parseInt(match[1], 10) : 1;
+                            },
+                            renderHTML: attributes => {
+                                return { level: attributes.level || 1 };
+                            },
+                        },
+                        textAlign: {
+                            default: 'left',
+                            parseHTML: element => element.style.textAlign || 'left',
+                            renderHTML: attributes => {
+                                return { style: `text-align: ${attributes.textAlign}` }
+                            },
+                        },
+                    }
+                },
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph']
+            }),
+            Underline,
             TaskList,
             Table,
             TableCell,
             TableRow,
             TableHeader,
             Image,
-            ImageResize
+            ImageResize,
+            TiptapAlert,
+            CodeBlockShiki.configure({
+                defaultLanguage: "ts",
+                defaultTheme: 'catppuccin-mocha',
+                HTMLAttributes: {
+                    class: 'p-4 my-4 bg-gray-800 text-gray-100 rounded overflow-auto'
+                }
+            }),
+            CodeGroupExtension,
+
         ],
         content: `<table>
           <tbody>
@@ -70,7 +116,22 @@ export const CourseBuilder = () => {
             </tr>
           </tbody>
         </table>`,
+        immediatelyRender: false
     })
+
+    const exportToTSX = () => {
+        if (!editor) return
+
+        const json = editor.getJSON();
+
+        // Create a DOM parser to work with the HTML
+        // const parser = new DOMParser()
+        // const doc = parser.parseFromString(html, "text/html")
+
+        // const processedHtml = doc.body.innerHTML
+
+        setExportedContent(json);
+    }
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -78,35 +139,25 @@ export const CourseBuilder = () => {
 
             <div className="border rounded-lg overflow-hidden mb-6 shadow-md flex flex-col">
                 <div className="sticky top-0 z-10">
-                    {/* <CourseEditorToolbar editor={editor}/> */}
+                    <CourseEditorToolbar editor={editor} language={language} setLanguage={setLanguage} />
                 </div>
-                <div className="p-4 h-[500px] overflow-y-auto bg-white dark:bg-[#23262B]">
+                <div className="p-4 h-[500px] overflow-y-auto bg-white dark:bg-[#23262B] font-nunito">
                     <EditorContent editor={editor} />
                 </div>
             </div>
 
             <div className="flex justify-end mb-6">
-                <Button onClick={() => { }}>
+                <Button onClick={() => { exportToTSX() }}>
                     <FileCode className="mr-2 h-4 w-4" />
                     Export to TSX
                 </Button>
             </div>
 
             {exportedContent && (
-                <Tabs defaultValue="code">
-                    <TabsList>
-                        <TabsTrigger value="code">TSX Code</TabsTrigger>
-                        <TabsTrigger value="preview">Preview</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="code">
-                        <div className="bg-gray-800 text-gray-100 p-4 rounded-lg overflow-auto max-h-[400px]">
-                            <pre className="text-sm">{exportedContent}</pre>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="preview">
-                        {/* <CodePreview code={exportedContent} /> */}
-                    </TabsContent>
-                </Tabs>
+                <div className="font-nunito">
+                    <h2 className="mb-4">Course Preview</h2>
+                    <CoursePreview content={exportedContent} />
+                </div>
             )}
         </div>
     );
