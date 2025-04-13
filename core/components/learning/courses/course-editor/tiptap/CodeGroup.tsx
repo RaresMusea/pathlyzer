@@ -1,0 +1,77 @@
+
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Editor, NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
+import { PlusCircle } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useRef, useState } from "react";
+
+
+export const CodeGroup = ({ editor, getPos, node }: NodeViewProps) => {
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [numberOfBlocks, setNumberOfBlocks] = useState<number>(0);
+
+    const addNewSnippet = () => {
+        const { state, view } = editor
+        const { tr, schema } = state
+
+        const position = typeof getPos === "function" ? getPos() : null
+        if (position === null) return
+
+        const newSnippet = schema.nodes.codeBlock.create(
+            { language: "javascript" },
+            schema.text("// new snippet")
+        )
+
+        const insertPos = getPos() + node.nodeSize - 1;
+        const transaction = tr.insert(insertPos, newSnippet)
+        view.dispatch(transaction)
+        setNumberOfBlocks(numberOfBlocks + 1);
+    }
+
+    useEffect(() => {
+        const dom = editor?.view?.dom
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter" && e.ctrlKey) {
+                const pos = getPos?.();
+                if (pos !== null && typeof pos === "number") {
+                    e.preventDefault();
+
+                    const insertPos = pos + node.nodeSize;
+
+                    editor.chain()
+                        .focus()
+                        .insertContentAt(insertPos, { type: 'paragraph' })
+                        .run();
+
+                    setTimeout(() => {
+                        editor.chain()
+                            .focus()
+                            .setTextSelection(insertPos + 1)
+                            .run();
+                    }, 0);
+                }
+            }
+        };
+
+        dom?.addEventListener("keydown", handleKeyDown);
+        return () => dom?.removeEventListener("keydown", handleKeyDown);
+    }, [editor, getPos, node]);
+
+
+    return (
+        <NodeViewWrapper ref={wrapperRef}>
+            <div className="flex items-center justify-end mb-3">
+                <Button variant="default" onClick={addNewSnippet} className="bg-[--pathlyzer-table-border] text-white">
+                    <PlusCircle className="mr-2"/>
+                    Add new snippet
+                </Button>
+            </div>
+            <div className={`${numberOfBlocks > 0 && 'border border-[--pathlyzer-table-border] rounded-md p-4'}`}>
+                <NodeViewContent />
+            </div>
+        </NodeViewWrapper>
+    )
+}
