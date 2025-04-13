@@ -13,8 +13,6 @@ export const CoursePreview = (props: CoursePreviewProps) => {
     const [html, setHtml] = useState<string>("")
     const [processedContent, setProcessedContent] = useState<JSX.Element | null>(null)
 
-    console.log(props.content);
-
     useEffect(() => {
         const convert = async () => {
             const result: string = await serializeCouseContent(props.content)
@@ -34,10 +32,6 @@ export const CoursePreview = (props: CoursePreviewProps) => {
         const codeBlocks = tempDiv.querySelectorAll("[data-code-block]")
 
         codeBlocks.forEach((block) => {
-            const language = block.getAttribute("data-language") || "txt"
-            const code = decodeURIComponent(block.getAttribute("data-code") || "")
-            const highlightedHtml = decodeURIComponent(block.getAttribute("data-html") || "")
-
             const id = `code-block-${Math.random().toString(36).substring(2, 9)}`
             block.id = id
         });

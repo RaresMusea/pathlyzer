@@ -1,5 +1,5 @@
 // extensions/codeTabs.ts
-import { Node, mergeAttributes, NodeViewRenderer } from '@tiptap/core'
+import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { CodeGroup } from './CodeGroup'
 

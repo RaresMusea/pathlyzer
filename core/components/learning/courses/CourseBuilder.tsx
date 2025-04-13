@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { FileCode } from "lucide-react";
 import { useState } from "react";
 import CourseEditorToolbar from "./course-editor/CourseEditorToolbar";
-import TiptapAlert from "./course-editor/tiptap/TiptapAlert";
 import { CoursePreview } from "./course-editor/CoursePreview";
 import { CodeGroupExtension } from "./course-editor/tiptap/CodeGroupExtension";
 
@@ -91,7 +90,6 @@ export const CourseBuilder = () => {
             TableHeader,
             Image,
             ImageResize,
-            TiptapAlert,
             CodeBlockShiki.configure({
                 defaultLanguage: "ts",
                 defaultTheme: 'catppuccin-mocha',

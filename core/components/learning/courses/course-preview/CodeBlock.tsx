@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, ImageIcon, Maximize, Minimize, Terminal, TerminalIcon } from "lucide-react"
+import { Check, Copy, Maximize, Minimize, Terminal, TerminalIcon } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { createHighlighter } from "shiki"
@@ -8,7 +8,6 @@ import { createHighlighter } from "shiki"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getIconForFile } from "vscode-icons-js";
-import { useTheme } from "next-themes";
 
 const THEMES = {
     dark: [
@@ -31,8 +30,6 @@ const THEMES = {
     ],
 };
 
-const ALL_THEMES = [...THEMES.dark, ...THEMES.light];
-
 const LanguageNames: Record<string, string> = {
     js: "JavaScript",
     ts: "TypeScript",
@@ -52,7 +49,6 @@ interface CodeBlockProps {
 };
 
 export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
-    const theme: string = useTheme().theme || 'light';
     const [copied, setCopied] = useState<boolean>(false);
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
@@ -134,7 +130,7 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
         return () => {
             window.removeEventListener("keydown", handleEscKey)
         }
-    }, [isFullscreen, isAnimating]);
+    }, [isFullscreen, toggleFullscreen, isAnimating]);
 
     useEffect(() => {
         const handleScroll = () => {

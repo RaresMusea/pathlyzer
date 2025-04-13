@@ -1,7 +1,6 @@
 "use client"
 
 import type { Editor } from "@tiptap/react"
-import * as shiki from "shiki";
 import {
     Bold,
     Italic,
@@ -23,7 +22,6 @@ import {
     AlertTriangle,
     AlertCircle,
     CheckCircle,
-    FileCode,
     ListChecks,
     Underline,
     Code2Icon,
@@ -70,26 +68,7 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
             })
             .toggleCodeBlock()
             .run()
-        // editor.chain().focus().setNode('codeBlock', { language }).run();
-
-        // const codeElement = editor.view.dom.querySelector('pre code');
-
-        // if (codeElement) {
-        //     Prism.highlightElement(codeElement);
-        // }
     }
-
-    //   const setCodeTabs = () => {
-    //     editor.chain().focus().setCodeTabs().run()
-    //   }
-
-    const updateLanguage = (language: string) => {
-        editor.chain().focus().updateAttributes("codeBlock", { language }).run();
-    }
-
-    //   const addAlert = (variant: string) => {
-    //     editor.chain().focus().setAlert({ variant }).run()
-    //   }
 
     const isCodeBlock = editor.isActive("codeBlock")
 
@@ -262,12 +241,6 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
             <Toggle size="sm" pressed={isCodeBlock} onPressedChange={setCodeBlock} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeBlock ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
                 <Code className="h-4 w-4" />
             </Toggle>
-
-
-            {/* <Button variant="ghost" size="sm" onClick={setCodeTabs} className="flex items-center gap-1">
-        <FileCode className="h-4 w-4" />
-        <span>Code Tabs</span>
-      </Button> */}
 
             {isCodeBlock && (
                 <Select value={language || "javascript"} onValueChange={setLanguage}>

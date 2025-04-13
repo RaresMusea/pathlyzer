@@ -2,9 +2,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Editor, NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
+import { NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import { PlusCircle } from "lucide-react";
-import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
 
