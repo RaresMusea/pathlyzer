@@ -24,7 +24,6 @@ import {
     CheckCircle,
     ListChecks,
     Underline,
-    Code2Icon,
     Group,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -81,9 +80,8 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
         ]).run()
     };
 
-    const isCodeBlock = editor.isActive("codeBlock")
     const isCodeGroup = editor.isActive('codeGroup');
-
+    const isCodeBlock = editor.isActive("codeBlock") && !editor.isActive('codeGroup');
     return (
         <div className="border-b p-2 flex flex-wrap items-center gap-1 bg-gray-50 dark:bg-[#2A2D33] text-gray-900 dark:text-white">
             <Button
@@ -235,7 +233,7 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
                 <Code className="h-4 w-4" />
             </Toggle>
 
-            <Toggle size="sm" pressed={isCodeGroup} onPressedChange={addCodeGroup} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeBlock ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
+            <Toggle size="sm" pressed={isCodeGroup} onPressedChange={addCodeGroup} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeGroup ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
                 <Group className="h-4 w-4 mr-1" /> Code Group
             </Toggle>
 
