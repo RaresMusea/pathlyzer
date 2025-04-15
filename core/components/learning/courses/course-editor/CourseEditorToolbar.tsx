@@ -1,6 +1,5 @@
-"use client"
+"use client";
 
-import type { Editor } from "@tiptap/react"
 import {
     Bold,
     Italic,
@@ -31,15 +30,11 @@ import { Toggle } from "@/components/ui/toggle"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useCourseBuilder } from "@/context/CourseBuilderContext"
 
-interface EditorToolbarProps {
-    editor: Editor | null;
-    language: string;
-    setLanguage: (newLang: string) => void;
-}
+export default function CourseEditorToolbar() {
+    const { editor, language, setLanguage } = useCourseBuilder();
 
-
-export default function CourseEditorToolbar({ editor, language, setLanguage }: EditorToolbarProps) {
     if (!editor) {
         return <p>Invalid editor</p>
     }
@@ -53,20 +48,40 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
     }
 
     const setCodeBlock = () => {
-        editor
-            .chain()
-            .focus()
-            .command(({ tr, dispatch }) => {
-                if (dispatch) {
-                    if (!editor.isActive("paragraph") || !editor.state.selection.empty) {
-                        tr.insert(tr.selection.from, editor.schema.nodes.paragraph.create())
-                    }
-                }
-                return true
-            })
-            .toggleCodeBlock()
-            .run()
-    }
+        const { state, view } = editor;
+        const { selection } = state;
+        const { $from, empty } = selection;
+
+        // Verifică dacă selecția este goală
+        if (empty) {
+            // Dacă selecția este goală, inserăm un code block nou
+            const codeBlockNode = editor.schema.nodes.codeBlock.create(
+                { language: language },
+                editor.schema.text("// code block")
+            );
+
+            // Crează tranzacția și înlocuiește selecția cu nodul code block
+            const tr = state.tr.replaceSelectionWith(codeBlockNode);
+            view.dispatch(tr);
+        } else {
+            const node = $from.node();
+
+            if (node.type.name === 'codeBlock') {
+                const newAttrs = { ...node.attrs, language: 'javascript' };
+                const pos = $from.pos;
+
+                const tr = state.tr.setNodeMarkup(pos, undefined, newAttrs);
+                view.dispatch(tr);
+            } else {
+                const codeBlockNode = editor.schema.nodes.codeBlock.create(
+                    { language: language },
+                    editor.schema.text("// code block")
+                );
+                const tr = state.tr.replaceSelectionWith(codeBlockNode);
+                view.dispatch(tr);
+            }
+        }
+    };
 
     const addCodeGroup = () => {
         editor.chain().focus().insertContent([
@@ -77,7 +92,8 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
             {
                 type: 'paragraph'
             }
-        ]).run()
+        ]).run();
+        setLanguage('txt');
     };
 
     const isCodeGroup = editor.isActive('codeGroup');
@@ -237,20 +253,24 @@ export default function CourseEditorToolbar({ editor, language, setLanguage }: E
                 <Group className="h-4 w-4 mr-1" /> Code Group
             </Toggle>
 
-            {isCodeBlock && (
-                <Select value={language || "javascript"} onValueChange={setLanguage}>
-                    <SelectTrigger className="h-8 w-24 bg-gray-100 dark:bg-gray-700">
+            {(isCodeBlock || isCodeGroup) && (
+                <Select value={language || "txt"} onValueChange={setLanguage}>
+                    <SelectTrigger className="h-8 w-40 bg-gray-100 dark:bg-gray-700">
                         <SelectValue placeholder="Language" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="javascript">JavaScript</SelectItem>
+                        <SelectItem value="txt">Plain Text</SelectItem>
+                        <SelectItem value="js">JavaScript</SelectItem>
                         <SelectItem value="jsx">JSX</SelectItem>
-                        <SelectItem value="typescript">TypeScript</SelectItem>
+                        <SelectItem value="ts">TypeScript</SelectItem>
                         <SelectItem value="tsx">TSX</SelectItem>
                         <SelectItem value="css">CSS</SelectItem>
                         <SelectItem value="html">HTML</SelectItem>
                         <SelectItem value="python">Python</SelectItem>
                         <SelectItem value="java">Java</SelectItem>
+                        <SelectItem value="c">C</SelectItem>
+                        <SelectItem value="cpp">C++</SelectItem>
+                        <SelectItem value="c#">C#</SelectItem>
                     </SelectContent>
                 </Select>
             )}

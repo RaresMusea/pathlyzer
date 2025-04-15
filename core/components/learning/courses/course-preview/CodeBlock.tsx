@@ -8,8 +8,6 @@ import { createHighlighter } from "shiki"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getIconForFile } from "vscode-icons-js";
-import { getAppNavLogo, getMinimalLogo } from "@/exporters/LogoExporter";
-import { useTheme } from "next-themes";
 
 const THEMES = {
     dark: [
@@ -42,6 +40,9 @@ const LanguageNames: Record<string, string> = {
     json: "JSON",
     java: "Java",
     txt: "Plain Text",
+    'c#': "C#",
+    'c++': 'C++',
+    c: 'c'
 };
 
 interface CodeBlockProps {
@@ -51,7 +52,6 @@ interface CodeBlockProps {
 };
 
 export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
-    const theme: string = useTheme().theme || 'light';
     const [copied, setCopied] = useState<boolean>(false);
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
