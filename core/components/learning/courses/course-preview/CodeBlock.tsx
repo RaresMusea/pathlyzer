@@ -229,13 +229,13 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
 
                 {/* Code content */}
                 <div className="group relative">
-                    <div ref={codeContentRef} className="flex max-h-[60vh] md:max-h-[70vh] overflow-auto scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
+                    <div ref={codeContentRef} className="flex max-h-[60vh] md:max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
                         {/* Line numbers */}
                         <div
-                            className={`line-numbers flex flex-col items-end border-r px-2 py-4 text-xs md:text-sm lg:text-medium shrink-0 ${darkModeLineNumbersClasses}`}
+                            className={`line-numbers flex flex-col items-end border-r px-2 pt-4 text-xs md:text-sm lg:text-medium shrink-0 ${darkModeLineNumbersClasses}`}
                         >
                             {Array.from({ length: lineCount }).map((_, i) => (
-                                <div key={i} className="leading-6">
+                                <div key={i} className="leading-5 md:leading-6">
                                     {i + 1}
                                 </div>
                             ))}
@@ -243,12 +243,11 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
 
                         {/* Code with syntax highlighting - reduced left padding */}
                         <div
-                            ref={codeContentRef}
-                            className="py-4 pl-4 pr-4 w-full"
+                            className="pt-4 pl-4 pr-4 w-full overflow-x-auto overflow-y-hidden scrollbar-thin h-full"
                         >
                             <div
                                 dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-                                className="text-xs md:text-sm lg:text-medium leading-5 whitespace-pre overflow-x-auto"
+                                className="min-w-fit text-xs md:text-sm lg:text-medium leading-5 whitespace-pre"
                             />
                         </div>
                     </div>
