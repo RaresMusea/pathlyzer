@@ -2,8 +2,9 @@
 
 import { JSONContent } from "@tiptap/react";
 import { useEffect, useState } from "react";
-import { CodeBlock } from "../course-preview/CodeBlock";
-import { serializeCouseContent } from "./serialization/CourseContentSerializer";
+import { CodeBlock, ICodeBlock } from "../course-preview/CodeBlock";
+import { serializeCourseContent } from "./serialization/CourseContentSerializer";
+import { CodeGroup, ICodeGroup } from "../course-preview/CodeGroup";
 
 type CoursePreviewProps = {
     content: JSONContent;
@@ -16,13 +17,36 @@ export const CoursePreview = (props: CoursePreviewProps) => {
     useEffect(() => {
         console.log(props.content);
         const convert = async () => {
-            const result: string = await serializeCouseContent(props.content)
+            const result: string = await serializeCourseContent(props.content)
             setHtml(result)
         }
 
         convert()
     }, [props.content]);
 
+    const renderCodeGroups = (groupElems: Element[]) => {
+
+        groupElems.forEach((elem) => {
+            const groupId = elem.getAttribute("data-group-id") || crypto.randomUUID();
+            const blockElements = elem.querySelectorAll("[data-code-block]");
+        
+            const blocks: ICodeBlock[] = Array.from(blockElements).map((blockEl) => ({
+                code: decodeURIComponent(blockEl.getAttribute("data-code") || ""),
+                language: blockEl.getAttribute("data-language") || "txt",
+                html: decodeURIComponent(blockEl.getAttribute("data-html") || ""),
+            }));
+        
+            const group: ICodeGroup = { id: parseInt(groupId), blocks };
+        
+            const codeGroupElement = document.createElement("div");
+            elem.parentNode?.replaceChild(codeGroupElement, elem);
+        
+            import("react-dom/client").then(({ createRoot }) => {
+                const root = createRoot(codeGroupElement);
+                root.render(<CodeGroup blocks={group.blocks} id={group.id} />);
+            });
+        });
+    }
 
     useEffect(() => {
         if (!html) return
@@ -44,9 +68,19 @@ export const CoursePreview = (props: CoursePreviewProps) => {
                 ref={(containerRef) => {
                     if (!containerRef) return
 
-                    const renderedCodeBlocks = containerRef.querySelectorAll("[data-code-block]")
+                    console.log(containerRef);
 
-                    renderedCodeBlocks.forEach((block) => {
+                    const allCodeBlocks = containerRef.querySelectorAll("[data-code-block]");
+
+                    const standaloneBlocks = Array.from(allCodeBlocks).filter(
+                        (block) => !block.closest("[data-code-group]")
+                    );
+
+                    const groupedBlocks = Array.from(containerRef.querySelectorAll("[data-code-group]"));
+
+                    renderCodeGroups(groupedBlocks);
+
+                    standaloneBlocks.forEach((block) => {
                         const language = block.getAttribute("data-language") || "txt"
                         const code = decodeURIComponent(block.getAttribute("data-code") || "")
                         const highlightedHtml = decodeURIComponent(block.getAttribute("data-html") || "")

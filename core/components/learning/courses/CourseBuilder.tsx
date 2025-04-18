@@ -1,26 +1,11 @@
 "use client";
 
 import { useEditor, EditorContent, JSONContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import TaskItem from "@tiptap/extension-task-item";
-import TaskList from "@tiptap/extension-task-list";
-import Table from "@tiptap/extension-table";
-import TableCell from "@tiptap/extension-table-cell";
-import Image from "@tiptap/extension-image";
-import Paragraph from "@tiptap/extension-paragraph";
-import Heading from "@tiptap/extension-heading";
-import ImageResize from "tiptap-extension-resize-image";
-import TableHeader from "@tiptap/extension-table-header";
-import TableRow from "@tiptap/extension-table-row";
-import Underline from "@tiptap/extension-underline";
-import TextAlign from "@tiptap/extension-text-align";
-import CodeBlockShiki from 'tiptap-extension-code-block-shiki'
 import { Button } from "@/components/ui/button";
 import { FileCode } from "lucide-react";
 import { useState } from "react";
 import CourseEditorToolbar from "./course-editor/CourseEditorToolbar";
 import { CoursePreview } from "./course-editor/CoursePreview";
-import { CodeGroupExtension } from "./course-editor/tiptap/CodeGroupExtension";
 import { useCourseBuilder } from "@/context/CourseBuilderContext";
 
 

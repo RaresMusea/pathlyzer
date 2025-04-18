@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export const CodeGroup = ({ editor, getPos, node }: NodeViewProps) => {
+export const CodeGroupEditor = ({ editor, getPos, node }: NodeViewProps) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [selectedBlockIndex, setSelectedBlockIndex] = useState<number>(0);
     const [numberOfBlocks, setNumberOfBlocks] = useState<number>(0);

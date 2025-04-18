@@ -40,18 +40,19 @@ const LanguageNames: Record<string, string> = {
     json: "JSON",
     java: "Java",
     txt: "Plain Text",
-    'c#': "C#",
+    py: 'Python',
+    'csharp': "C#",
     'c++': 'C++',
     c: 'c'
 };
 
-interface CodeBlockProps {
+export interface ICodeBlock {
     code: string
     language: string
     html: string
 };
 
-export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
+export const CodeBlock = ({ code, language, html }: ICodeBlock) => {
     const [copied, setCopied] = useState<boolean>(false);
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
@@ -66,7 +67,7 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
             try {
                 const highlighter = await createHighlighter({
                     themes: [currentTheme],
-                    langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx"],
+                    langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", 'py', 'csharp'],
                 })
 
                 const newHtml = highlighter.codeToHtml(code, {

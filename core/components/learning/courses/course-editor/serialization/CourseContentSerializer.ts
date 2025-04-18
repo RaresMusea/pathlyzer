@@ -4,14 +4,15 @@ import { BundledLanguage, BundledTheme, createHighlighter, HighlighterGeneric } 
 export const getCodeHighlighter = async () => {
     const highlighter = await createHighlighter({
         themes: ["catppuccin-mocha"],
-        langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", "xml", "c#", 'c++'],
+        langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", "xml", "csharp", 'c++', 'py'],
     });
 
     return highlighter;
 }
 
-export async function serializeCouseContent(doc: JSONContent): Promise<string> {
+export async function serializeCourseContent(doc: JSONContent): Promise<string> {
     const highlighter: HighlighterGeneric<BundledLanguage, BundledTheme> = await getCodeHighlighter();
+    let codeGroupsCounter: number = 0;
 
     return (doc.content || []).map(processNode).join("\n");
 
@@ -19,6 +20,8 @@ export async function serializeCouseContent(doc: JSONContent): Promise<string> {
         switch (node.type) {
             case "codeBlock":
                 return processCodeBlock(node, highlighter);
+            case "codeGroup":
+                return processCodeGroup(node, highlighter, codeGroupsCounter++);
             case "paragraph":
                 const alignment: string = node.attrs?.textAlign;
                 const content: string = node.content?.map(processNode).join("") || '';
@@ -53,6 +56,32 @@ export async function serializeCouseContent(doc: JSONContent): Promise<string> {
         const lang = node.attrs?.language || "txt";
         const highlightedHtml = highlighter.codeToHtml(code, { lang, theme: "catppuccin-mocha" });
         return `<div data-code-block data-language="${lang}" data-code="${encodeURIComponent(code)}" data-html="${encodeURIComponent(highlightedHtml)}"></div>`;
+    }
+
+    function processCodeGroup(node: JSONContent, highlighter: HighlighterGeneric<BundledLanguage, BundledTheme>, codeGroupId: number): string {
+        const blocks = node.content || [];
+
+        const renderedBlocks = blocks
+            .map((block, idx) => {
+                const code = block.content?.[0]?.text || "";
+                const lang = block.attrs?.language || "txt";
+                const highlightedHtml = highlighter.codeToHtml(code, {
+                    lang,
+                    theme: "catppuccin-mocha",
+                });
+
+                return `
+                        <div 
+                            data-code-block 
+                            data-language="${lang}" 
+                            data-code="${encodeURIComponent(code)}" 
+                            data-html="${encodeURIComponent(highlightedHtml)}"
+                            data-block-index="${idx}">
+                        </div>
+                `;
+            }).join("\n");
+
+        return `<div data-code-group data-group-id="${codeGroupId}">${renderedBlocks}</div>`;
     }
 
     function processTextNode(node: JSONContent): string {

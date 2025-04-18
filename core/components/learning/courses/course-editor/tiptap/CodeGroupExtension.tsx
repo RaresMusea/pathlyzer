@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
-import { CodeGroup } from './CodeGroup'
+import { CodeGroupEditor } from './CodeGroupEditor'
 
 export const CodeGroupExtension = Node.create({
     name: 'codeGroup',
@@ -17,6 +17,6 @@ export const CodeGroupExtension = Node.create({
     },
 
     addNodeView() {
-        return ReactNodeViewRenderer(CodeGroup, {as: 'div'});
+        return ReactNodeViewRenderer(CodeGroupEditor, {as: 'div'});
     },
 })

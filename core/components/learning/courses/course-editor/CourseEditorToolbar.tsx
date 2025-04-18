@@ -266,11 +266,11 @@ export default function CourseEditorToolbar() {
                         <SelectItem value="tsx">TSX</SelectItem>
                         <SelectItem value="css">CSS</SelectItem>
                         <SelectItem value="html">HTML</SelectItem>
-                        <SelectItem value="python">Python</SelectItem>
+                        <SelectItem value="py">Python</SelectItem>
                         <SelectItem value="java">Java</SelectItem>
                         <SelectItem value="c">C</SelectItem>
                         <SelectItem value="cpp">C++</SelectItem>
-                        <SelectItem value="c#">C#</SelectItem>
+                        <SelectItem value="csharp">C#</SelectItem>
                     </SelectContent>
                 </Select>
             )}
