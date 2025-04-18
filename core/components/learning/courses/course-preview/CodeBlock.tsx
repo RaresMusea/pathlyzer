@@ -367,24 +367,26 @@ export const CodeBlock = ({ code, language, html }: CodeBlockProps) => {
                     </div>
 
                     {/* Code content */}
-                    <div className="group relative max-h-[calc(95vh-8rem)]">
-                        {/* Line numbers */}
-                        <div
-                            className={`line-numbers absolute left-0 top-0 flex flex-col items-end border-r px-2 py-4 text-xs ${darkModeLineNumbersClasses}`}
-                        >
-                            {Array.from({ length: lineCount }).map((_, i) => (
-                                <div key={i} className="leading-5">
-                                    {i + 1}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Code with syntax highlighting - reduced left padding */}
-                        <div className="overflow-auto py-4 pl-8 pr-4 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
+                    <div className="group-relative">
+                        <div ref={codeContentRef} className="flex max-h-[60vh] md:max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
+                            {/* Line numbers */}
                             <div
-                                dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-                                className="font-mono text-sm md:text-medium lg:text-large lg leading-5"
-                            />
+                                className={`line-numbers flex flex-col items-end border-r px-2 pt-4 text-xs md:text-sm lg:text-medium shrink-0 ${darkModeLineNumbersClasses}`}
+                            >
+                                {Array.from({ length: lineCount }).map((_, i) => (
+                                    <div key={i} className="leading-5 md:leading-6">
+                                        {i + 1}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Code with syntax highlighting - reduced left padding */}
+                            <div className="pt-4 pl-4 pr-4 w-full overflow-x-auto overflow-y-hidden scrollbar-thin h-full">
+                                <div
+                                    dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+                                    className="min-w-fit text-xs md:text-sm lg:text-medium leading-5 whitespace-pre"
+                                />
+                            </div>
                         </div>
                     </div>
 
