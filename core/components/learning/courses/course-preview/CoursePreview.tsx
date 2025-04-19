@@ -2,9 +2,9 @@
 
 import { JSONContent } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
-import { CodeBlock, ICodeBlock } from "../course-preview/CodeBlock";
-import { serializeCourseContent } from "./serialization/CourseContentSerializer";
-import { CodeGroup, ICodeGroup } from "../course-preview/CodeGroup";
+import { CodeBlock, ICodeBlock } from "./code-section-preview/CodeBlock";
+import { serializeCourseContent } from "../course-editor/serialization/CourseContentSerializer";
+import { CodeGroup, ICodeGroup } from "./code-section-preview/CodeGroup";
 
 type CoursePreviewProps = {
     content: JSONContent;

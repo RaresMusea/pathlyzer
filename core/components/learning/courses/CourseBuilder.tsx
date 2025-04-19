@@ -2,7 +2,7 @@
 
 import { JSONContent } from "@tiptap/react";
 import { useState } from "react";
-import { CoursePreview } from "./course-editor/CoursePreview";
+import { CoursePreview } from "./course-preview/CoursePreview";
 import { useCourseBuilder } from "@/context/CourseBuilderContext";
 import { Spinner } from "@heroui/spinner";
 import { CourseEditor } from "./CourseEditor";
