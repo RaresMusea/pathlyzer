@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { Tab } from "@/types/types";
 import { getIconForFile } from "vscode-icons-js";
 
