@@ -1,10 +1,12 @@
 import { JSONContent } from "@tiptap/react";
 import { BundledLanguage, BundledTheme, createHighlighter, HighlighterGeneric } from "shiki";
 
+export const availableLanguages: string[] = ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", "xml", "csharp", 'c++', 'py'];
+
 export const getCodeHighlighter = async () => {
     const highlighter = await createHighlighter({
         themes: ["catppuccin-mocha"],
-        langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", "xml", "csharp", 'c++', 'py'],
+        langs: availableLanguages
     });
 
     return highlighter;

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useCourseBuilder } from "@/context/CourseBuilderContext";
 import { NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import { PlusCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const CodeGroupEditor = ({ editor, getPos, node }: NodeViewProps) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -13,15 +13,15 @@ export const CodeGroupEditor = ({ editor, getPos, node }: NodeViewProps) => {
     const { setLanguage } = useCourseBuilder();
 
 
-    const getLanguageAtIndex = (index: number): string => {
+    const getLanguageAtIndex = useCallback((index: number): string => {
         const codeBlockNode = node.content.content[index];
         if (codeBlockNode?.type.name === "codeBlock") {
             return codeBlockNode.attrs.language;
         }
         return 'txt';
-    };
+    }, [node.content.content]);
 
-    const addNewSnippet = () => {
+    const addNewSnippet = useCallback(() => {
         const { state, view } = editor
         const { tr, schema } = state
 
@@ -37,12 +37,12 @@ export const CodeGroupEditor = ({ editor, getPos, node }: NodeViewProps) => {
         const transaction = tr.insert(insertPos, newSnippet)
         view.dispatch(transaction)
         setNumberOfBlocks(numberOfBlocks + 1);
-    };
+    }, [editor, getPos, node.nodeSize, numberOfBlocks]);
 
     useEffect(() => {
         console.log(getLanguageAtIndex(selectedBlockIndex));
         setLanguage(getLanguageAtIndex(selectedBlockIndex));
-    }, [selectedBlockIndex])
+    }, [selectedBlockIndex, getLanguageAtIndex, setLanguage]);
 
     useEffect(() => {
         const dom = editor?.view?.dom
@@ -91,7 +91,7 @@ export const CodeGroupEditor = ({ editor, getPos, node }: NodeViewProps) => {
         });
 
         setSelectedBlockIndex(index);
-    }, [editor.state.selection]);
+    }, [editor.state.selection, getPos, node]);
 
 
     return (

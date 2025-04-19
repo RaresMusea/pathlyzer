@@ -96,7 +96,7 @@ export const CoursePreview = (props: CoursePreviewProps) => {
         )
 
         setProcessedContent(finalContent)
-    }, [html]);
+    }, [html, renderCodeBlocks, renderCodeGroups]);
 
     return processedContent || <div>Loading</div>
 }

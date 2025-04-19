@@ -4,7 +4,7 @@ import { Tabs, Tab } from "@heroui/tabs";
 
 import { CodeBlock, ICodeBlock } from "./CodeBlock";
 import { getLanguageByAbbr } from "@/lib/Code";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import { getIconForFile } from "vscode-icons-js";
 
@@ -14,18 +14,17 @@ export interface ICodeGroup {
 }
 
 export const CodeGroup = (group: ICodeGroup) => {
-    console.log(group);
-    if (!group.blocks || group.blocks.length === 0) {
-        return null;
-    }
-
-    const getLanguageIcon = (language: string): string => {
-            const icon = getIconForFile(`Document.${language.toLowerCase()}`);
-            return `https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/${icon}`;
-        }
+    
+    const getLanguageIcon = useCallback((language: string): string => {
+        const icon = getIconForFile(`Document.${language.toLowerCase()}`);
+        return `https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/${icon}`;
+    }, [])
 
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
+    if (!group.blocks || group.blocks.length === 0) {
+        return null;
+    }
     return (
         <>
             <Tabs variant="underlined" onSelectionChange={(k) => setSelectedIndex(Number(k))}>

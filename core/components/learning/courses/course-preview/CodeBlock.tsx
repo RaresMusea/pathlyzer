@@ -2,7 +2,7 @@
 
 import { Check, Copy, Maximize, Minimize, Terminal, TerminalIcon } from "lucide-react"
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { createHighlighter } from "shiki"
 
 import { Button } from "@/components/ui/button"
@@ -92,7 +92,7 @@ export const CodeBlock = ({ code, language, html }: ICodeBlock) => {
         setTimeout(() => setCopied(false), 2000)
     }
 
-    const toggleFullscreen = () => {
+    const toggleFullscreen = useCallback(() => {
         setIsAnimating(true)
 
         if (isFullscreen) {
@@ -108,7 +108,7 @@ export const CodeBlock = ({ code, language, html }: ICodeBlock) => {
                 setIsAnimating(false)
             }, 300);
         }
-    }
+    }, [isFullscreen]);
 
     const getLanguageIcon = (): string | undefined => {
         console.log(`Document.${language.toLowerCase()}`)
@@ -433,4 +433,3 @@ export const CodeBlock = ({ code, language, html }: ICodeBlock) => {
         </>
     );
 }
-
