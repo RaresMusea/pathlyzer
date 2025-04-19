@@ -1,7 +1,7 @@
 "use client";
 
 import { JSONContent } from "@tiptap/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CodeBlock, ICodeBlock } from "../course-preview/CodeBlock";
 import { serializeCourseContent } from "./serialization/CourseContentSerializer";
 import { CodeGroup, ICodeGroup } from "../course-preview/CodeGroup";
@@ -24,29 +24,45 @@ export const CoursePreview = (props: CoursePreviewProps) => {
         convert()
     }, [props.content]);
 
-    const renderCodeGroups = (groupElems: Element[]) => {
+    const renderCodeBlocks = useCallback((codeBlockElems: Element[]) => {
+        codeBlockElems.forEach((block) => {
+            const language = block.getAttribute("data-language") || "txt"
+            const code = decodeURIComponent(block.getAttribute("data-code") || "")
+            const highlightedHtml = decodeURIComponent(block.getAttribute("data-html") || "")
+
+            const codeBlockElement = document.createElement("div")
+            block.parentNode?.replaceChild(codeBlockElement, block)
+
+            import("react-dom/client").then(({ createRoot }) => {
+                const root = createRoot(codeBlockElement)
+                root.render(<CodeBlock code={code} language={language} html={highlightedHtml} />)
+            })
+        });
+    }, []);
+
+    const renderCodeGroups = useCallback((groupElems: Element[]) => {
 
         groupElems.forEach((elem) => {
             const groupId = elem.getAttribute("data-group-id") || crypto.randomUUID();
             const blockElements = elem.querySelectorAll("[data-code-block]");
-        
+
             const blocks: ICodeBlock[] = Array.from(blockElements).map((blockEl) => ({
                 code: decodeURIComponent(blockEl.getAttribute("data-code") || ""),
                 language: blockEl.getAttribute("data-language") || "txt",
                 html: decodeURIComponent(blockEl.getAttribute("data-html") || ""),
             }));
-        
+
             const group: ICodeGroup = { id: parseInt(groupId), blocks };
-        
+
             const codeGroupElement = document.createElement("div");
             elem.parentNode?.replaceChild(codeGroupElement, elem);
-        
+
             import("react-dom/client").then(({ createRoot }) => {
                 const root = createRoot(codeGroupElement);
                 root.render(<CodeGroup blocks={group.blocks} id={group.id} />);
             });
         });
-    }
+    }, []);
 
     useEffect(() => {
         if (!html) return
@@ -67,32 +83,14 @@ export const CoursePreview = (props: CoursePreviewProps) => {
                 dangerouslySetInnerHTML={{ __html: tempDiv.innerHTML }}
                 ref={(containerRef) => {
                     if (!containerRef) return
-
-                    console.log(containerRef);
-
                     const allCodeBlocks = containerRef.querySelectorAll("[data-code-block]");
-
                     const standaloneBlocks = Array.from(allCodeBlocks).filter(
                         (block) => !block.closest("[data-code-group]")
                     );
-
                     const groupedBlocks = Array.from(containerRef.querySelectorAll("[data-code-group]"));
 
+                    renderCodeBlocks(standaloneBlocks);
                     renderCodeGroups(groupedBlocks);
-
-                    standaloneBlocks.forEach((block) => {
-                        const language = block.getAttribute("data-language") || "txt"
-                        const code = decodeURIComponent(block.getAttribute("data-code") || "")
-                        const highlightedHtml = decodeURIComponent(block.getAttribute("data-html") || "")
-
-                        const codeBlockElement = document.createElement("div")
-                        block.parentNode?.replaceChild(codeBlockElement, block)
-
-                        import("react-dom/client").then(({ createRoot }) => {
-                            const root = createRoot(codeBlockElement)
-                            root.render(<CodeBlock code={code} language={language} html={highlightedHtml} />)
-                        })
-                    })
                 }}
             />
         )

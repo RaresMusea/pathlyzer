@@ -41,9 +41,10 @@ const LanguageNames: Record<string, string> = {
     java: "Java",
     txt: "Plain Text",
     py: 'Python',
+    cpp: 'C++',
     'csharp': "C#",
     'c++': 'C++',
-    c: 'c'
+    c: 'C'
 };
 
 export interface ICodeBlock {
@@ -67,7 +68,7 @@ export const CodeBlock = ({ code, language, html }: ICodeBlock) => {
             try {
                 const highlighter = await createHighlighter({
                     themes: [currentTheme],
-                    langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", 'py', 'csharp'],
+                    langs: ["ts", "js", "html", "css", "json", "txt", "java", "tsx", "jsx", 'py', 'csharp', 'c', 'c++'],
                 })
 
                 const newHtml = highlighter.codeToHtml(code, {

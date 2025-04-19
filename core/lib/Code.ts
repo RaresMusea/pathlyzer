@@ -20,6 +20,11 @@ export const getLanguageByAbbr = (langAbbr: string): string =>{
             return 'HTML';
         case 'py':
             return 'Python';
+        case 'c':
+            return 'C';
+        case 'cpp':
+        case 'c++':
+            return 'C++';
         default:
             return 'Unknown';
     }

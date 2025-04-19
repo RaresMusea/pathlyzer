@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent, JSONContent } from "@tiptap/react";
+import { EditorContent, JSONContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { FileCode } from "lucide-react";
 import { useState } from "react";
