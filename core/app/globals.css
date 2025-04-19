@@ -190,6 +190,28 @@ ul[data-type="taskList"] ul[data-type="taskList"] {
   margin: 0;
 }
 
+ul[data-type="taskList"] {
+  list-style: none;
+  margin-left: 0;
+  padding: 0;
+}
+
+ul[data-type="taskList"] li[data-type="taskItem"] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+ul[data-type="taskList"] li[data-type="taskItem"] input[type="checkbox"] {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+ul[data-type="taskList"] li[data-type="taskItem"] div {
+  flex: 1 1 auto;
+}
+
 .tiptap h1,
 .tiptap h2,
 .tiptap h3,
@@ -208,15 +230,15 @@ ul[data-type="taskList"] ul[data-type="taskList"] {
 }
 
 .tiptap h1 {
-  font-size: 1.4rem;
+  font-size: 2rem;
 }
 
 .tiptap h2 {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 
 .tiptap h3 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .tiptap h4,
@@ -225,7 +247,46 @@ ul[data-type="taskList"] ul[data-type="taskList"] {
   font-size: 1rem;
 }
 
-.tiptap table {
+h1.tiptap,
+h2.tiptap,
+h3.tiptap,
+h4.tiptap,
+h5.tiptap,
+h6.tiptap {
+  line-height: 1.1;
+  margin-top: 2.5rem;
+  text-wrap: pretty;
+}
+
+h1.tiptap,
+h2.tiptap {
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h1.tiptap {
+  font-size: 2rem;
+}
+
+h2.tiptap {
+  font-size: 1.5rem;
+}
+
+h3.tiptap {
+  font-size: 1.2rem;
+}
+
+h4.tiptap ,
+h5.tiptap ,
+h6.tiptap  {
+  font-size: 1rem;
+}
+
+p.tiptap {
+  margin-bottom:1em;
+}
+
+table {
   border-collapse: collapse;
   margin: 0;
   overflow: hidden;
@@ -233,12 +294,12 @@ ul[data-type="taskList"] ul[data-type="taskList"] {
   width: 100%;
 }
 
-.tiptap table th {
+table th {
   color: white;
 }
 
-.tiptap table td,
-.tiptap table th {
+table td,
+table th {
   border: 0.2px solid var(--pathlyzer-table-border);
   box-sizing: border-box;
   min-width: 1em;
@@ -247,12 +308,12 @@ ul[data-type="taskList"] ul[data-type="taskList"] {
   vertical-align: top;
 }
 
-.tiptap table td > *,
-.tiptap table th > * {
+table td > *,
+table th > * {
   margin-bottom: 0;
 }
 
-.tiptap table th {
+table th {
   background-color: var(--pathlyzer);
   font-weight: bold;
   text-align: left;
@@ -299,4 +360,13 @@ ul[data-type="taskList"] ul[data-type="taskList"] {
 
 .tiptap img.ProseMirror-selectednode {
   outline: 3px solid var(--pathlyzer);
+}
+
+.codePreFormat {
+  background-color: #1f2937 !important; /* Tailwind bg-gray-800 */
+  color: #f3f4f6 !important;            /* Tailwind text-gray-100 */
+  padding: 1rem !important;             /* p-4 */
+  margin: 1rem 0 !important;            /* my-4 */
+  border-radius: 0.5rem !important;     /* rounded */
+  overflow-x: auto !important;          /* overflow-auto */
 }
