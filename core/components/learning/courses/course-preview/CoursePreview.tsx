@@ -18,7 +18,7 @@ export const CoursePreview = (props: CoursePreviewProps) => {
         console.log(props.content);
         const convert = async () => {
             const result: string = await serializeCourseContent(props.content)
-            setHtml(result)
+            setHtml(`<div className='prose'>${result}</div>`);
         }
 
         convert()
@@ -95,7 +95,7 @@ export const CoursePreview = (props: CoursePreviewProps) => {
             />
         )
 
-        setProcessedContent(finalContent)
+        setProcessedContent(finalContent);
     }, [html, renderCodeBlocks, renderCodeGroups]);
 
     return processedContent || <div>Loading</div>
