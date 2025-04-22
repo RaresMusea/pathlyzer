@@ -20,16 +20,8 @@ import { getDashboardLogo } from "@/exporters/LogoExporter";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 
-type RoleSwitcherProps = {
-    roles: {
-        name: string
-        icon: React.ElementType
-        description?: string
-    }[]
-}
 
-
-export function RoleSwitcher(props: RoleSwitcherProps) {
+export function RoleSwitcher() {
     const { isMobile } = useSidebar();
     const currentUser = useCurrentUser();
     const theme: string = useTheme().theme || "light";
@@ -42,7 +34,7 @@ export function RoleSwitcher(props: RoleSwitcherProps) {
     const userAppRoles: UserAppRole[] | undefined = getUserAppRoles(currentUser.role);
 
     return (
-        <SidebarMenu>
+        <SidebarMenu className="font-nunito">
             <SidebarMenuItem>
                 {userAppRoles.length > 1 ?
                     <DropdownMenu>
@@ -51,18 +43,17 @@ export function RoleSwitcher(props: RoleSwitcherProps) {
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <Image src={getDashboardLogo(theme)} width={50} height={50} alt="Dashboard logo" />
-                                </div>
+
+                                <Image src={getDashboardLogo(theme)} width={50} height={50} alt="Dashboard logo" />
+
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">{userAppRoles[0].roleName}</span>
-                                    <span className="truncate text-xs">{userAppRoles[0].description}</span>
                                 </div>
                                 <ChevronsUpDown className="ml-auto" />
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg font-nunito"
                             align="start"
                             side={isMobile ? "bottom" : "right"}
                             sideOffset={4}
@@ -73,8 +64,10 @@ export function RoleSwitcher(props: RoleSwitcherProps) {
                                     <div className="flex size-6 items-center justify-center rounded-sm border">
                                         <role.icon className="h-4 w-4 shrink-0" />
                                     </div>
-                                    {role.roleName}
-                                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                                    <div className="flex flex-col">
+                                        <div className="font-semibold">{role.roleName}</div>
+                                        <div className="text-sm">{role.description}</div>
+                                    </div>
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuSeparator />
@@ -82,16 +75,12 @@ export function RoleSwitcher(props: RoleSwitcherProps) {
                                 <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                                     <Plus className="size-4" />
                                 </div>
-                                <div className="font-medium text-muted-foreground">Add team</div>
+                                <div className="font-medium text-muted-foreground">Add a new role</div>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     :
-                    <div
-                        onClick={() => router.push("/dashboard")}
-                        className="flex cursor-pointer items-center justify-between rounded-lg p-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                        <Image src={getDashboardLogo(theme)} width={70} height={70} alt="Dashboard logo" />
-                    </div>
+                    <Image onClick={() => router.push("/dashboard")} src={getDashboardLogo(theme)} width={100} height={100} alt="Dashboard logo" className="mx-auto" />
                 }
             </SidebarMenuItem>
         </SidebarMenu>

@@ -27,7 +27,7 @@ export default async function Projects() {
     }
 
     return (
-        <div className='container mx-auto py-6 pt-6 font-nunito'>
+        <div className='container mx-auto py-6 px-6 font-nunito'>
             <div className='flex items-center justify-between mb-6'>
                 <h1 className="text-4xl">Projects</h1>
                 <ProjectCreatorProvider existingProjects={projects} userId={session?.user.id || ''}>
@@ -35,7 +35,7 @@ export default async function Projects() {
                 </ProjectCreatorProvider>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 container">
                 {projects && projects.map((project: ProjectData) => (
                     <Card key={project.name} className="m-3 md:m-0">
                         <CardHeader className="flex justify-between flex-row">
