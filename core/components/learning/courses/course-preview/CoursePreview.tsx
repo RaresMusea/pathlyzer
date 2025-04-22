@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { CodeBlock, ICodeBlock } from "./code-section-preview/CodeBlock";
 import { serializeCourseContent } from "../course-editor/serialization/CourseContentSerializer";
 import { CodeGroup, ICodeGroup } from "./code-section-preview/CodeGroup";
+import SmoothScrollProvider from "@/providers/SmoothScrollProvider";
+import { CollapsibleToc } from "./toc/CollapsibleToc";
 
 type CoursePreviewProps = {
     content: JSONContent;
@@ -12,13 +14,13 @@ type CoursePreviewProps = {
 
 export const CoursePreview = (props: CoursePreviewProps) => {
     const [html, setHtml] = useState<string>("")
-    const [processedContent, setProcessedContent] = useState<JSX.Element | null>(null)
+    const [processedContent, setProcessedContent] = useState<JSX.Element | null>(null);
 
     useEffect(() => {
         console.log(props.content);
         const convert = async () => {
             const result: string = await serializeCourseContent(props.content)
-            setHtml(result)
+            setHtml(`<div class='prose'>${result}</div>`);
         }
 
         convert()
@@ -95,8 +97,17 @@ export const CoursePreview = (props: CoursePreviewProps) => {
             />
         )
 
-        setProcessedContent(finalContent)
+        setProcessedContent(finalContent);
     }, [html, renderCodeBlocks, renderCodeGroups]);
 
-    return processedContent || <div>Loading</div>
+    return (
+        <SmoothScrollProvider>
+            <div className="flex min-h-screen w-full max-w-full">
+                <CollapsibleToc content={processedContent} />
+                <div className="w-full p-4 md:p-6 lg:p-8 pt-0 md:pt-0 lg:pt-0">
+                    {processedContent || <div>Loading</div>}
+                </div>
+            </div>
+        </SmoothScrollProvider>
+    )
 }

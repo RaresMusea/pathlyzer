@@ -16,6 +16,9 @@ export interface ICodeGroup {
 export const CodeGroup = (group: ICodeGroup) => {
 
     const getLanguageIcon = useCallback((language: string): string => {
+        if (language === 'csharp') {
+            language = 'cs';
+        }
         const icon = getIconForFile(`Document.${language.toLowerCase()}`);
         return `https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/${icon}`;
     }, [])

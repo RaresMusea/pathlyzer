@@ -3,7 +3,7 @@ import { CourseBuilderProvider } from "@/context/CourseBuilderContext";
 
 const CourseCreationPage = () => {
     return (
-        <div className="mt-12 min-h-screen text-black dark:text-white bg-background">
+        <div className="mt-12 min-h-screen w-full text-black dark:text-white bg-background">
             <CourseBuilderProvider>
                 <CourseBuilder />
             </CourseBuilderProvider>

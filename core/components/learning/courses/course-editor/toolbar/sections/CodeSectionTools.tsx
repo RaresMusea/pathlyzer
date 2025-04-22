@@ -3,6 +3,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCourseBuilder } from "@/context/CourseBuilderContext";
 import { Code, Group } from "lucide-react";
 import { useCallback } from "react";
@@ -69,13 +70,28 @@ export const CodeSectionTools = () => {
 
     return (
         <>
-            <Toggle size="sm" pressed={isCodeBlock} onPressedChange={setCodeBlock} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeBlock ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
-                <Code className="h-4 w-4" />
-            </Toggle>
+            <Tooltip>
+                <TooltipTrigger>
+                    <Toggle size="sm" pressed={isCodeBlock} onPressedChange={setCodeBlock} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeBlock ? '!bg-[var(--pathlyzer-table-border)]' : ''}`}>
+                        <Code className={`h-4 w-4 ${isCodeBlock ? 'text-white' : ''}`} />
+                    </Toggle>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="font-nunito w-32 text-center dark:bg-gray-700 bg-gray-100 text-primary border border-gray-300 dark:border-gray-600 rounded-md shadow-sm">
+                    Toggle a syntax highlighted code block
+                </TooltipContent>
+            </Tooltip>
 
-            <Toggle size="sm" pressed={isCodeGroup} onPressedChange={addCodeGroup} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeGroup ? 'bg-blue-500 dark:bg-blue-600' : ''}`}>
-                <Group className="h-4 w-4 mr-1" /> Code Group
-            </Toggle>
+            <Tooltip>
+                <TooltipTrigger>
+                    <Toggle size="sm" pressed={isCodeGroup} onPressedChange={addCodeGroup} className={`bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 ${isCodeGroup ? '!bg-[var(--pathlyzer-table-border)]' : ''}`}>
+                        <Group className={`h-4 w-4 ${isCodeGroup ? 'text-white' : ''}`} />
+                        <span className={`${isCodeGroup ? 'text-white' : ''}`}>Code Group</span>
+                    </Toggle>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="font-nunito w-32 text-center dark:bg-gray-700 bg-gray-100 text-primary border border-gray-300 dark:border-gray-600 rounded-md shadow-sm">
+                    Toggle a syntax highlighted group of code blocks
+                </TooltipContent>
+            </Tooltip>
 
             {(isCodeBlock || isCodeGroup) && (
                 <Select value={language || "txt"} onValueChange={setLanguage}>
