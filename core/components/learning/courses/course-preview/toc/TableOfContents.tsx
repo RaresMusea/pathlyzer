@@ -151,7 +151,7 @@ export const TableOfContents = (props: TableOfContentsProps) => {
             observer.disconnect();
             window.removeEventListener("scroll", findActiveHeading);
         }
-    }, [props.onHeadingsChange, props.content]);
+    }, [props.onHeadingsChange, props.content, props]);
 
     const smoothScrollToElement = (elementId: string) => {
         const element = document.getElementById(elementId);

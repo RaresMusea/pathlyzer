@@ -44,7 +44,8 @@ const LanguageNames: Record<string, string> = {
     txt: "Plain Text",
     py: 'Python',
     cpp: 'C++',
-    'csharp': "C#",
+    cs: 'C#',
+    csharp: 'C#',
     'c++': 'C++',
     c: 'C'
 };
