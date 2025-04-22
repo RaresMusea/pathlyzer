@@ -50,7 +50,7 @@ export const TableOfContents = (props: TableOfContentsProps) => {
 
     useEffect(() => {
         if (!props.content) return;
-        
+
         //@TODO: To be extended once adding more headings to the course editor
         console.log("PROSE", document.querySelector('.prose'));
         const elements = Array.from(document.querySelector(".prose")?.querySelectorAll("h1, h2, h3") || []);
@@ -187,16 +187,23 @@ export const TableOfContents = (props: TableOfContentsProps) => {
                         className={cn(
                             "transition-colors",
                             heading.level === 1 && "mt-2",
-                            heading.level > 1 && `ml-${(heading.level - 1) * 4}`,
                         )}
                     >
                         <button
                             className={cn(
-                                "block py-1 text-sm text-left w-full hover:text-primary transition-colors",
-                                activeId === heading.id ? "font-medium text-primary" : "text-muted-foreground",
+                                "grid grid-cols-[1rem_auto] items-center gap-1 w-full py-1 text-sm text-left hover:text-primary transition-colors",
+                                `pl-${(heading.level - 1) * 4}`,
+                                activeId === heading.id ? "font-medium text-primary" : "text-muted-foreground"
                             )}
                             onClick={() => smoothScrollToElement(heading.id)}
                         >
+                            <span
+                                className={cn(
+                                    "w-1 h-4 rounded-full",
+                                    activeId === heading.id ? "bg-primary" : "bg-transparent"
+                                )}
+                                aria-hidden="true"
+                            />
                             {heading.text}
                         </button>
                     </li>
@@ -204,5 +211,4 @@ export const TableOfContents = (props: TableOfContentsProps) => {
             </ul>
         </nav>
     )
-
 }

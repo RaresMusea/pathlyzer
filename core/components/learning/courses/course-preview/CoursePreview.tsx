@@ -104,8 +104,8 @@ export const CoursePreview = (props: CoursePreviewProps) => {
         <SmoothScrollProvider>
             <div className="flex min-h-screen w-full max-w-full">
                 <CollapsibleToc content={processedContent} />
-                <div className="flex-1 w-full p-4 md:p-6 lg:p-8 pt-0 md:pt-0 lg:pt-0">
-                    {processedContent} || <div>Loading</div>
+                <div className="w-full p-4 md:p-6 lg:p-8 pt-0 md:pt-0 lg:pt-0">
+                    {processedContent || <div>Loading</div>}
                 </div>
             </div>
         </SmoothScrollProvider>

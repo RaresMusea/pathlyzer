@@ -23,12 +23,11 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
         setIsCollapsed(isMobile);
     }, [isMobile]);
 
-    // if (!hasHeadings) {
-    //     console.warn("No headings");
-    //     return null;
-    // }
+    if (!hasHeadings) {
+        console.warn("No headings");
+        return null;
+    }
 
-    // Pe mobile, folosim Sheet din shadcn/ui pentru un drawer elegant
     if (isMobile) {
         return (
             <>
@@ -38,17 +37,14 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
                             variant="secondary"
                             size="icon"
                             className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-40"
-                            aria-label="Deschide cuprinsul"
+                            aria-label="Open table of contents"
                         >
                             <Menu className="h-6 w-6" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-[80%] max-w-xs p-0 overflow-x-hidden">
                         <div className="flex h-14 items-center justify-between border-b px-4">
-                            <h2 className="text-xl font-bold">Cuprins</h2>
-                            <Button variant="ghost" size="icon" onClick={() => setIsSheetOpen(false)} aria-label="Închide cuprinsul">
-                                <X className="h-5 w-5" />
-                            </Button>
+                            <h2 className="text-xl font-bold">Summary</h2>
                         </div>
                         <ScrollArea className="h-[calc(100vh-3.5rem)] p-4 overflow-x-hidden">
                             <TableOfContents content={props.content} onHeadingsChange={setHasHeadings} />
@@ -73,7 +69,7 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
                         isCollapsed ? "opacity-0 invisible" : "opacity-100 visible",
                     )}
                 >
-                    Cuprins
+                    Summary
                 </h2>
                 <Button
                     variant="ghost"
