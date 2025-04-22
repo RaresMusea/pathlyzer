@@ -29,6 +29,11 @@ const CourseBuilderContext = createContext<CourseBuilderContextProps | undefined
 
 export const CourseBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [language, setLanguage] = useState<string>('txt');
+    const [isCodeBlock, setIsCodeBlock] = useState<boolean>(false);
+    const [isCodeGroup, setIsCodeGroup] = useState<boolean>(false);
+
+
+
     const editor = useEditor({
         editorProps: {
             attributes: {
@@ -194,8 +199,7 @@ export const CourseBuilderProvider: React.FC<{ children: React.ReactNode }> = ({
         return () => {
             editor.off('transaction', handler)
         }
-    }, [editor])
-
+    }, [editor]);
 
     return (
         <CourseBuilderContext.Provider value={{

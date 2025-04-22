@@ -363,10 +363,89 @@ table th {
 }
 
 .codePreFormat {
-  background-color: #1f2937 !important; /* Tailwind bg-gray-800 */
-  color: #f3f4f6 !important;            /* Tailwind text-gray-100 */
-  padding: 1rem !important;             /* p-4 */
-  margin: 1rem 0 !important;            /* my-4 */
-  border-radius: 0.5rem !important;     /* rounded */
-  overflow-x: auto !important;          /* overflow-auto */
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 0.5rem !important;
+  overflow-x: auto !important;
+}
+
+.toc ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.prose {
+  scroll-margin-top: 1rem;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  scroll-margin-top: 1rem;
+  margin-top: 1.5em;
+}
+
+.prose h1:first-child {
+  margin-top: 0;
+}
+
+.toc button {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.toc button:hover {
+  transform: translateX(4px);
+}
+
+.toc button.text-primary {
+  position: relative;
+}
+
+.toc button.text-primary::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  background-color: hsl(var(--primary));
+  border-radius: 2px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+.sticky {
+  position: sticky;
+  z-index: 10;
 }
