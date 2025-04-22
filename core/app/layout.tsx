@@ -5,7 +5,6 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { ThemeProvider } from "@/components/provider/ThemeProvider";
 import { Nunito, Poppins } from "next/font/google";
-import { Navbar } from "@/components/navbar/Navbar";
 import { Toaster } from "sonner";
 
 const geistSans = localFont({
@@ -55,7 +54,6 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar/>
             {children}
             <Toaster />
           </ThemeProvider>
