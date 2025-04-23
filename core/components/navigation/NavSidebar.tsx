@@ -4,6 +4,7 @@ import type * as React from "react";
 import {
     BookOpen,
     Bot,
+    FolderClock,
     FolderCode,
     Frame,
     Map,
@@ -12,15 +13,28 @@ import {
     SquareTerminal,
 } from "lucide-react"
 
-import { MainNavigation } from "./MainNavigation";
+import { MainNavigationGeneric } from "./MainNavigation";
 import { UserOptions } from "../user/UserOptions";
 import { RoleSwitcher } from "./RoleSwitcher";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
+import { useEffect, useState } from "react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { NavProjects } from "@/types/types";
+
+type NavSidebarProps = {
+    recentProjects: NavProjects[];
+} & React.ComponentProps<typeof Sidebar>;
 
 const data = {
     navMain: [
         {
-            title: "Projects",
+            title: "Recent Projects",
+            icon: FolderClock,
+            url: '#',
+            items: [],
+        },
+        {
+            title: 'All Projects',
             url: '/dashboard/projects',
             icon: FolderCode,
         },
@@ -129,14 +143,32 @@ const data = {
     ],
 }
 
-export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps) {
+    const currentUser = useCurrentUser();
+    const [navItems, setNavItems] = useState(data.navMain);
+
+    useEffect(() => {
+        if (recentProjects && recentProjects?.length) {
+            const updated = [...data.navMain];
+            updated[0] = {
+                ...updated[0],
+                items: recentProjects
+            };
+            setNavItems(updated);
+        }
+    }, [recentProjects]);
+
+    if (!currentUser) {
+        return null;
+    }
+
     return (
-        <Sidebar collapsible="icon" {...props}>
+        <Sidebar collapsible="icon" {...sidebarProps}>
             <SidebarHeader className="bg-background/60 mt-0">
                 <RoleSwitcher />
             </SidebarHeader>
             <SidebarContent className="bg-background/60">
-                <MainNavigation items={data.navMain} />
+                <MainNavigationGeneric items={navItems} />
             </SidebarContent>
             <SidebarFooter className="bg-background/60">
                 <UserOptions />

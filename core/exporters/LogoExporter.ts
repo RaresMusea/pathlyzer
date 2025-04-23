@@ -67,6 +67,12 @@ export const getLogoBasedOnTech = (template: string, theme: string): string => {
             return typescriptLogo;
         case "Spring":
             return springLogo;
+        case "Next.js":
+            return nextJsLogo;
+        case "React":
+            return typescriptLogo;
+        case "C++":
+            return cppLogo;
         default:
             return (theme === 'dark' ? blankIconLight : blankLogo);
     }

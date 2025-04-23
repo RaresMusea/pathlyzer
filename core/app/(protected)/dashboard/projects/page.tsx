@@ -15,9 +15,7 @@ import { ProjectAccordion } from "@/components/projects/accordion/ProjectAccordi
 export default async function Projects() {
     const session = await auth();
     const projects: ProjectData[] | null = await getProjects(`code/${session?.user.id}/`, session?.user.id || '');
-    console.log("Projects: ", projects);
 
-    console.log(projects);
     if (projects === null) {
         return <ErrorPage />
     }
@@ -27,7 +25,7 @@ export default async function Projects() {
     }
 
     return (
-        <div className='container mx-auto py-6 px-6 font-nunito'>
+        <div className='container mx-auto py-6 px-6 font-nunito h-[2000px]'>
             <div className='flex items-center justify-between mb-6'>
                 <h1 className="text-4xl">Projects</h1>
                 <ProjectCreatorProvider existingProjects={projects} userId={session?.user.id || ''}>
