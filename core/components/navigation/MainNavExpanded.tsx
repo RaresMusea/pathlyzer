@@ -1,4 +1,4 @@
-import { MainNavigationProps } from "@/types/types";
+import { MainNavigationProps, MainNavigationUnwrappedProps } from "@/types/types";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "../ui/sidebar";
 import { ChevronRight } from "lucide-react";
@@ -6,18 +6,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export const MainNavExpanded = (props: MainNavigationProps) => {
+export const MainNavExpanded = ({ items, setActiveItem }: { items: MainNavigationUnwrappedProps[], setActiveItem: (newActiveItem: MainNavigationUnwrappedProps) => void }) => {
     const router = useRouter();
     const exclude: string[] = ['Recent Projects'];
-    
+
     return (
         <>
-            {props.items.map((item) => (
+            {items.map((item, index) => (
                 item.items && item.items.length > 0 ? (
-                    <Collapsible key={item.title} asChild defaultOpen={item.isActive} className="group/collapsible">
+                    <Collapsible key={index} asChild defaultOpen={item.isActive} className="group/collapsible">
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
-                                <SidebarMenuButton tooltip={item.title}>
+                                <SidebarMenuButton tooltip={item.title} isActive={item.isActive} onClick={() => setActiveItem(item)}>
                                     {item.icon && <item.icon />}
                                     <span>{item.title}</span>
                                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -25,8 +25,8 @@ export const MainNavExpanded = (props: MainNavigationProps) => {
                             </CollapsibleTrigger>
                             <CollapsibleContent>
                                 <SidebarMenuSub>
-                                    {item.items?.map((subItem) => (
-                                        <SidebarMenuSubItem key={subItem.title}>
+                                    {item.items?.map((subItem, index) => (
+                                        <SidebarMenuSubItem key={index}>
                                             <SidebarMenuSubButton asChild>
                                                 <Link href={subItem.url} className="flex items-center justify-between flex-row">
                                                     <span>{subItem.title}</span>
@@ -46,11 +46,11 @@ export const MainNavExpanded = (props: MainNavigationProps) => {
                         </SidebarMenuItem>
                     </Collapsible>
                 ) :
-                    <>
+                    <div key={index}>
                         {
                             !exclude.includes(item.title) &&
                             <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton asChild tooltip={item.title} onClick={() => item.url && router.push(item.url)}>
+                                <SidebarMenuButton asChild tooltip={item.title} onClick={() => setActiveItem(item)} isActive={item.isActive}>
                                     <div className="flex cursor-pointer">
                                         {item.icon && <item.icon className="h-4 w-4" />}
                                         <span>{item.title}</span>
@@ -58,7 +58,7 @@ export const MainNavExpanded = (props: MainNavigationProps) => {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         }
-                    </>
+                    </div>
             ))
             }
         </>

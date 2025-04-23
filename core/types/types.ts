@@ -110,6 +110,18 @@ export type MainNavigationProps = {
     }[]
 };
 
+export type MainNavigationUnwrappedProps = {
+    title: string
+    url: string
+    icon?: LucideIcon
+    isActive?: boolean
+    items?: {
+        title: string
+        url: string,
+        icons?: string[]
+    }[]
+}
+
 export interface NavProjects {
     title: string;
     url: string;

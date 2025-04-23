@@ -7,29 +7,43 @@ import {
     FolderClock,
     FolderCode,
     Frame,
+    LayoutDashboard,
     Map,
     PieChart,
     Settings2,
     SquareTerminal,
 } from "lucide-react"
 
-import { MainNavigationGeneric } from "./MainNavigation";
+import { MainNavigationGeneric } from "./MainNavigationGeneric";
 import { UserOptions } from "../user/UserOptions";
 import { RoleSwitcher } from "./RoleSwitcher";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { NavProjects } from "@/types/types";
+import { MainNavigationProps, MainNavigationUnwrappedProps, NavProjects } from "@/types/types";
+import { usePathname, useRouter } from "next/navigation";
 
 type NavSidebarProps = {
     recentProjects: NavProjects[];
 } & React.ComponentProps<typeof Sidebar>;
 
-const data = {
+type NavDataType = {
+    navMain: MainNavigationUnwrappedProps[];
+}
+
+const data: {navMain: MainNavigationUnwrappedProps[]} = {
     navMain: [
+        {
+            title: "Dashboard",
+            url: "/dashboard",
+            isActive: true,
+            icon: LayoutDashboard,
+            items: [],
+        },
         {
             title: "Recent Projects",
             icon: FolderClock,
+            isActive: false,
             url: '#',
             items: [],
         },
@@ -37,26 +51,7 @@ const data = {
             title: 'All Projects',
             url: '/dashboard/projects',
             icon: FolderCode,
-        },
-        {
-            title: "Playground",
-            url: "#",
-            icon: SquareTerminal,
-            isActive: true,
-            items: [
-                {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
-                },
-            ],
+            items: [],
         },
         {
             title: "Models",
@@ -124,39 +119,46 @@ const data = {
             ],
         },
     ],
-    projects: [
-        {
-            name: "Design Engineering",
-            url: "#",
-            icon: Frame,
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
-        },
-    ],
 }
 
 export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps) {
     const currentUser = useCurrentUser();
-    const [navItems, setNavItems] = useState(data.navMain);
+    const router = useRouter();
+    const pathname = usePathname();
+    const [navItems, setNavItems] = useState<MainNavigationUnwrappedProps[]>(data.navMain);
 
     useEffect(() => {
         if (recentProjects && recentProjects?.length) {
             const updated = [...data.navMain];
-            updated[0] = {
-                ...updated[0],
+            updated[1] = {
+                ...updated[1],
                 items: recentProjects
             };
             setNavItems(updated);
         }
     }, [recentProjects]);
+
+    useEffect(() => {    
+        setNavItems(prevItems =>
+            prevItems.map(item => ({
+                ...item,
+                isActive: pathname === item.url,
+                items: item.items || [],
+            }))
+        );
+    }, [pathname]);
+
+    const setActiveItem = (activeItem: MainNavigationUnwrappedProps) => {
+        setNavItems(prevItems =>
+            prevItems.map(item => ({
+                ...item,
+                isActive: item.title === activeItem.title,
+                items: item.items || [],
+            }))
+        );
+
+        router.push(activeItem.url);
+    };
 
     if (!currentUser) {
         return null;
@@ -168,7 +170,7 @@ export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps)
                 <RoleSwitcher />
             </SidebarHeader>
             <SidebarContent className="bg-background/60">
-                <MainNavigationGeneric items={navItems} />
+                <MainNavigationGeneric items={navItems} setActiveItem={setActiveItem} />
             </SidebarContent>
             <SidebarFooter className="bg-background/60">
                 <UserOptions />

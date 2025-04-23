@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Settings, Lock } from 'lucide-react';
+import { Settings, Lock, LockKeyholeOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreateProject } from "@/components/projects/CreateProject";
 import { ProjectCreatorProvider } from "@/context/ProjectCreatorContext";
@@ -42,7 +42,7 @@ export default async function Projects() {
                                 <CardDescription>Last edited: {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(project.lastModified))}</CardDescription>
                             </div>
                             <div>
-                                <Chip color={project.visibility === 'PRIVATE' ? 'default' : 'primary'} startContent={<Lock className="h-4 w-4 ml-1" />} variant="bordered" >
+                                <Chip startContent={project.visibility === 'PRIVATE' ? <Lock className="h-4 w-4 ml-1" /> : <LockKeyholeOpen className="h-4 w-4 ml-1" />} variant="bordered" >
                                     {project.visibility === "PRIVATE" ? "Private" : "Public"}
                                 </Chip>
                             </div>

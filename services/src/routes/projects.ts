@@ -29,7 +29,7 @@ router.get("/", async (request: Request, response: Response) => {
     const key = request.query.q as string;
     const token = request.headers['x-api-key'] as string;
     const expectedToken: string = process.env.CLIENT_TOKEN as string;
-    
+
     if (!token || expectedToken !== token) {
         logger.error(`Unauthorized access attempt with key: ${token || 'no key'}.`);
         return response.status(401).json({ message: 'Unauthorized!' });
