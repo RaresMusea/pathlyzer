@@ -42,7 +42,7 @@ export const Pathgrid = () => {
     ];
 
     useEffect(() => {
-        if (!session) {
+        if (session.status === 'unauthenticated') {
             setButtonText("Start today");
             return;
         }

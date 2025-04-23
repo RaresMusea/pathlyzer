@@ -9,11 +9,11 @@ import { generateEmailVerifToken } from '@/lib/TokenGenerator';
 import { getUserByEmail } from '@/persistency/data/User';
 import { sendVerificationEmail, send2FATokenEmail } from '@/lib/Email';
 import { generate2FAToken } from '@/lib/TokenGenerator';
-import { TwoFactorConfirmation, TwoFactorToken } from '@prisma/client';
 import { getTokenByEmail } from '@/persistency/data/2FAToken';
 import { db } from '@/persistency/Db';
 import { getTwoFactorConfirmationByUserId } from '@/persistency/data/2FAConfirmation';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { redirect } from 'next/navigation';
 
 export interface LoginResult {
     error?: string;
@@ -45,7 +45,7 @@ const checkForExistingUser = async (email: string) => {
     return { user: existingUser };
 };
 
-const handleEmailVerify = async (user: {email: string; name?: string}) => {
+const handleEmailVerify = async (user: { email: string; name?: string }) => {
     const verifyToken = await generateEmailVerifToken(user.email);
     await sendVerificationEmail(verifyToken.email, verifyToken.token, user.name || "User");
 
@@ -54,7 +54,7 @@ const handleEmailVerify = async (user: {email: string; name?: string}) => {
     };
 };
 
-const handleTwoFactorAuth = async (user: {id: string; email: string; name?: string}, providedOtp?: string) => {
+const handleTwoFactorAuth = async (user: { id: string; email: string; name?: string }, providedOtp?: string) => {
     if (providedOtp) {
         const twoFactorToken = await getTokenByEmail(user.email);
         console.log(twoFactorToken);
@@ -70,21 +70,21 @@ const handleTwoFactorAuth = async (user: {id: string; email: string; name?: stri
         const tokenHasExpired: boolean = new Date(twoFactorToken.expiresAt) < new Date();
 
         if (tokenHasExpired) {
-            return { error: "The OTP code has expired! "};
+            return { error: "The OTP code has expired! " };
         }
 
-        await db.twoFactorToken.delete({ where: { id: twoFactorToken.id }});
+        await db.twoFactorToken.delete({ where: { id: twoFactorToken.id } });
         const existingConfirmationToken = await getTwoFactorConfirmationByUserId(user.id);
 
         if (existingConfirmationToken) {
-            await db.twoFactorConfirmation.delete({ where: { id: existingConfirmationToken.id }});
+            await db.twoFactorConfirmation.delete({ where: { id: existingConfirmationToken.id } });
         }
-        await db.twoFactorConfirmation.create({ data: { userId: user.id }});
+        await db.twoFactorConfirmation.create({ data: { userId: user.id } });
     }
     else {
         const generatedOtp = await generate2FAToken(user.email);
         await send2FATokenEmail(generatedOtp.email, generatedOtp.token, user.name!);
-        return { twoFactor: generatedOtp.token};
+        return { twoFactor: generatedOtp.token };
     }
 };
 
@@ -113,11 +113,11 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
     }
 
     if (existingUser.is2FAEnabled && existingUser.email) {
-       const twoFactorResult = await handleTwoFactorAuth({ id: existingUser.id, email: existingUser.email, name: existingUser.name || undefined }, twoFactorOtp);
-       
-       if (twoFactorResult) {
-           return twoFactorResult;
-       }
+        const twoFactorResult = await handleTwoFactorAuth({ id: existingUser.id, email: existingUser.email, name: existingUser.name || undefined }, twoFactorOtp);
+
+        if (twoFactorResult) {
+            return twoFactorResult;
+        }
     }
 
     try {
@@ -128,15 +128,22 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
         });
     }
     catch (error) {
-        console.log(error);
-        if (error instanceof AuthError) {
-            return {
-                error: error.type === "CredentialsSignin" ? "Invalid login credentials!" : "An error occurred while attempting to sign you in."
-            }
-        }
 
         if (isRedirectError(error)) {
             throw error;
+        }
+
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case "CredentialsSignin":
+                    return { error: "Invalid login credentials!" };
+                case "OAuthCallbackError":
+                    return { error: "An error occurred while attempting to sign you in." };
+                case "OAuthAccountNotLinked":
+                    return { error: "The provided email is already linked to another account." };
+                default:
+                    return { error: "An unknown error occurred." };
+            }
         }
 
         throw error;
