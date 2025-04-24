@@ -55,6 +55,9 @@ export const LoginForm = () => {
                     }
                 })
                 .catch(e => {
+                    if (e?.digest?.startsWith("NEXT_REDIRECT")) {
+                        return;
+                      }
                     setError(`Something went wrong while attempting to log you in.\nMore details: ${e}.`);
                 })
         });

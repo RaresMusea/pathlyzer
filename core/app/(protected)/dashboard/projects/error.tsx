@@ -13,7 +13,7 @@ export default function ErrorPage() {
     }, []);
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-background to-muted/70 backdrop-blur-sm">
+        <div className="inset-0 h-full flex items-center justify-center bg-gradient-to-br from-background to-muted/70 backdrop-blur-sm">
             <div className="w-full max-w-md p-8 space-y-6 bg-background rounded-lg shadow-lg border border-border">
                 <div className="flex flex-col items-center text-center space-y-4">
                     <div className={`p-3 bg-red-100 rounded-full transition-all duration-700 ${isAnimated ? "scale-100 opacity-100" : "scale-50 opacity-0"
@@ -33,7 +33,7 @@ export default function ErrorPage() {
                         </Button>
 
                         <Button asChild>
-                            <Link href="/">Back to Home</Link>
+                            <Link href="/dashboard">Back to Dashboard</Link>
                         </Button>
                     </div>
                 </div>
