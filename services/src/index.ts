@@ -12,7 +12,10 @@ const app = express();
 
 logger.debug('App started.');
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  allowedHeaders: ["Content-Type", "X-API-KEY"],
+}));
 app.use(express.json());
 app.use('/project', projectRoutes);
 const httpServer = createServer(app);

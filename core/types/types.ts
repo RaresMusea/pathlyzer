@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
 const PORT: number = 3001;
@@ -91,3 +92,40 @@ export type ProjectCreationDto = {
     projectPath: string;
     ownerId: string;
 }
+
+
+// #region Navigation-related types
+
+export type MainNavigationProps = {
+    items: {
+        title: string
+        url: string
+        icon?: LucideIcon
+        isActive?: boolean
+        items?: {
+            title: string
+            url: string,
+            icons?: string[]
+        }[]
+    }[]
+};
+
+export type MainNavigationUnwrappedProps = {
+    title: string
+    url: string
+    icon?: LucideIcon
+    isActive?: boolean
+    items?: {
+        title: string
+        url: string,
+        icons?: string[]
+    }[]
+}
+
+export interface NavProjects {
+    title: string;
+    url: string;
+    icons?: string[];
+}
+
+// #endregion

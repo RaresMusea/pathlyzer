@@ -43,6 +43,7 @@ export const LoginForm = () => {
                 .then((data: LoginResult | undefined) => {
                     if (data?.error) {
                         form.reset();
+                        console.error("Data error: ", data.error);
                         setError(data.error);
                     }
                     if (data?.success) {
@@ -55,6 +56,9 @@ export const LoginForm = () => {
                     }
                 })
                 .catch(e => {
+                    if (e?.digest?.startsWith("NEXT_REDIRECT")) {
+                        return;
+                      }
                     setError(`Something went wrong while attempting to log you in.\nMore details: ${e}.`);
                 })
         });
