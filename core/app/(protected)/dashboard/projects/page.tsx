@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Settings, Lock } from 'lucide-react';
+import { Settings, Lock, LockKeyholeOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreateProject } from "@/components/projects/CreateProject";
 import { ProjectCreatorProvider } from "@/context/ProjectCreatorContext";
@@ -15,9 +15,7 @@ import { ProjectAccordion } from "@/components/projects/accordion/ProjectAccordi
 export default async function Projects() {
     const session = await auth();
     const projects: ProjectData[] | null = await getProjects(`code/${session?.user.id}/`, session?.user.id || '');
-    console.log("Projects: ", projects);
 
-    console.log(projects);
     if (projects === null) {
         return <ErrorPage />
     }
@@ -27,7 +25,7 @@ export default async function Projects() {
     }
 
     return (
-        <div className='container mx-auto py-6 pt-6 font-nunito'>
+        <div className='container mx-auto py-6 px-6 font-nunito h-[2000px]'>
             <div className='flex items-center justify-between mb-6'>
                 <h1 className="text-4xl">Projects</h1>
                 <ProjectCreatorProvider existingProjects={projects} userId={session?.user.id || ''}>
@@ -35,7 +33,7 @@ export default async function Projects() {
                 </ProjectCreatorProvider>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 container">
                 {projects && projects.map((project: ProjectData) => (
                     <Card key={project.name} className="m-3 md:m-0">
                         <CardHeader className="flex justify-between flex-row">
@@ -44,7 +42,7 @@ export default async function Projects() {
                                 <CardDescription>Last edited: {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(project.lastModified))}</CardDescription>
                             </div>
                             <div>
-                                <Chip color={project.visibility === 'PRIVATE' ? 'default' : 'primary'} startContent={<Lock className="h-4 w-4 ml-1" />} variant="bordered" >
+                                <Chip startContent={project.visibility === 'PRIVATE' ? <Lock className="h-4 w-4 ml-1" /> : <LockKeyholeOpen className="h-4 w-4 ml-1" />} variant="bordered" >
                                     {project.visibility === "PRIVATE" ? "Private" : "Public"}
                                 </Chip>
                             </div>

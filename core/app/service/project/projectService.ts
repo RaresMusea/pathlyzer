@@ -36,6 +36,18 @@ export async function getProjects(key: string, ownerId: string): Promise<Project
     }
 }
 
+export async function getRecentProjects(key: string, ownerId: string): Promise<ProjectData[] | null> {
+    const projects = await getProjects(key, ownerId);
+
+    if (!projects) return null;
+
+    const sortedProjects = projects.sort((a, b) =>
+        new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime()
+    );
+
+    return sortedProjects.slice(0, 5);
+}
+
 export async function projectAlreadyExists(projectName: string, userId: string): Promise<boolean> {
     const project = await db.project.findFirst({
         where: {
@@ -101,7 +113,7 @@ async function getProjectsDetails(userId: string): Promise<ProjectDetails[]> {
     if (!userId) {
         throw new Error('Unauthorized!');
     }
-    
+
     const projects = await db.project.findMany({
         where: {
             ownerId: userId
