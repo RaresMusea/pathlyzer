@@ -24,15 +24,14 @@ import { AppMode, useAppRoleContext } from "@/context/UserAppRoleContext";
 export function RoleSwitcher() {
     const { isMobile } = useSidebar();
     const currentUser = useCurrentUser();
+    const userAppRoles: UserAppRole[] | undefined = getUserAppRoles(currentUser?.role);
+    const { setAppMode, currentAppMode } = useAppRoleContext();
     const theme: string = useTheme().theme || "light";
     const router = useRouter();
 
     if (!currentUser) {
         return null;
     }
-
-    const userAppRoles: UserAppRole[] | undefined = getUserAppRoles(currentUser.role);
-    const { setAppMode, currentAppMode } = useAppRoleContext();
 
     return (
         <SidebarMenu className="font-nunito">
@@ -62,7 +61,11 @@ export function RoleSwitcher() {
                             <DropdownMenuLabel className="text-xs text-muted-foreground">Roles</DropdownMenuLabel>
                             {userAppRoles.map((role, index) => (
                                 <DropdownMenuItem key={index} onClick={() => {
-                                    role.roleName === 'Standard User Mode' ? setAppMode(AppMode.STANDARD_USER) : setAppMode(AppMode.ELEVATED);
+                                    if (role.roleName === 'Standard User Mode') {
+                                        setAppMode(AppMode.STANDARD_USER);
+                                    } else {
+                                        setAppMode(AppMode.ELEVATED);
+                                    }
                                 }} className="gap-2 p-2">
                                     <div className="flex size-6 items-center justify-center rounded-sm border">
                                         <role.icon className="h-4 w-4 shrink-0" />

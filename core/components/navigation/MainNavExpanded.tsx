@@ -1,13 +1,11 @@
-import { MainNavigationProps, MainNavigationUnwrappedProps } from "@/types/types";
+import { MainNavigationUnwrappedProps } from "@/types/types";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "../ui/sidebar";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export const MainNavExpanded = ({ items, setActiveItem }: { items: MainNavigationUnwrappedProps[], setActiveItem: (newActiveItem: MainNavigationUnwrappedProps) => void }) => {
-    const router = useRouter();
     const exclude: string[] = ['Recent Projects'];
 
     return (

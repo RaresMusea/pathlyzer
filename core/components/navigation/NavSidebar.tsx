@@ -1,19 +1,6 @@
 "use client";
 
 import type * as React from "react";
-import {
-    BookOpen,
-    Bot,
-    FolderClock,
-    FolderCode,
-    Frame,
-    GraduationCap,
-    LayoutDashboard,
-    Map,
-    PieChart,
-    Settings2,
-    SquareTerminal,
-} from "lucide-react"
 
 import { MainNavigationGeneric } from "./MainNavigationGeneric";
 import { UserOptions } from "../user/UserOptions";
@@ -21,7 +8,7 @@ import { RoleSwitcher } from "./RoleSwitcher";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { MainNavigationProps, MainNavigationUnwrappedProps, NavProjects } from "@/types/types";
+import { MainNavigationUnwrappedProps, NavProjects } from "@/types/types";
 import { usePathname, useRouter } from "next/navigation";
 import { AppMode, useAppRoleContext } from "@/context/UserAppRoleContext";
 

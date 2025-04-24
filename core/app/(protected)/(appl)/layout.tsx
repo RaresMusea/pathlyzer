@@ -5,8 +5,6 @@ import { headers } from "next/headers";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     const pathname = (await headers()).get('X-Current-Route');
-
-    console.log('DashboardLayout pathname:', pathname);
     const requiresNavigation = childRequiresNav(pathname);
 
     return (
@@ -14,7 +12,9 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
             {
                 requiresNavigation ? (
                     <UserAppRoleProvider>
-                        <SidebarLayout children={children} />
+                        <SidebarLayout >
+                            {children}
+                        </SidebarLayout>
                     </UserAppRoleProvider>
                 ) : (
                     <div></div>
