@@ -61,6 +61,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.7.4",
     "input-otp": "^1.4.1",
+    "lottie-react": "^2.4.1",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.452.0",
     "monaco-editor": "^0.52.2",
