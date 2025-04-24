@@ -1,4 +1,5 @@
 import { SidebarLayout } from "@/components/navigation/SidebarLayout";
+import { UserAppRoleProvider } from "@/context/UserAppRoleContext";
 import { childRequiresNav } from "@/lib/NavigationUtils";
 import { headers } from "next/headers";
 
@@ -12,7 +13,9 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         <>
             {
                 requiresNavigation ? (
-                    <SidebarLayout children={children} />
+                    <UserAppRoleProvider>
+                        <SidebarLayout children={children} />
+                    </UserAppRoleProvider>
                 ) : (
                     <div></div>
                 )

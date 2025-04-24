@@ -30,7 +30,6 @@ export const SidebarLayout = async ({ children }: SidebarLayoutProps) => {
                             </div>
                             <ThemeToggle />
                         </header>
-
                         <div className="flex-1 overflow-y-auto px-4 py-6">
                             {children}
                         </div>

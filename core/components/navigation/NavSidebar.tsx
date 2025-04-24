@@ -7,6 +7,7 @@ import {
     FolderClock,
     FolderCode,
     Frame,
+    GraduationCap,
     LayoutDashboard,
     Map,
     PieChart,
@@ -22,123 +23,38 @@ import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { MainNavigationProps, MainNavigationUnwrappedProps, NavProjects } from "@/types/types";
 import { usePathname, useRouter } from "next/navigation";
+import { AppMode, useAppRoleContext } from "@/context/UserAppRoleContext";
 
 type NavSidebarProps = {
     recentProjects: NavProjects[];
 } & React.ComponentProps<typeof Sidebar>;
 
-type NavDataType = {
-    navMain: MainNavigationUnwrappedProps[];
-}
-
-const data: {navMain: MainNavigationUnwrappedProps[]} = {
-    navMain: [
-        {
-            title: "Dashboard",
-            url: "/dashboard",
-            isActive: true,
-            icon: LayoutDashboard,
-            items: [],
-        },
-        {
-            title: "Recent Projects",
-            icon: FolderClock,
-            isActive: false,
-            url: '#',
-            items: [],
-        },
-        {
-            title: 'All Projects',
-            url: '/projects',
-            icon: FolderCode,
-            items: [],
-        },
-        {
-            title: "Models",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: Settings2,
-            items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-}
 
 export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps) {
     const currentUser = useCurrentUser();
     const router = useRouter();
     const pathname = usePathname();
-    const [navItems, setNavItems] = useState<MainNavigationUnwrappedProps[]>(data.navMain);
+    const { navData, currentAppMode } = useAppRoleContext();
+    const [navItems, setNavItems] = useState<MainNavigationUnwrappedProps[]>(navData);
 
     useEffect(() => {
-        if (recentProjects && recentProjects?.length) {
-            const updated = [...data.navMain];
-            updated[1] = {
-                ...updated[1],
-                items: recentProjects
-            };
-            setNavItems(updated);
+        if (currentAppMode === AppMode.STANDARD_USER) {
+            if (recentProjects && recentProjects?.length) {
+                const updated = navData;
+                updated[1] = {
+                    ...updated[1],
+                    items: recentProjects
+                };
+                setNavItems(updated);
+            }
         }
-    }, [recentProjects]);
+    }, [recentProjects, currentAppMode, navData]);
 
-    useEffect(() => {    
+    useEffect(() => {
+        setNavItems(navData);
+    }, [navData]);
+
+    useEffect(() => {
         setNavItems(prevItems =>
             prevItems.map(item => ({
                 ...item,
