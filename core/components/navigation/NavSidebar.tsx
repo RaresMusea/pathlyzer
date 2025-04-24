@@ -38,17 +38,20 @@ export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps)
     const [navItems, setNavItems] = useState<MainNavigationUnwrappedProps[]>(navData);
 
     useEffect(() => {
-        if (currentAppMode === AppMode.STANDARD_USER) {
-            if (recentProjects && recentProjects?.length) {
-                const updated = navData;
-                updated[1] = {
-                    ...updated[1],
-                    items: recentProjects
-                };
-                setNavItems(updated);
-            }
+        if (currentAppMode === AppMode.STANDARD_USER && recentProjects?.length) {
+            const updated = navData.map((item, index) => {
+                if (index === 1) {
+                    return {
+                        ...item,
+                        items: recentProjects,
+                    };
+                }
+                return item;
+            });
+
+            setNavItems(updated);
         }
-    }, [recentProjects, currentAppMode, navData]);
+    }, [recentProjects, currentAppMode]);
 
     useEffect(() => {
         setNavItems(navData);
