@@ -1,14 +1,19 @@
-import { mapRecentProjectsToNavItems } from "@/lib/NavigationUtils";
-import { auth } from "@/auth";
-import { BreadcrumbsGenerator } from "@/components/navigation/BreadcrumbsGenerator";
-import { NavSidebar } from "@/components/navigation/NavSidebar";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { auth } from "@/auth"
+import { ThemeToggle } from "../ThemeToggle"
+import { Separator } from "../ui/separator"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar"
+import { BreadcrumbsGenerator } from "./BreadcrumbsGenerator"
+import { NavSidebar } from "./NavSidebar"
+import { mapRecentProjectsToNavItems } from "@/lib/NavigationUtils"
+import { NavProjects } from "@/types/types"
 
-const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+type SidebarLayoutProps = {
+    children: React.ReactNode
+}
+
+export const SidebarLayout = async ({ children }: SidebarLayoutProps) => {
     const session = await auth();
-    const recentProjects = await mapRecentProjectsToNavItems(`code/${session?.user.id}/`, session?.user.id || '');
+    const recentProjects: NavProjects[] = await mapRecentProjectsToNavItems(`code/${session?.user.id}/`, session?.user.id || '');
 
     return (
         <SidebarProvider>
@@ -33,8 +38,5 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
                 </div>
             </div>
         </SidebarProvider>
-
-    );
+    )
 }
-
-export default DashboardLayout;

@@ -49,7 +49,7 @@ const data: {navMain: MainNavigationUnwrappedProps[]} = {
         },
         {
             title: 'All Projects',
-            url: '/dashboard/projects',
+            url: '/projects',
             icon: FolderCode,
             items: [],
         },
