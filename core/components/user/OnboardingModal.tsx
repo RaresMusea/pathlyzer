@@ -1,19 +1,17 @@
 "use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { X } from "lucide-react"
-import Lottie from "lottie-react"
-import { useMediaQuery } from "@/hooks/useMediaQuery"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { X } from "lucide-react";
+import Lottie from "lottie-react";
 
 import learningPathsAnimation from "@/resources/lottie/onboarding/learning-paths.json";
 import evaluationAnimation from "@/resources/lottie/onboarding/evaluation.json";
 import gamificationAnimation from "@/resources/lottie/onboarding/gamification.json";
 import codeEditorAnimation from "@/resources/lottie/onboarding/code-editor.json";
 import rewardsAnimation from "@/resources/lottie/onboarding/rewards.json";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface OnboardingModalProps {
     isOpen: boolean
@@ -23,8 +21,6 @@ interface OnboardingModalProps {
 export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     const [currentStep, setCurrentStep] = useState<number>(-1);
     const [direction, setDirection] = useState<number>(0);
-    const isMobile = useMediaQuery("(max-width: 768px)");
-    const currentUser = useCurrentUser();
 
     const steps = [
         {
