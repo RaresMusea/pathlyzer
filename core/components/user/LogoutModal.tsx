@@ -10,7 +10,7 @@ export const LogoutModal = ({ deauth, closeDialog }: { deauth: () => void; close
                 <DialogHeader>
                     <DialogTitle>Log out</DialogTitle>
                     <DialogDescription className="text-muted-foreground pt-2">
-                        You'll be signed out. We'll be here when you return!
+                        You&apos;ll be signed out. We&apos;ll be here when you return!
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

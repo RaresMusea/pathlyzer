@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 
 const { auth } = NextAuth(authConfig);
 import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } from "./routes";
+import { NextResponse } from "next/server";
 
 export default (auth as unknown as (handler: any) => any)((req: any, ctx: any) => {
   const { nextUrl } = req;
@@ -11,6 +12,9 @@ export default (auth as unknown as (handler: any) => any)((req: any, ctx: any) =
   const isRouteHandler: boolean = nextUrl.pathname.startsWith("/api");
   const isPublicRoute: boolean = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute: boolean = authRoutes.includes(nextUrl.pathname);
+
+  const response = NextResponse.next();
+  response.headers.set('X-Current-Route', nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null;
@@ -31,7 +35,7 @@ export default (auth as unknown as (handler: any) => any)((req: any, ctx: any) =
     return Response.redirect(new URL("/login", nextUrl));
   }
 
-  return null;
+  return response;
 });
 
 export const config = {
