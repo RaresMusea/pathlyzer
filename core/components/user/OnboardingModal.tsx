@@ -16,7 +16,7 @@ import rewardsAnimation from "@/resources/lottie/onboarding/rewards.json";
 interface OnboardingModalProps {
     isOpen: boolean
     onClose: () => void
-}
+};
 
 export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     const [currentStep, setCurrentStep] = useState<number>(-1);

@@ -16,6 +16,12 @@ enum UserRole {
   ADMINISTRATOR
 }
 
+enum CourseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 enum ProjectVisibility {
   PUBLIC
   PRIVATE
@@ -103,4 +109,24 @@ model Project {
   user            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([name])
+}
+
+model Course {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  imageSrc    Bytes            @map("image_src")
+  description String
+  difficulty  CourseDifficulty
+  available   Boolean          @default(false)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  tags        CourseTag[]
+
+  @@index([name])
+}
+
+model CourseTag {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  courses Course[]
 }
