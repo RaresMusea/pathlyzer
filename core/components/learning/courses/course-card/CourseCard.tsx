@@ -6,7 +6,7 @@ import { ChevronRight, Clock } from "lucide-react";
 import Image from "next/image";
 
 
-export const CourseCard = ({course, key}: {course: CourseProps, key: number}) => {
+export const CourseCard = ({ course }: { course: CourseProps }) => {
     return (
         <Card key={course.id} className="overflow-hidden hover:shadow-md transition-shadow">
             <div className="relative w-full h-[250px]">
