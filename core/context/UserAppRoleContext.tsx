@@ -70,6 +70,12 @@ const data: { standardNav: MainNavigationUnwrappedProps[], adminNav: MainNavigat
             url: "/admin/insights",
             isActive: true,
             icon: Gauge
+        },
+        {
+            title: "Courses",
+            url: "/admin/courses",
+            isActive: false,
+            icon: GraduationCap,
         }
     ]
 };
