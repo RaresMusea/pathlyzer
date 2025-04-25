@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
-import { LoadingSpinner } from "@/components/misc/animations/LoadingSpinner";
+import { ManageCoursesPageWrapper } from "@/components/admin/ManageCoursesPageWrapper";
+import { CourseDto } from "@/types/types";
 import { redirect } from "next/navigation";
 
 export default async function ManageCoursesPage() {
@@ -9,16 +10,11 @@ export default async function ManageCoursesPage() {
         redirect("/unauthorized")
     };
 
+    const courses: CourseDto[] = []
+
     return (
-       <div></div> 
+        <div className="container mx-auto py-10">
+            <ManageCoursesPageWrapper courses={courses} />
+        </div>
     )
 }
-
-function LoadingTableSkeleton() {
-    return (
-      <div className="flex flex-col items-center justify-center py-10">
-        <LoadingSpinner size="large" />
-        <p className="mt-4 text-muted-foreground">Se încarcă cursurile...</p>
-      </div>
-    )
-  }

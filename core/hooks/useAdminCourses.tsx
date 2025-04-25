@@ -3,26 +3,27 @@
 import { CourseDto } from "@/types/types";
 import { Course } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import debounce from "lodash/debounce";
 
 export function useAdminCourses(initialCourses: CourseDto[]) {
-    const router = useRouter()
-    const [courses, setCourses] = useState<CourseDto[]>(initialCourses)
-    const [searchTerm, setSearchTerm] = useState("")
-    const [difficultyFilter, setDifficultyFilter] = useState<string>("all")
-    const [availabilityFilter, setAvailabilityFilter] = useState<string>("all")
-    const [tagFilter, setTagFilter] = useState<string>("all")
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-    const [courseToDelete, setCourseToDelete] = useState<Course | null>(null)
-    const [sortColumn, setSortColumn] = useState<string>("name")
-    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-    const [loading, setLoading] = useState(false)
-    const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false)
-    const [selectedCourses, setSelectedCourses] = useState<string[]>([])
-    const [selectAll, setSelectAll] = useState(false)
+    const router = useRouter();
+    const tableRef = useRef<HTMLDivElement>(null)
+    const [courses, setCourses] = useState<CourseDto[]>(initialCourses);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
+    const [availabilityFilter, setAvailabilityFilter] = useState<string>('all');
+    const [tagFilter, setTagFilter] = useState<string>('all');
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+    const [sortColumn, setSortColumn] = useState<string>('name');
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">('asc');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState<boolean>(false);
+    const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+    const [selectAll, setSelectAll] = useState<boolean>(false);
     const [visibleColumns, setVisibleColumns] = useState<string[]>([
         "image",
         "name",
@@ -32,8 +33,8 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         "createdAt",
         "actions",
     ])
-    const [viewMode, setViewMode] = useState<"table" | "grid">("table")
-    const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false)
+    const [viewMode, setViewMode] = useState<"table" | "grid">('table');
+    const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState<boolean>(false);
     const [dateRangeFilter, setDateRangeFilter] = useState<{ start: string; end: string }>({
         start: "",
         end: "",
@@ -63,15 +64,30 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         sortDirection,
     ]);
 
+    const scrollToTable = () => {
+        if (tableRef.current) {
+            const tableTop = tableRef.current.getBoundingClientRect().top + window.pageYOffset - 100;
+
+            window.scrollTo({
+                top: tableTop,
+                behavior: "smooth",
+            });
+        }
+    }
+
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
         setSelectedCourses([]);
         setSelectAll(false);
+
+        scrollToTable();
     }
 
     const handleItemsPerPageChange = (value: string) => {
         setItemsPerPage(Number.parseInt(value));
         setCurrentPage(1);
+
+        scrollToTable();
     }
 
     const filteredCourses = courses.filter((course) => {
@@ -155,6 +171,8 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
             setSortColumn(column);
             setSortDirection("asc");
         }
+
+        scrollToTable();
     }
 
     const confirmDelete = (course: Course) => {
@@ -217,7 +235,6 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
                 courses.map((course) => (selectedCourses.includes(course.id) ? { ...course, available: true } : course))
             );
         } else if (action === "unavailable") {
-            // Marcăm cursurile selectate ca indisponibile
             setCourses(
                 courses.map((course) => (selectedCourses.includes(course.id) ? { ...course, available: false } : course))
             );
@@ -261,7 +278,12 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         setTagFilter("all");
         setDateRangeFilter({ start: "", end: "" });
         setCurrentPage(1);
+        scrollToTable();
     };
+
+    const applyFilters = () => {
+        scrollToTable()
+    }
 
     return {
         courses,
@@ -278,6 +300,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         toggleColumnVisibility,
         handleExport,
         handleSearchChange,
-        resetFilters
+        resetFilters,
+        applyFilters
     };
 }
