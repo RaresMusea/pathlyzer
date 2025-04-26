@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { ManageCoursesPageWrapper } from "@/components/admin/ManageCoursesPageWrapper";
+import { ManageCoursesPageWrapper } from "@/components/admin/courses/ManageCoursesPageWrapper";
 import { CourseDto } from "@/types/types";
 import { redirect } from "next/navigation";
 
