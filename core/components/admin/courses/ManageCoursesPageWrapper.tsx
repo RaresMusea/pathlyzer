@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { Plus } from "lucide-react";
 import { Suspense } from "react";
-import { CoursesTable } from "../tables/CoursesTable";
-import { LoadingSpinner } from "../misc/animations/LoadingSpinner";
+import { CoursesTable } from "../../tables/CoursesTable";
+import { LoadingSpinner } from "../../misc/animations/LoadingSpinner";
 import { CourseDto } from "@/types/types";
 
 function LoadingTableSkeleton() {
@@ -27,7 +27,7 @@ export const ManageCoursesPageWrapper = ({courses}: {courses: CourseDto[]}) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
             >
-                <h1 className="text-3xl font-bold">Courses Management</h1>
+                <h1 className="text-3xl font-bold">Manage Courses</h1>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link href="/admin/courses/new">
                         <Button>

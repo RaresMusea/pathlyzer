@@ -15,13 +15,13 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
     const [availabilityFilter, setAvailabilityFilter] = useState<string>('all');
     const [tagFilter, setTagFilter] = useState<string>('all');
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+    const [courseToDelete, setCourseToDelete] = useState<CourseDto | null>(null);
     const [sortColumn, setSortColumn] = useState<string>('name');
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(10);
     const [loading, setLoading] = useState<boolean>(false);
-    const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState<boolean>(false);
+    const [massActionDialogOpen, setMassActionDialogOpen] = useState<boolean>(false);
     const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
     const [selectAll, setSelectAll] = useState<boolean>(false);
     const [visibleColumns, setVisibleColumns] = useState<string[]>([
@@ -175,7 +175,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         scrollToTable();
     }
 
-    const confirmDelete = (course: Course) => {
+    const confirmDelete = (course: CourseDto) => {
         setCourseToDelete(course);
         setDeleteDialogOpen(true);
     }
@@ -240,7 +240,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
             );
         }
 
-        setBulkActionDialogOpen(false);
+        setMassActionDialogOpen(false);
         setSelectedCourses([]);
         setSelectAll(false);
     }
@@ -287,6 +287,35 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
 
     return {
         courses,
+        currentPage,
+        tagFilter,
+        allTags,
+        tableRef,
+        loading,
+        totalPages,
+        itemsPerPage,
+        paginatedCourses,
+        selectedCourses,
+        filteredCourses,
+        courseToDelete,
+        deleteDialogOpen,
+        visibleColumns,
+        viewMode,
+        dateRangeFilter,
+        difficultyFilter,
+        availabilityFilter,
+        massActionDialogOpen,
+        selectAll,
+        setDeleteDialogOpen,
+        setDateRangeFilter,
+        setMassActionDialogOpen,
+        setDifficultyFilter,
+        setSelectedCourses,
+        setSelectAll,
+        setViewMode,
+        setTagFilter,
+        setVisibleColumns,
+        setAvailabilityFilter,
         handlePageChange,
         handleItemsPerPageChange,
         getPageNumbers,
@@ -301,6 +330,6 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         handleExport,
         handleSearchChange,
         resetFilters,
-        applyFilters
+        applyFilters,
     };
 }
