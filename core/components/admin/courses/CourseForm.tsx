@@ -209,37 +209,33 @@ export const CourseForm = ({ course, tags }: { course?: CourseMutationDto, tags:
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid gap-3">
-                                    <FormField
-                                        control={form.control}
-                                        name="tags"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Add Tags</FormLabel>
-                                                <Controller
-                                                    name="tags"
-                                                    control={form.control}
-                                                    defaultValue={[]}
-                                                    render={({ field }) => (
-                                                        <MultiSelect
-                                                            className="w-full"
-                                                            options={fromCourseTagsToOptions(tags)}
-                                                            selected={field.value.map((tag) => tag.id)}
-                                                            onChange={(selectedIds) => {
-                                                                const selectedTags = tags.filter((tag) =>
-                                                                    selectedIds.includes(tag.id)
-                                                                );
 
-                                                                field.onChange(selectedTags);
-                                                            }}
-                                                            placeholder="Select the course tags..."
-                                                            emptyText="No tags were found."
-                                                        />
-                                                    )}
+                                    <FormItem>
+                                        <FormLabel>Add Tags</FormLabel>
+                                        <Controller
+                                            name="tags"
+                                            control={form.control}
+                                            defaultValue={[]}
+                                            render={({ field }) => (
+                                                <MultiSelect
+                                                    className="w-full"
+                                                    options={fromCourseTagsToOptions(tags)}
+                                                    selected={field.value.map((tag) => tag.id)}
+                                                    onChange={(selectedIds) => {
+                                                        const selectedTags = tags.filter((tag) =>
+                                                            selectedIds.includes(tag.id)
+                                                        );
+
+                                                        field.onChange(selectedTags);
+                                                    }}
+                                                    placeholder="Select the course tags..."
+                                                    emptyText="No tags were found."
                                                 />
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                            )}
+                                        />
+                                        <FormMessage />
+                                    </FormItem>
+
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 mt-2">

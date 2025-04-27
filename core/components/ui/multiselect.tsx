@@ -71,7 +71,7 @@ export function MultiSelect({
                         <CommandList>
                             <CommandEmpty>{emptyText}</CommandEmpty>
                             <CommandGroup>
-                                {options.map((option, index) => (
+                                {options.map((option) => (
                                     <CommandItem key={option.value} value={option.label.toLowerCase()} onSelect={() => handleSelect(option.value)}>
                                         <span className="truncate">{option.label}</span>
                                         <Check
