@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { CourseDifficulty } from "@prisma/client";
 
-export const courseMutationSchema = z.object({
+export const CourseMutationSchema = z.object({
     name: z
         .string()
         .min(1, { message: "The course name is mandatory!" })
@@ -12,8 +12,17 @@ export const courseMutationSchema = z.object({
         .min(1, { message: "The course description is mandatory!" })
         .max(200, { message: "The course description cannot exceed 200 characters." }),
 
+    image: z
+        .string()
+        .url({ message: "Please upload a valid image." }),
+
     difficulty: z.nativeEnum(CourseDifficulty, {
         required_error: "Please select a difficulty level.",
+    }),
+
+    availability: z.boolean({
+        required_error: "Availability is required.",
+        invalid_type_error: "Availability must be true or false.",
     }),
 
     tags: z
