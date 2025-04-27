@@ -71,8 +71,8 @@ export function MultiSelect({
                         <CommandList>
                             <CommandEmpty>{emptyText}</CommandEmpty>
                             <CommandGroup>
-                                {options.map((option) => (
-                                    <CommandItem key={option.value} value={option.value} onSelect={() => handleSelect(option.value)}>
+                                {options.map((option, index) => (
+                                    <CommandItem key={option.value} value={option.label.toLowerCase()} onSelect={() => handleSelect(option.value)}>
                                         <span className="truncate">{option.label}</span>
                                         <Check
                                             className={cn("ml-auto h-4 w-4", selected.includes(option.value) ? "opacity-100" : "opacity-0")}

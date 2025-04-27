@@ -6,7 +6,7 @@ export function fromCourseDto(course: Course & { tags: CourseTag[] }): CourseDto
     return {
         id: course.id,
         name: course.name,
-        imageSrc: Buffer.from(course.imageSrc).toString("base64"),
+        imageSrc: Buffer.from(course.imageSrc).toString("utf-8"),
         description: course.description,
         difficulty: course.difficulty,
         available: course.available,
@@ -25,7 +25,7 @@ export function fromCoursesToDto(courses: (Course & { tags: CourseTag[] })[]): C
 
 function fromCourseTagToOption(tag: CourseTag): Option {
     return {
-        value: tag.name.toLowerCase(),
+        value: tag.id,
         label: tag.name
     }
 }

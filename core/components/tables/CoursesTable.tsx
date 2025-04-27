@@ -85,7 +85,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
             >
                 <div className="relative flex-1">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Caută cursuri..." className="pl-8" onChange={handleSearchChange} />
+                    <Input placeholder="Search courses..." className="pl-8" onChange={handleSearchChange} />
                 </div>
                 <div className="flex gap-2 flex-wrap sm:flex-nowrap">
                     <Popover>
@@ -101,7 +101,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                     <Label htmlFor="difficulty-filter">Difficulty Level</Label>
                                     <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
                                         <SelectTrigger id="difficulty-filter">
-                                            <SelectValue placeholder="Filtrează după dificultate" />
+                                            <SelectValue placeholder="Filter by difficulty level" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">All difficulty levels</SelectItem>
@@ -178,53 +178,56 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                             </div>
                         </PopoverContent>
                     </Popover>
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">Columns</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel>Columns visibility</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuCheckboxItem
-                                checked={visibleColumns.includes("image")}
-                                onCheckedChange={() => toggleColumnVisibility("image")}
-                            >
-                                Image
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={visibleColumns.includes("name")}
-                                onCheckedChange={() => toggleColumnVisibility("name")}
-                                disabled
-                            >
-                                Name
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={visibleColumns.includes("difficulty")}
-                                onCheckedChange={() => toggleColumnVisibility("difficulty")}
-                            >
-                                Difficulty
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={visibleColumns.includes("tags")}
-                                onCheckedChange={() => toggleColumnVisibility("tags")}
-                            >
-                                Tags
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={visibleColumns.includes("available")}
-                                onCheckedChange={() => toggleColumnVisibility("available")}
-                            >
-                                Availability
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={visibleColumns.includes("createdAt")}
-                                onCheckedChange={() => toggleColumnVisibility("createdAt")}
-                            >
-                                Date created
-                            </DropdownMenuCheckboxItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <>
+                        {viewMode === 'table' &&
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline">Columns</Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>Columns visibility</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuCheckboxItem
+                                        checked={visibleColumns.includes("image")}
+                                        onCheckedChange={() => toggleColumnVisibility("image")}
+                                    >
+                                        Image
+                                    </DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem
+                                        checked={visibleColumns.includes("name")}
+                                        onCheckedChange={() => toggleColumnVisibility("name")}
+                                        disabled
+                                    >
+                                        Name
+                                    </DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem
+                                        checked={visibleColumns.includes("difficulty")}
+                                        onCheckedChange={() => toggleColumnVisibility("difficulty")}
+                                    >
+                                        Difficulty
+                                    </DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem
+                                        checked={visibleColumns.includes("tags")}
+                                        onCheckedChange={() => toggleColumnVisibility("tags")}
+                                    >
+                                        Tags
+                                    </DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem
+                                        checked={visibleColumns.includes("available")}
+                                        onCheckedChange={() => toggleColumnVisibility("available")}
+                                    >
+                                        Availability
+                                    </DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem
+                                        checked={visibleColumns.includes("createdAt")}
+                                        onCheckedChange={() => toggleColumnVisibility("createdAt")}
+                                    >
+                                        Date created
+                                    </DropdownMenuCheckboxItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        }
+                    </>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -274,7 +277,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                 setSelectAll(false)
                             }}
                         >
-                            Anulează selecția
+                            Cancel selection
                         </Button>
                         <Button variant="default" size="sm" onClick={() => setMassActionDialogOpen(true)}>
                             Mass actions
@@ -361,10 +364,10 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                         aria-label="Select all courses"
                                                     />
                                                 </TableHead>
-                                                {visibleColumns.includes("image") && <TableHead className="w-[80px]">Imagine</TableHead>}
+                                                {visibleColumns.includes("image") && <TableHead className="w-[80px]">Image</TableHead>}
                                                 <TableHead>
                                                     <Button variant="ghost" onClick={() => toggleSort("name")} className="flex items-center">
-                                                        Nume
+                                                        Name
                                                         <ArrowUpDown className="ml-2 h-4 w-4" />
                                                     </Button>
                                                 </TableHead>
@@ -375,12 +378,12 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                             onClick={() => toggleSort("difficulty")}
                                                             className="flex items-center"
                                                         >
-                                                            Dificultate
+                                                            Difficulty
                                                             <ArrowUpDown className="ml-2 h-4 w-4" />
                                                         </Button>
                                                     </TableHead>
                                                 )}
-                                                {visibleColumns.includes("tags") && <TableHead>Tag-uri</TableHead>}
+                                                {visibleColumns.includes("tags") && <TableHead>Tags</TableHead>}
                                                 {visibleColumns.includes("available") && (
                                                     <TableHead>
                                                         <Button
@@ -388,7 +391,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                             onClick={() => toggleSort("available")}
                                                             className="flex items-center"
                                                         >
-                                                            Disponibil
+                                                            Available
                                                             <ArrowUpDown className="ml-2 h-4 w-4" />
                                                         </Button>
                                                     </TableHead>
@@ -400,19 +403,19 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                             onClick={() => toggleSort("createdAt")}
                                                             className="flex items-center"
                                                         >
-                                                            Data creării
+                                                            Date created
                                                             <ArrowUpDown className="ml-2 h-4 w-4" />
                                                         </Button>
                                                     </TableHead>
                                                 )}
-                                                <TableHead className="text-right">Acțiuni</TableHead>
+                                                <TableHead className="text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {paginatedCourses.length === 0 ? (
                                                 <TableRow>
                                                     <TableCell colSpan={7 + (selectAll ? 1 : 0)} className="h-24 text-center">
-                                                        Nu s-au găsit cursuri.
+                                                        No courses found.
                                                     </TableCell>
                                                 </TableRow>
                                             ) : (
@@ -479,6 +482,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                 <TableCell>
                                                                     <motion.div whileTap={{ scale: 0.95 }}>
                                                                         <Switch
+                                                                            className="[state=checked]:bg-[var(--pathlyzer-table-border)]"
                                                                             disabled
                                                                             checked={course.available}
                                                                             onCheckedChange={() => { }}
@@ -490,15 +494,15 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                 <TableCell>{new Date(course.createdAt).toLocaleDateString("ro-RO")}</TableCell>
                                                             )}
                                                             <TableCell className="text-right">
-                                                                <DropdownMenu>
+                                                                <DropdownMenu modal={false}>
                                                                     <DropdownMenuTrigger asChild>
                                                                         <Button variant="ghost" className="h-8 w-8 p-0">
-                                                                            <span className="sr-only">Deschide meniu</span>
+                                                                            <span className="sr-only">Open menu</span>
                                                                             <MoreHorizontal className="h-4 w-4" />
                                                                         </Button>
                                                                     </DropdownMenuTrigger>
                                                                     <DropdownMenuContent align="end">
-                                                                        <DropdownMenuLabel>Acțiuni</DropdownMenuLabel>
+                                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                                         <DropdownMenuItem asChild>
                                                                             <Link href={`/admin/courses/${course.id}`}>
                                                                                 <Eye className="mr-2 h-4 w-4" />
@@ -573,9 +577,9 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                     </CardContent>
                                                     <CardFooter className="flex justify-between p-4 pt-0">
                                                         <Badge variant={course.available ? "default" : "secondary"}>
-                                                            {course.available ? "Disponibil" : "Indisponibil"}
+                                                            {course.available ? "Available" : "Unavailable"}
                                                         </Badge>
-                                                        <DropdownMenu>
+                                                        <DropdownMenu modal={false}>
                                                             <DropdownMenuTrigger asChild>
                                                                 <Button variant="ghost" size="icon" className="h-8 w-8">
                                                                     <MoreHorizontal className="h-4 w-4" />
@@ -665,37 +669,39 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
             </div>
 
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent asChild>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        <DialogHeader>
-                            <DialogTitle>Confirm deletion</DialogTitle>
-                            <DialogDescription>
-                                Are you absolutely sure that you want to completely remove course &quot;{courseToDelete?.name}&quot;? All the units and lessons linked to this course will also get deleted! This acction is irreversible!
-                            </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                                Cancel
-                            </Button>
-                            <Button variant="destructive" onClick={deleteCourse}>
-                                Delete
-                            </Button>
-                        </DialogFooter>
-                    </motion.div>
+                <DialogContent>
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <DialogHeader>
+                                <DialogTitle>Confirm deletion</DialogTitle>
+                                <DialogDescription>
+                                    Are you absolutely sure that you want to completely remove course &quot;{courseToDelete?.name}&quot;? All the units and lessons linked to this course will also get deleted! This acction is irreversible!
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                                    Cancel
+                                </Button>
+                                <Button variant="destructive" onClick={deleteCourse}>
+                                    Delete
+                                </Button>
+                            </DialogFooter>
+                        </motion.div>
+                    </>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={massActionDialogOpen} onOpenChange={setMassActionDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Acțiuni în masă</DialogTitle>
+                        <DialogTitle>Mass actions</DialogTitle>
                         <DialogDescription>
-                            Alegeți o acțiune pentru cele {selectedCourses.length} cursuri selectate.
+                            Choose an action for the {selectedCourses.length} selected courses
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -716,7 +722,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setMassActionDialogOpen(false)}>
-                            Anulare
+                            Cancel
                         </Button>
                     </DialogFooter>
                 </DialogContent>

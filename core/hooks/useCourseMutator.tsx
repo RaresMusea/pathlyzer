@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { CourseMutationSchema } from "@/schemas/CourseMutationValidation";
-import { saveCourse, ValidationResult } from "@/actions/CoursesManagement";
+import { saveCourse, CourseManagementResult } from "@/actions/CoursesManagement";
 import { toast } from "sonner";
 
 export function useCourseMutator(tags: CourseTag[], course?: CourseMutationDto) {
@@ -83,7 +83,7 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseMutationDto) 
     const onSubmit = (values: z.infer<typeof CourseMutationSchema>) => {
         startTransition(() => {
             saveCourse(values)
-                .then((data: ValidationResult) => {
+                .then((data: CourseManagementResult) => {
                     if (data.isValid) {
                         toast.success(data.message);
                     }
@@ -93,6 +93,8 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseMutationDto) 
                 })
                 .catch(e => toast.error(e))
         });
+
+        setTimeout(() => router.push('/admin/courses'), 100);
     }
 
     return {

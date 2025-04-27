@@ -1,3 +1,4 @@
+import { getCourses } from "@/app/service/course/courseService";
 import { auth } from "@/auth";
 import { ManageCoursesPageWrapper } from "@/components/admin/courses/ManageCoursesPageWrapper";
 import { CourseDto } from "@/types/types";
@@ -10,7 +11,7 @@ export default async function ManageCoursesPage() {
         redirect("/unauthorized")
     };
 
-    const courses: CourseDto[] = []
+    const courses: CourseDto[] = await getCourses();
 
     return (
         <div className="container mx-auto py-10">
