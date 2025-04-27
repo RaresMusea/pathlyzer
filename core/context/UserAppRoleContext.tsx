@@ -4,8 +4,9 @@ import { MainNavigationUnwrappedProps } from "@/types/types";
 import { UserRole } from "@prisma/client";
 import { FolderClock, FolderCode, Gauge, GraduationCap, LayoutDashboard, Settings2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
+import { appendErrors } from "react-hook-form";
 
 export enum AppMode {
     STANDARD_USER,
@@ -101,6 +102,7 @@ interface UserAppRoleContextProps {
     currentAppMode: AppMode;
     navData: MainNavigationUnwrappedProps[];
     setAppMode: (newAppMode: AppMode) => void;
+    setActiveItem: (activeItem: MainNavigationUnwrappedProps) => void;
 };
 
 const UserAppRoleContext = createContext<UserAppRoleContextProps | undefined>(undefined);
@@ -110,6 +112,7 @@ export const UserAppRoleProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const { data: session, status } = useSession();
     const [isElevated, setIsElevated] = useState(false);
     const router = useRouter();
+    const pathName = usePathname();
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -119,8 +122,22 @@ export const UserAppRoleProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }, [session, status]);
 
     const [currentAppMode, setCurrentAppMode] = useState<AppMode>(details.appMode);
-
     const [navData, setNavData] = useState<MainNavigationUnwrappedProps[]>(details.navData);
+
+    useEffect(() => {
+        if (!pathName) return;
+
+        const isAdminPath = pathName.startsWith("/admin");
+
+        const expectedMode = isAdminPath ? AppMode.ELEVATED : AppMode.STANDARD_USER;
+
+        if (expectedMode !== currentAppMode) {
+            setCurrentAppMode(expectedMode);
+            localStorage.setItem("appMode", expectedMode.toString());
+            setNavData(isAdminPath ? data.adminNav : data.standardNav);
+        }
+    }, [pathName]);
+
 
     const setAppMode = (newAppMode: AppMode) => {
         if (isElevated) {
@@ -136,10 +153,26 @@ export const UserAppRoleProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
+    const setActiveItem = (activeItem: MainNavigationUnwrappedProps) => {
+        const targetMode = activeItem.url.startsWith("/admin")
+            ? AppMode.ELEVATED
+            : AppMode.STANDARD_USER;
+
+        if (targetMode !== currentAppMode) {
+            setAppMode(targetMode);
+            setTimeout(() => {
+                router.push(activeItem.url);
+            }, 10);
+        } else {
+            router.push(activeItem.url);
+        }
+    };
+
     return (
         <UserAppRoleContext.Provider value={{
             currentAppMode,
             setAppMode,
+            setActiveItem,
             navData,
         }}>
             {children}

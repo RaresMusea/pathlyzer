@@ -29,7 +29,7 @@ export const ManageCoursesPageWrapper = ({courses}: {courses: CourseDto[]}) => {
             >
                 <h1 className="text-3xl font-bold">Manage Courses</h1>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Link href="/admin/courses/new">
+                    <Link href="/admin/courses/create">
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />
                             New Course
