@@ -1,3 +1,4 @@
+import { Option } from "@/components/ui/multiselect";
 import { CourseDto } from "@/types/types";
 import { Course, CourseTag } from "@prisma/client";
 
@@ -20,4 +21,19 @@ export function fromCourseDto(course: Course & { tags: CourseTag[] }): CourseDto
 
 export function fromCoursesToDto(courses: (Course & { tags: CourseTag[] })[]): CourseDto[] {
     return courses.map(fromCourseDto);
+}
+
+function fromCourseTagToOption(tag: CourseTag): Option {
+    return {
+        value: tag.name.toLowerCase(),
+        label: tag.name
+    }
+}
+
+export function fromCourseTagsToOptions(tags: CourseTag[]): Option[] {
+    if (!tags || tags.length === 0) {
+        return [];
+    }
+
+    return tags.map(fromCourseTagToOption);
 }
