@@ -1,8 +1,11 @@
 import { ChangePasswordForm } from "@/components/authentication/ChangePasswordForm";
+import { Suspense } from "react";
 
 const ChangePasswordPage = () => {
     return (
-       <ChangePasswordForm />
+        <Suspense>
+            <ChangePasswordForm />
+        </Suspense>
     );
 };
 

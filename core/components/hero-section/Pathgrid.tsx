@@ -5,13 +5,13 @@ import { TypewriterEffect } from "@/components/ui/typewritter-effect";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import { Session } from "next-auth";
 
-export const Pathgrid = () => {
+
+export const Pathgrid = ({ session }: { session: Session | null }) => {
     const router = useRouter();
     const [buttonText, setButtonText] = useState<string>('');
-    const session = useSession();
 
     const words = [
         {
@@ -42,7 +42,7 @@ export const Pathgrid = () => {
     ];
 
     useEffect(() => {
-        if (session.status === 'unauthenticated') {
+        if (!session || !session.user) {
             setButtonText("Start today");
             return;
         }

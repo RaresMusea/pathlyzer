@@ -1,6 +1,6 @@
 import { getRecentProjects } from "@/app/service/project/projectService";
 import { getLogoBasedOnTech } from "@/exporters/LogoExporter";
-import { NavProjects } from "@/types/types";
+import { MainNavigationUnwrappedProps, NavProjects } from "@/types/types";
 
 export const mapRecentProjectsToNavItems = async (key: string, ownerId: string): Promise<NavProjects[]> => {
     const recentProjects = await getRecentProjects(key, ownerId);
@@ -19,4 +19,12 @@ export const childRequiresNav = (childRoute: string | null): boolean => {
     
     const excludedRoutesPatterns = ['editor'];
     return !excludedRoutesPatterns.some(pattern => childRoute.includes(pattern));
+}
+
+export const markActive = (items: MainNavigationUnwrappedProps[], pathname: string): MainNavigationUnwrappedProps[] => {
+    return items.map(item => ({
+        ...item,
+        isActive: pathname.startsWith(item.url),
+        items: item.items || [],
+    }));
 }

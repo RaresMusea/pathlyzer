@@ -1,4 +1,4 @@
-import { CourseDifficulty } from "@prisma/client";
+import { CourseDifficulty, CourseTag } from "@prisma/client";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
@@ -147,6 +147,14 @@ export type CourseDto = {
         id: string;
         name: string;
     }[];
+}
+
+export type CourseMutationDto = {
+    name: string
+    description: string
+    difficulty: CourseDifficulty
+    available: boolean
+    tags: CourseTag[]
 }
 
 // #endregion

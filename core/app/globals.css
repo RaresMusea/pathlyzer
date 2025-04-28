@@ -336,7 +336,7 @@ p.tiptap {
 }
 
 .tiptap .tiptap table .selectedCell:after {
-  background: var();
+  background: var(--pathlyzer);
   content: "";
   left: 0;
   right: 0;
