@@ -3,7 +3,9 @@
 import { courseAlreadyExists } from "@/app/service/course/courseService";
 import { db } from "@/persistency/Db";
 import { CourseMutationSchema } from "@/schemas/CourseMutationValidation";
+import { isValidAdminSession } from "@/security/Security";
 import { CourseTag } from "@prisma/client";
+import { redirect } from "next/navigation";
 import * as z from "zod";
 
 export interface CourseManagementResult {
@@ -41,6 +43,10 @@ const handleSuccess = (message: string): CourseManagementResult => {
 }
 
 export const saveCourse = async (values: z.infer<typeof CourseMutationSchema>): Promise<CourseManagementResult> => {
+    if (await !isValidAdminSession()) {
+        redirect('/unauthorized');
+    }
+    
     const validatedFields = CourseMutationSchema.safeParse(values);
 
     if (!validatedFields.success) {

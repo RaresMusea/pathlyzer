@@ -1,7 +1,9 @@
 import { fromCoursesToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
+import { isValidAdminSession } from "@/security/Security";
 import { CourseDto } from "@/types/types";
 import { Course, CourseTag } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export async function getCourseTags(): Promise<CourseTag[]> {
     const tags: CourseTag[] = await db.courseTag.findMany();
@@ -15,7 +17,17 @@ export const courseAlreadyExists = async (courseName: string): Promise<boolean> 
 }
 
 export const getCourses = async (): Promise<CourseDto[]> => {
+    if (!await isValidAdminSession()) {
+        redirect('/unauthorized');
+    }
     const courses: (Course & { tags: CourseTag[] })[] = await db.course.findMany({ include: { tags: true } });
 
     return fromCoursesToDto(courses);
+}
+
+export const getAvailableCourses = async (): Promise<CourseDto[]> => {
+    const courses: (Course & { tags: CourseTag[] })[] = await db.course.findMany({ where: { available: true }, include: { tags: true } });
+
+    return fromCoursesToDto(courses)
+
 }
