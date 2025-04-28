@@ -1,18 +1,18 @@
+import { auth } from "@/auth";
 import { Navbar } from "@/components/navbar/Navbar";
-import { ThemeProvider } from "@/components/provider/ThemeProvider";
+import { SessionProvider } from "next-auth/react";
 
 export default async function LandingLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
+    const session = await auth();
+
     return (
-        <main>
-            <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-            >
-                <Navbar />
-                {children}
-            </ThemeProvider>
-        </main>
+        <>
+            <SessionProvider session={session}>
+                <main>
+                    <Navbar />
+                    {children}
+                </main>
+            </SessionProvider>
+        </>
     );
 }
