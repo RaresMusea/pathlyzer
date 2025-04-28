@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth";
 import { ThemeProvider } from "@/components/provider/ThemeProvider";
 import { Nunito, Poppins } from "next/font/google";
 import { Toaster } from "sonner";
@@ -41,23 +39,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
 
   return (
-    <SessionProvider session={session}>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} ${poppins.variable} antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </body>
-      </html>
-    </SessionProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} ${poppins.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

@@ -1,5 +1,6 @@
 
 import { AuthImageLogo } from "@/components/authentication/AuthImageLogo";
+import { Navbar } from "@/components/navbar/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import Link from "next/link";
 const AuthenticationFormLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <>
+            <Navbar/>
             <div className="flex w-full h-auto items-center justify-center font-nunito">
                 <div className={cn("flex h-full flex-col w-full sm:w-5/12 md:w-5/12 lg:w-9/12 xl:w-8/12")}>
                     <Card className="overflow-hidden w-full h-full">

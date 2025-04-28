@@ -9,8 +9,9 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } fr
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { MainNavigationUnwrappedProps, NavProjects } from "@/types/types";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { AppMode, useAppRoleContext } from "@/context/UserAppRoleContext";
+import { markActive } from "@/lib/NavigationUtils";
 
 type NavSidebarProps = {
     recentProjects: NavProjects[];
@@ -19,14 +20,15 @@ type NavSidebarProps = {
 
 export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps) {
     const currentUser = useCurrentUser();
-    const router = useRouter();
     const pathname = usePathname();
-    const { navData, currentAppMode } = useAppRoleContext();
+    const { navData, currentAppMode, setActiveItem } = useAppRoleContext();
     const [navItems, setNavItems] = useState<MainNavigationUnwrappedProps[]>(navData);
 
     useEffect(() => {
+        let updatedNavItems = navData;
+
         if (currentAppMode === AppMode.STANDARD_USER && recentProjects?.length) {
-            const updated = navData.map((item, index) => {
+            updatedNavItems = updatedNavItems.map((item, index) => {
                 if (index === 1) {
                     return {
                         ...item,
@@ -35,36 +37,24 @@ export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps)
                 }
                 return item;
             });
-
-            setNavItems(updated);
         }
-    }, [recentProjects, currentAppMode]);
 
-    useEffect(() => {
-        setNavItems(navData);
-    }, [navData]);
+        updatedNavItems = markActive(updatedNavItems, pathname);
+        setNavItems(updatedNavItems);
 
-    useEffect(() => {
+    }, [navData, pathname, recentProjects, currentAppMode]);
+
+    const onSetActiveItem = (newActiveItem: MainNavigationUnwrappedProps) => {
+        setActiveItem(newActiveItem);
+
         setNavItems(prevItems =>
             prevItems.map(item => ({
                 ...item,
-                isActive: pathname === item.url,
+                isActive: item.title === newActiveItem.title,
                 items: item.items || [],
             }))
         );
-    }, [pathname]);
-
-    const setActiveItem = (activeItem: MainNavigationUnwrappedProps) => {
-        setNavItems(prevItems =>
-            prevItems.map(item => ({
-                ...item,
-                isActive: item.title === activeItem.title,
-                items: item.items || [],
-            }))
-        );
-
-        router.push(activeItem.url);
-    };
+    }
 
     if (!currentUser) {
         return null;
@@ -76,7 +66,7 @@ export function NavSidebar({ recentProjects, ...sidebarProps }: NavSidebarProps)
                 <RoleSwitcher />
             </SidebarHeader>
             <SidebarContent className="bg-background/60">
-                <MainNavigationGeneric items={navItems} setActiveItem={setActiveItem} />
+                <MainNavigationGeneric items={navItems} setActiveItem={onSetActiveItem} />
             </SidebarContent>
             <SidebarFooter className="bg-background/60">
                 <UserOptions />

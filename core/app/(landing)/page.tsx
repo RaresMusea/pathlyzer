@@ -1,7 +1,10 @@
+import { auth } from "@/auth";
 import { Homepage } from "@/components/hero-section/Homepage";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
   return (
-    <Homepage/>
+    <Homepage session={session}/>
   );
 }
