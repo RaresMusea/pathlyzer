@@ -504,7 +504,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                     <DropdownMenuContent align="end">
                                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                                         <DropdownMenuItem asChild>
-                                                                            <Link href={`/admin/courses/${course.id}`}>
+                                                                            <Link href={`/admin/courses/details?courseId=${encodeURIComponent(course.id)}`}>
                                                                                 <Eye className="mr-2 h-4 w-4" />
                                                                                 View details
                                                                             </Link>
@@ -587,7 +587,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
                                                                 <DropdownMenuItem asChild>
-                                                                    <Link href={`/admin/courses/${course.id}`}>
+                                                                    <Link href={`/admin/courses/details?courseId=${encodeURIComponent(course.id)}`}>
                                                                         <Eye className="mr-2 h-4 w-4" />
                                                                         View details
                                                                     </Link>
