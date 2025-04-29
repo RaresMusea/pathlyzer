@@ -1,4 +1,4 @@
-import { fromCoursesToDto } from "@/lib/Mapper";
+import { fromCourseDto, fromCoursesToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { isValidAdminSession } from "@/security/Security";
 import { CourseDto } from "@/types/types";
@@ -30,4 +30,30 @@ export const getAvailableCourses = async (): Promise<CourseDto[]> => {
 
     return fromCoursesToDto(courses)
 
+}
+
+export const getCourseById = async (courseId: string): Promise<CourseDto | undefined> => {
+    if (!await isValidAdminSession()) {
+        redirect('/unauthorized');
+    }
+    const requestedCourse = await db.course.findUnique({ where: { id: courseId }, include: { tags: true } });
+
+    if (!requestedCourse) {
+        return undefined;
+    }
+
+    return fromCourseDto(requestedCourse);
+}
+
+export const courseWithIdAlreadyExists = async (courseId: string): Promise<boolean> => {
+    if (!(await isValidAdminSession())) {
+        redirect('/unauthorized');
+    }
+
+    const requestedId = await db.course.findUnique({
+        where: { id: courseId },
+        select: { id: true },
+    });
+
+    return !!requestedId;
 }
