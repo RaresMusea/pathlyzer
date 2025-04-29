@@ -43,6 +43,7 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
 
     const [isPending, startTransition] = useTransition();
     const [imagePreview, setImagePreview] = useState<string | null>(course?.imageSrc || null);
+    const [errors, setErrors] = useState<boolean>(false);
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
         const file = e.target.files?.[0];
@@ -71,7 +72,9 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
             await handleCourseUpdate(values);
         }
 
-        setTimeout(() => router.push('/admin/courses'), 100);
+        if (!errors) {
+            setTimeout(() => router.push('/admin/courses'), 100);
+        }
     };
 
     const handleCourseSave = async (values: z.infer<typeof CourseMutationSchema>) => {
@@ -84,7 +87,12 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
                         toast.error(data.message);
                     }
                 })
-                .catch((e) => toast.error(e));
+                .catch((e) => {
+                    toast.error("An error occurred while attempting to create the course. Please try again later.");
+                    setTimeout(() => {
+                        setErrors(true);
+                    }, 100);
+                });
         });
     }
 
@@ -98,7 +106,13 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
                         toast.error(data.message);
                     }
                 })
-                .catch((e) => toast.error(e));
+                .catch((e) => {
+                    toast.error('An error occurred while attempting to create the course. Please try again later.');
+                    setTimeout(() => {
+                        setErrors(true);
+                    }, 100);
+
+                });
         });
     }
 
@@ -106,6 +120,7 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
         router,
         form,
         imagePreview,
+        errors,
         handleImageUpload,
         removeImage,
         isPending,
