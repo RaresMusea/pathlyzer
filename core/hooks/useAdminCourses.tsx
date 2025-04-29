@@ -2,7 +2,7 @@
 
 import { CourseDto } from "@/types/types";
 import { Course } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import debounce from "lodash/debounce";
 import { CourseManagementResult, deleteCourse } from "@/actions/CoursesManagement";
@@ -43,6 +43,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         start: "",
         end: "",
     });
+    const pathName = usePathname();
 
     const allTags = Array.from(new Set(courses.flatMap((course) => course.tags.map((tag) => tag.id)))).map((tagId) => {
         const tag = courses.flatMap((course) => course.tags).find((tag) => tag.id === tagId)
@@ -92,6 +93,14 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         setCurrentPage(1);
 
         scrollToTable();
+    }
+
+    const postCourseDeletionRedirect = () => {
+        if (pathName.includes('details')) {
+            router.push('/admin/courses');
+        }
+
+        router.refresh();
     }
 
     const filteredCourses = courses.filter((course) => {
@@ -210,7 +219,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
             setCourses(courses.filter((course) => course.id !== courseToDelete.id));
             setDeleteDialogOpen(false);
             setCourseToDelete(null);
-            router.refresh();
+            postCourseDeletionRedirect();
         }
     }
 
