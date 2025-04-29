@@ -1,4 +1,4 @@
-import { Resend } from 'Resend';
+import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const logoUrl: string = "https://i.imgur.com/xQaKAhT.png";

@@ -6,12 +6,13 @@ import { TechCloud } from "./TechCloud";
 import { InviewType, InViewWrapper } from "./InView";
 import { TabsDemo } from "./TabsDemo";
 import { SpreadableCards } from "./SpreadableCards";
+import { Session } from "next-auth";
 
-export const Homepage = () => {
+export const Homepage = ({session}: {session: Session | null}) => {
 
     return (
         <main className="bg-background">
-            <Pathgrid />
+            <Pathgrid session={session}/>
             <div className="flex justify-center items-center flex-col">
                 <InViewWrapper type={InviewType.NORMAL}>
                     <div className="w-full mt-5">

@@ -1,3 +1,4 @@
+import { CourseDifficulty, CourseTag } from "@prisma/client";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
@@ -126,6 +127,35 @@ export interface NavProjects {
     title: string;
     url: string;
     icons?: string[];
+}
+
+// #endregion
+
+
+// #region Course-related types
+
+export type CourseDto = {
+    id: string;
+    name: string;
+    imageSrc: string;
+    description: string;
+    difficulty: CourseDifficulty;
+    available: boolean;
+    createdAt: string;
+    updatedAt: string;
+    tags: {
+        id: string;
+        name: string;
+    }[];
+}
+
+export type CourseMutationDto = {
+    name: string
+    description: string
+    difficulty: CourseDifficulty
+    available: boolean
+    image: string
+    tags: CourseTag[]
 }
 
 // #endregion

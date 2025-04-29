@@ -302,7 +302,7 @@ p.tiptap {
   margin-bottom:1em;
 }
 
-table {
+.tiptap table {
   border-collapse: collapse;
   margin: 0;
   overflow: hidden;
@@ -310,12 +310,12 @@ table {
   width: 100%;
 }
 
-table th {
+.tiptap table th {
   color: white;
 }
 
-table td,
-table th {
+.tiptap table td,
+.tiptap table th {
   border: 0.2px solid var(--pathlyzer-table-border);
   box-sizing: border-box;
   min-width: 1em;
@@ -324,19 +324,19 @@ table th {
   vertical-align: top;
 }
 
-table td > *,
-table th > * {
+.tiptap table td > *,
+.tiptap table th > * {
   margin-bottom: 0;
 }
 
-table th {
+.tiptap table th {
   background-color: var(--pathlyzer);
   font-weight: bold;
   text-align: left;
 }
 
-.tiptap table .selectedCell:after {
-  background: var();
+.tiptap .tiptap table .selectedCell:after {
+  background: var(--pathlyzer);
   content: "";
   left: 0;
   right: 0;
