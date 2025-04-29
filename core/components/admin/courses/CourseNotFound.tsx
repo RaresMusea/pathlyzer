@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { BookX, AlertTriangle, GraduationCap } from "lucide-react";
+import { AlertTriangle, GraduationCap } from "lucide-react";
 
 export default function CourseNotFound() {
     const [isVisible, setIsVisible] = useState(false);
@@ -67,7 +67,7 @@ export default function CourseNotFound() {
                 transition={{ delay: 0.7, duration: 0.5 }}
                 className="text-muted-foreground mb-6 max-w-md"
             >
-                Sorry, we couldn't find the requested course.
+                Sorry, we couldn&apos;t find the requested course.
                 It might have been removed or you may not have access.
             </motion.p>
         </motion.div>
