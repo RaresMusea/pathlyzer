@@ -12,17 +12,18 @@ export const CourseMutationSchema = z.object({
         .min(1, { message: "The course description is mandatory!" })
         .max(200, { message: "The course description cannot exceed 200 characters." }),
 
-    image: z
-        .string()
-        .url({ message: "Please upload a valid image." }),
+    image: z.string().refine((val) => {
+        return val.startsWith('http') || val.startsWith('data:image/');
+    }, {
+        message: "Please upload a valid image or select an existing one.",
+    }),
 
     difficulty: z.nativeEnum(CourseDifficulty, {
         required_error: "Please select a difficulty level.",
     }),
 
     availability: z.boolean({
-        required_error: "Availability is required.",
-        invalid_type_error: "Availability must be true or false.",
+        invalid_type_error: "Availability must be either true or false.",
     }),
 
     tags: z

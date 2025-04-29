@@ -510,7 +510,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                             </Link>
                                                                         </DropdownMenuItem>
                                                                         <DropdownMenuItem asChild>
-                                                                            <Link href={`/admin/courses/${course.id}/edit`}>
+                                                                            <Link href={`/admin/courses/edit?courseId=${encodeURIComponent(course.id)}`}>
                                                                                 <Edit className="mr-2 h-4 w-4" />
                                                                                 Edit
                                                                             </Link>
@@ -593,10 +593,11 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                     </Link>
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuItem asChild>
-                                                                    <Link href={`/admin/courses/${course.id}/edit`}>
+                                                                    <Link href={`/admin/courses/edit?courseId=${encodeURIComponent(course.id)}`}>
                                                                         <Edit className="mr-2 h-4 w-4" />
                                                                         Edit
                                                                     </Link>
+
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuSeparator />
                                                                 <DropdownMenuItem className="text-red-600" onClick={() => confirmDelete(course)}>
