@@ -23,6 +23,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { CourseDeletionDialog } from "../admin/courses/CourseDeletionDialog";
 
 interface CoursesTableProps {
     initialCourses: CourseDto[]
@@ -71,7 +72,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
         confirmDelete,
         handlePageChange,
         getPageNumbers,
-        deleteCourse,
+        handleCourseDeletion,
         handleMassAction
     } = useAdminCourses(initialCourses);
 
@@ -504,7 +505,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                     <DropdownMenuContent align="end">
                                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                                         <DropdownMenuItem asChild>
-                                                                            <Link href={`/admin/courses/${course.id}`}>
+                                                                            <Link href={`/admin/courses/details?courseId=${encodeURIComponent(course.id)}`}>
                                                                                 <Eye className="mr-2 h-4 w-4" />
                                                                                 View details
                                                                             </Link>
@@ -587,7 +588,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
                                                                 <DropdownMenuItem asChild>
-                                                                    <Link href={`/admin/courses/${course.id}`}>
+                                                                    <Link href={`/admin/courses/details?courseId=${encodeURIComponent(course.id)}`}>
                                                                         <Eye className="mr-2 h-4 w-4" />
                                                                         View details
                                                                     </Link>
@@ -669,33 +670,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                 </div>
             </div>
 
-            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent>
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <DialogHeader>
-                                <DialogTitle>Confirm deletion</DialogTitle>
-                                <DialogDescription>
-                                    Are you absolutely sure that you want to completely remove course &quot;{courseToDelete?.name}&quot;? All the units and lessons linked to this course will also get deleted! This acction is irreversible!
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                                <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button variant="destructive" onClick={deleteCourse}>
-                                    Delete
-                                </Button>
-                            </DialogFooter>
-                        </motion.div>
-                    </>
-                </DialogContent>
-            </Dialog>
+            <CourseDeletionDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} courseTitle={courseToDelete?.name || ''} action={handleCourseDeletion} />
 
             <Dialog open={massActionDialogOpen} onOpenChange={setMassActionDialogOpen}>
                 <DialogContent>

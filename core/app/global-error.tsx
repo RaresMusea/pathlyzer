@@ -4,7 +4,6 @@ import { startTransition } from "react";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function GlobalError({
@@ -17,6 +16,7 @@ export default function GlobalError({
     const [isAnimated, setIsAnimated] = useState(false);
 
     useEffect(() => {
+        console.log(error);
         setIsAnimated(true)
     }, []);
 

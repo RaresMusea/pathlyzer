@@ -64,56 +64,44 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
         form.setValue('image', '');
     };
 
-    const onSubmit = async (values: z.infer<typeof CourseMutationSchema>) => {
+    const onSubmit = (values: z.infer<typeof CourseMutationSchema>) => {
         if (!course || !course.id) {
-            await handleCourseSave(values);
-        }
-        else {
-            await handleCourseUpdate(values);
-        }
+            startTransition(async () => {
+                const success = await handleCourseSave(values);
 
-        if (!errors) {
-            setTimeout(() => router.push('/admin/courses'), 100);
+                if (success) {
+                    router.push('/admin/courses');
+                }
+            });
+        } else {
+            startTransition(async () => {
+                const success = await handleCourseUpdate(values);
+                
+                if (success) {
+                    router.push('/admin/courses');
+                }
+            });
         }
     };
 
-    const handleCourseSave = async (values: z.infer<typeof CourseMutationSchema>) => {
-        startTransition(() => {
-            saveCourse(values)
-                .then((data: CourseManagementResult) => {
-                    if (data.isValid) {
-                        toast.success(data.message);
-                    } else {
-                        toast.error(data.message);
-                    }
-                })
-                .catch((e) => {
-                    toast.error("An error occurred while attempting to create the course. Please try again later.");
-                    setTimeout(() => {
-                        setErrors(true);
-                    }, 100);
-                });
-        });
+    const handleMutationOutput = (output: CourseManagementResult) => {
+        if (output.isValid) {
+            toast.success(output.message);
+        } else {
+            toast.error(output.message);
+        }
+
+        return output.isValid;
     }
 
-    const handleCourseUpdate = async (values: z.infer<typeof CourseMutationSchema>) => {
-        startTransition(() => {
-            updateCourse(course?.id, values)
-                .then((data: CourseManagementResult) => {
-                    if (data.isValid) {
-                        toast.success(data.message);
-                    } else {
-                        toast.error(data.message);
-                    }
-                })
-                .catch((e) => {
-                    toast.error('An error occurred while attempting to create the course. Please try again later.');
-                    setTimeout(() => {
-                        setErrors(true);
-                    }, 100);
+    const handleCourseSave = async (values: z.infer<typeof CourseMutationSchema>): Promise<boolean> => {
+        const data = await saveCourse(values);
+        return handleMutationOutput(data);
+    };
 
-                });
-        });
+    const handleCourseUpdate = async (values: z.infer<typeof CourseMutationSchema>): Promise<boolean> => {
+        const data = await updateCourse(course?.id, values);
+        return handleMutationOutput(data);
     }
 
     return {
