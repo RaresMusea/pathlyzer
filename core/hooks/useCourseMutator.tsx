@@ -1,27 +1,18 @@
 "use client";
 
-import { CourseMutationDto } from "@/types/types";
+import { CourseDto } from "@/types/types";
 import { CourseTag } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { CourseMutationSchema } from "@/schemas/CourseMutationValidation";
-import { saveCourse, CourseManagementResult } from "@/actions/CoursesManagement";
+import { saveCourse, CourseManagementResult, updateCourse } from "@/actions/CoursesManagement";
 import { toast } from "sonner";
 
-export function useCourseMutator(tags: CourseTag[], course?: CourseMutationDto) {
+export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
     const router = useRouter();
-    const [formData, setFormData] = useState<CourseMutationDto>(
-        course || {
-            name: "",
-            description: "",
-            difficulty: "BEGINNER",
-            available: false,
-            tags: [],
-        },
-    );
 
     const form = useForm<z.infer<typeof CourseMutationSchema>>({
         resolver: zodResolver(CourseMutationSchema),
@@ -35,9 +26,23 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseMutationDto) 
         }
     });
 
+    useEffect(() => {
+        if (course) {
+            form.reset({
+                name: course.name,
+                description: course.description,
+                difficulty: course.difficulty,
+                availability: course.available,
+                image: course.imageSrc || '',
+                tags: course.tags,
+            });
+
+            setImagePreview(course.imageSrc || null);
+        }
+    }, [course, form]);
+
     const [isPending, startTransition] = useTransition();
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [tagInput, setTagInput] = useState<string>('');
+    const [imagePreview, setImagePreview] = useState<string | null>(course?.imageSrc || null);
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
         const file = e.target.files?.[0];
@@ -45,70 +50,65 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseMutationDto) 
         if (file) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                const result = event.target?.result as string
+                const result = event.target?.result as string;
                 setImagePreview(result);
-                onChange(result)
-            }
+                onChange(result);
+            };
             reader.readAsDataURL(file);
         }
-    }
+    };
 
     const removeImage = () => {
         setImagePreview(null);
-    }
+        form.setValue('image', '');
+    };
 
-    const updateFormData = (field: keyof CourseMutationDto, value: any) => {
-        setFormData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    }
-
-    const addTag = (tagId: string) => {
-        const tagToAdd = tags.find((tag) => tag.id === tagId);
-
-        if (tagToAdd && !formData.tags.some((tag) => tag.id === tagId)) {
-            updateFormData("tags", [...formData.tags, tagToAdd]);
+    const onSubmit = async (values: z.infer<typeof CourseMutationSchema>) => {
+        if (!course || !course.id) {
+            await handleCourseSave(values);
         }
-        setTagInput("");
-    }
+        else {
+            await handleCourseUpdate(values);
+        }
 
-    const removeTag = (tagId: string) => {
-        updateFormData(
-            "tags",
-            formData.tags.filter((tag) => tag.id !== tagId),
-        );
-    }
+        setTimeout(() => router.push('/admin/courses'), 100);
+    };
 
-    const onSubmit = (values: z.infer<typeof CourseMutationSchema>) => {
+    const handleCourseSave = async (values: z.infer<typeof CourseMutationSchema>) => {
         startTransition(() => {
             saveCourse(values)
                 .then((data: CourseManagementResult) => {
                     if (data.isValid) {
                         toast.success(data.message);
-                    }
-                    else {
+                    } else {
                         toast.error(data.message);
                     }
                 })
-                .catch(e => toast.error(e))
+                .catch((e) => toast.error(e));
         });
+    }
 
-        setTimeout(() => router.push('/admin/courses'), 100);
+    const handleCourseUpdate = async (values: z.infer<typeof CourseMutationSchema>) => {
+        startTransition(() => {
+            updateCourse(course?.id, values)
+                .then((data: CourseManagementResult) => {
+                    if (data.isValid) {
+                        toast.success(data.message);
+                    } else {
+                        toast.error(data.message);
+                    }
+                })
+                .catch((e) => toast.error(e));
+        });
     }
 
     return {
         router,
         form,
-        formData,
         imagePreview,
         handleImageUpload,
-        updateFormData,
         removeImage,
         isPending,
-        addTag,
-        removeTag,
-        onSubmit
-    }
-
+        onSubmit,
+    };
 }

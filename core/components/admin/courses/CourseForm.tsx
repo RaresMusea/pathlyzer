@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCourseMutator } from "@/hooks/useCourseMutator";
-import { CourseMutationDto } from "@/types/types";
+import { CourseDto } from "@/types/types";
 import { CourseTag } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
@@ -21,7 +21,7 @@ import { Controller } from "react-hook-form";
 import { MultiSelect } from "@/components/ui/multiselect";
 import { fromCourseTagsToOptions } from "@/lib/Mapper";
 
-export const CourseForm = ({ course, tags }: { course?: CourseMutationDto, tags: CourseTag[] }) => {
+export const CourseForm = ({ course, tags }: { course?: CourseDto, tags: CourseTag[] }) => {
     const { form, onSubmit, router, imagePreview, removeImage, handleImageUpload, isPending } = useCourseMutator(tags, course);
 
     return (
@@ -191,10 +191,12 @@ export const CourseForm = ({ course, tags }: { course?: CourseMutationDto, tags:
                                                     <Switch
                                                         id="available"
                                                         disabled={isPending}
+                                                        defaultChecked={field.value}
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange}
                                                     />
                                                 </FormControl>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -283,9 +285,9 @@ export const CourseForm = ({ course, tags }: { course?: CourseMutationDto, tags:
                         </motion.div>
                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                             {isPending ?
-                                <LoadingButton type="submit">Saving course...</LoadingButton>
+                                <LoadingButton type="submit">{course ? 'Updating course...' : 'Saving course...'}</LoadingButton>
                                 :
-                                <Button type="submit">Save Course</Button>
+                                <Button type="submit">{course ? 'Update course' : 'Save course'}</Button>
                             }
                         </motion.div>
                     </div>

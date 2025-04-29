@@ -154,6 +154,7 @@ export type CourseMutationDto = {
     description: string
     difficulty: CourseDifficulty
     available: boolean
+    image: string
     tags: CourseTag[]
 }
 
