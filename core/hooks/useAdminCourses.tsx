@@ -3,12 +3,15 @@
 import { CourseDto } from "@/types/types";
 import { Course } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import debounce from "lodash/debounce";
+import { CourseManagementResult, deleteCourse } from "@/actions/CoursesManagement";
+import { toast } from "sonner";
 
 export function useAdminCourses(initialCourses: CourseDto[]) {
     const router = useRouter();
-    const tableRef = useRef<HTMLDivElement>(null)
+    const tableRef = useRef<HTMLDivElement>(null);
+    const [errors, setErrors] = useState(false);
     const [courses, setCourses] = useState<CourseDto[]>(initialCourses);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
@@ -23,6 +26,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
     const [loading, setLoading] = useState<boolean>(false);
     const [massActionDialogOpen, setMassActionDialogOpen] = useState<boolean>(false);
     const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+    const [isPending, startTransition] = useTransition();
     const [selectAll, setSelectAll] = useState<boolean>(false);
     const [visibleColumns, setVisibleColumns] = useState<string[]>([
         "image",
@@ -180,19 +184,34 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         setDeleteDialogOpen(true);
     }
 
-    const deleteCourse = () => {
+    const handleCourseDeletion = () => {
         if (!courseToDelete) return;
 
-        // @TODO: Implement delete logic
-        console.warn(`Deleting course: ${courseToDelete.name}`);
+        startTransition(() => {
+            deleteCourse(courseToDelete.id)
+                .then((data: CourseManagementResult) => {
+                    if (data.isValid) {
+                        toast.success(data.message);
+                    } else {
+                        toast.error(data.message);
+                    }
+                })
+                .catch((e) => {
+                    console.error(e);
+                    console.log('Inside error block');
+                    toast.error("An unexpected error occurred while attempting to delete a course. Please try again later.");
+                    setTimeout(() => {
+                        setErrors(true);
+                    })
+                })
+        })
 
-        // Update local courses state after deletion succeeds
-        setCourses(courses.filter((course) => course.id !== courseToDelete.id));
-
-        setDeleteDialogOpen(false);
-        setCourseToDelete(null);
-
-        // Refresh data
+        if (!errors) {
+            setCourses(courses.filter((course) => course.id !== courseToDelete.id));
+            setDeleteDialogOpen(false);
+            setCourseToDelete(null);
+            router.refresh();
+        }
     }
 
     const toggleAvailability = (course: Course) => {
@@ -290,6 +309,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         currentPage,
         tagFilter,
         allTags,
+        isPending,
         tableRef,
         loading,
         totalPages,
@@ -321,7 +341,7 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
         getPageNumbers,
         toggleSort,
         confirmDelete,
-        deleteCourse,
+        handleCourseDeletion,
         toggleAvailability,
         handleCourseSelect,
         handleFullSelection,

@@ -68,9 +68,9 @@ const validateUpdate = async (values: z.infer<typeof CourseMutationSchema>, cour
         if (!await courseWithIdAlreadyExists(courseId as string)) {
             handleError('The course ID cannot be modified!');
         }
-    } catch(error) {
+    } catch (error) {
         console.error(error);
-        throw new Error('An unexpected error occurred while attempting to update the course. Please try again later.'); 
+        throw new Error('An unexpected error occurred while attempting to update the course. Please try again later.');
     }
 }
 
@@ -153,7 +153,7 @@ export const deleteCourse = async (courseId: string): Promise<CourseManagementRe
         const deletedCouse = await db.course.delete({ where: { id: courseId }, select: { id: true, name: true } });
 
         if (deletedCouse) {
-            handleSuccess(`Successfully deleted course '${deletedCouse.name}'!`);
+            return handleSuccess(`Successfully deleted course '${deletedCouse.name}'!`);
         }
 
         return handleError('An unexpected error occurred while attempting to delete the course. Please try again later.');

@@ -1,5 +1,6 @@
 import { fromCourseDto, fromCoursesToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
+import { UNAUTHORIZED_REDIRECT } from "@/routes";
 import { isValidAdminSession } from "@/security/Security";
 import { CourseDto } from "@/types/types";
 import { Course, CourseTag } from "@prisma/client";
@@ -18,7 +19,7 @@ export const courseAlreadyExists = async (courseName: string): Promise<boolean> 
 
 export const getCourses = async (): Promise<CourseDto[]> => {
     if (!await isValidAdminSession()) {
-        redirect('/unauthorized');
+        redirect(UNAUTHORIZED_REDIRECT);
     }
     const courses: (Course & { tags: CourseTag[] })[] = await db.course.findMany({ include: { tags: true } });
 
@@ -34,7 +35,7 @@ export const getAvailableCourses = async (): Promise<CourseDto[]> => {
 
 export const getCourseById = async (courseId: string): Promise<CourseDto | undefined> => {
     if (!await isValidAdminSession()) {
-        redirect('/unauthorized');
+        redirect(UNAUTHORIZED_REDIRECT);
     }
     const requestedCourse = await db.course.findUnique({ where: { id: courseId }, include: { tags: true } });
 
@@ -47,7 +48,7 @@ export const getCourseById = async (courseId: string): Promise<CourseDto | undef
 
 export const courseWithIdAlreadyExists = async (courseId: string): Promise<boolean> => {
     if (!(await isValidAdminSession())) {
-        redirect('/unauthorized');
+        redirect(UNAUTHORIZED_REDIRECT);
     }
 
     const requestedId = await db.course.findUnique({

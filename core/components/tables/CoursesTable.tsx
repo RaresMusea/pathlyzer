@@ -71,7 +71,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
         confirmDelete,
         handlePageChange,
         getPageNumbers,
-        deleteCourse,
+        handleCourseDeletion,
         handleMassAction
     } = useAdminCourses(initialCourses);
 
@@ -685,11 +685,11 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                 </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
+                                <Button variant="destructive" onClick={() => handleCourseDeletion()}>
+                                    Delete
+                                </Button>
                                 <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
                                     Cancel
-                                </Button>
-                                <Button variant="destructive" onClick={deleteCourse}>
-                                    Delete
                                 </Button>
                             </DialogFooter>
                         </motion.div>
