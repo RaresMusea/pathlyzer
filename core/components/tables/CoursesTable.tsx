@@ -23,6 +23,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { CourseDeletionDialog } from "../admin/courses/CourseDeletionDialog";
 
 interface CoursesTableProps {
     initialCourses: CourseDto[]
@@ -669,33 +670,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                 </div>
             </div>
 
-            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent>
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <DialogHeader>
-                                <DialogTitle>Confirm deletion</DialogTitle>
-                                <DialogDescription>
-                                    Are you absolutely sure that you want to completely remove course &quot;{courseToDelete?.name}&quot;? All the units and lessons linked to this course will also get deleted! This acction is irreversible!
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                                <Button variant="destructive" onClick={() => handleCourseDeletion()}>
-                                    Delete
-                                </Button>
-                                <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                                    Cancel
-                                </Button>
-                            </DialogFooter>
-                        </motion.div>
-                    </>
-                </DialogContent>
-            </Dialog>
+            <CourseDeletionDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} courseTitle={courseToDelete?.name || ''} action={handleCourseDeletion} />
 
             <Dialog open={massActionDialogOpen} onOpenChange={setMassActionDialogOpen}>
                 <DialogContent>
