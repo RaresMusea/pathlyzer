@@ -35,11 +35,8 @@ export const ErrorPageWrapper = ({
             <Button
                 className="button px-4 py-2 bg-[var(--pathlyzer-table-border)] text-white rounded-lg hover:bg-[var(--pathlyzer)] transition-colors hover:text-white"
                 onClick={() => {
-                    try {
-                        reset();
-                    } catch (error) {
-                        router.refresh();
-                    }
+                    router.refresh();
+                    reset();
                 }}
             >
                 Try Again

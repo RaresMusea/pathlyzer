@@ -14,8 +14,6 @@ async function EditCoursePage({ searchParams }: {
 
     const courseId: string | undefined = decodeURIComponent((await searchParams).courseId);
 
-    console.log("Course ID", courseId);
-
     if (!courseId) {
         notFound();
     }
