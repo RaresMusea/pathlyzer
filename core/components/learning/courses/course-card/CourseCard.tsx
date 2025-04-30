@@ -11,13 +11,13 @@ import Link from "next/link";
 
 export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFooterContent = true }: { course: CourseDto, enrollment: EnrollmentRetrievalDto | undefined, includeFooterContent?: boolean, setSelectedCourse: (course: CourseDto) => void }) => {
     return (
-        <Card key={course.id} className="overflow-hidden hover:shadow-md transition-shadow">
-            <div className="relative w-full h-[250px]">
+        <Card key={course.id} className="overflow-hidden hover:shadow-md transition-shadow max-w-md">
+            <div className="relative w-full aspect-[16/9]">
                 <Image
                     src={course.imageSrc}
                     alt={course.name}
                     fill
-                    className="object-cover w-full h-[250px] rounded-sm"
+                    className="object-cover w-full rounded-sm"
                 />
                 {enrollment && enrollment.progress > 0.0 && (
                     <div className="absolute bottom-0 left-0 right-0 bg-background/90 dark:bg-background/50 backdrop-blur-sm p-2">
@@ -28,7 +28,7 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                     </div>
                 )}
             </div>
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-1 px-3">
                 <div className="flex justify-between items-start">
                     <CardTitle className="text-xl">{course.name}</CardTitle>
                     <Badge
@@ -45,7 +45,7 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                 </div>
                 <CardDescription className="line-clamp-2">{course.description}</CardDescription>
             </CardHeader>
-            <CardContent className="pb-2">
+            <CardContent className="pb-1 px-3">
                 <div className="flex flex-wrap gap-2">
                     {course.tags.map((tag) => (
                         <Badge key={tag.id} variant="outline" className="bg-muted/50">
@@ -55,18 +55,18 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                 </div>
             </CardContent>
             {includeFooterContent &&
-                <CardFooter className="flex justify-between items-center">
+                <CardFooter className="flex justify-between items-center pb-1 px-3">
                     <div className="flex items-center text-sm text-muted-foreground">
                         <Clock className="mr-1 h-4 w-4" />
                         35h
                     </div>
                     <>
                         {
-                            enrollment && enrollment.progress > 0 ?
+                            enrollment ?
                                 <Button variant="link">
                                     <Link href={`/courses/learn/${course.id}`}>
                                         <div className="flex flex-row items-center">
-                                            <div>Continue</div>
+                                            <div>{enrollment.progress > 0.0 ? 'Continue' : 'Start learning'}</div>
                                             <ChevronRight className="ml-1 h-4 w-4" />
                                         </div>
                                     </Link>
