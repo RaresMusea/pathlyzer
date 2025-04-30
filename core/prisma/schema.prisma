@@ -142,8 +142,8 @@ model Enrollment {
   completed            Boolean  @default(false)
   lastAccessedLessonId String?  @map("last_accessed_lesson_id")
 
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
