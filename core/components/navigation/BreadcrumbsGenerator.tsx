@@ -14,17 +14,24 @@ import React from 'react';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export const BreadcrumbsGenerator = () => {
-  const pathname = usePathname()
-  const segments = pathname.split('/').filter(Boolean)
+const isUUID = (str: string): boolean => {
+  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(str);
+};
 
-  const breadcrumbs = segments.map((segment, index) => {
-    const href = '/' + segments.slice(0, index + 1).join('/')
+export const BreadcrumbsGenerator = () => {
+  const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+
+  const breadcrumbs = segments
+  .filter((segment) => !isUUID(segment))
+  .map((segment, index) => {
+    const href = '/' + segments.slice(0, index + 1).join('/');
     return {
       label: capitalize(segment),
       href,
-    }
-  })
+    };
+  });
 
   return (
     <Breadcrumb>
