@@ -2,8 +2,11 @@
 
 import { CourseDto, EnrollmentRetrievalDto } from "@/types/types";
 import { CourseCard } from "./course-card/CourseCard";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { EnrollmentModal } from "../enrollment/EnrollmentModal";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 type CoursesWrapperProps = {
     courses: CourseDto[];
@@ -12,9 +15,39 @@ type CoursesWrapperProps = {
 
 export const CoursesWrapper = ({ courses, userEnrollments }: CoursesWrapperProps) => {
     const [selectedCourse, setSelectedCourse] = useState<CourseDto | null>(null);
+    const [isTransitioning, startTransition] = useTransition();
+    const router = useRouter();
 
     const closeEnrollmentModal = () => {
         setSelectedCourse(null);
+    }
+
+    const submitEnrollment = async () => {
+        if (selectedCourse && selectedCourse.id) {
+            startTransition(async () => {
+                try {
+                    const courseId = selectedCourse.id;
+                    const response = await axios.post(`/api/courses/${courseId}/enroll`);
+
+                    if (response.status === 201) {
+                        toast.success(response.data.message);
+                        closeEnrollmentModal();
+                        setTimeout(() => router.refresh(), 100);
+                    }
+                    else {
+                        toast.error(response.data.message);
+                    }
+                } catch (error) {
+
+                    if (axios.isAxiosError(error)) {
+                        toast.error(error.response?.data?.message || "Unexpected error during enrollment.");
+                    } else {
+                        toast.error("Unexpected error occurred.");
+                    }
+                    console.error(error);
+                }
+            });
+        }
     }
 
     return (
@@ -33,9 +66,9 @@ export const CoursesWrapper = ({ courses, userEnrollments }: CoursesWrapperProps
                 ))}
             </div>
             <>
-            <EnrollmentModal courseId={selectedCourse? selectedCourse.id : null}
-                             courseTitle={selectedCourse? selectedCourse.name : null}
-                             open={selectedCourse !== null} setOpen={closeEnrollmentModal} action={() => {}} />
+                <EnrollmentModal courseId={selectedCourse ? selectedCourse.id : null}
+                    courseTitle={selectedCourse ? selectedCourse.name : null} pending={isTransitioning}
+                    open={selectedCourse !== null} setOpen={closeEnrollmentModal} action={submitEnrollment} />
             </>
         </div>
     )

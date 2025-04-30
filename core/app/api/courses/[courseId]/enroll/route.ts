@@ -4,13 +4,12 @@ import { isValidSession } from "@/security/Security";
 import { CourseDto } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest, { params }: { params: { courseId: string } }): Promise<NextResponse> {
     if (!await isValidSession()) {
         return NextResponse.json({ message: "Unauthorized!" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const courseId = body.courseId;
+    const courseId: string = params.courseId;
 
     if (!courseId) {
         return NextResponse.json({ success: false, message: 'The course ID cannot be empty!' }, { status: 400 });

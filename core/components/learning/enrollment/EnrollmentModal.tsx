@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Dialog } from "@radix-ui/react-dialog";
@@ -9,11 +10,12 @@ type EnrollmentModalProps = {
     courseId: string | null;
     courseTitle: string | null;
     open: boolean;
+    pending: boolean;
     setOpen: () => void;
     action: () => void;
 }
 
-export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action }: EnrollmentModalProps) => {
+export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action, pending }: EnrollmentModalProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="font-nunito max-w-[700px]">
@@ -42,9 +44,13 @@ export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action }
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button className="bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] transition-colors text-white" onClick={() => action()}>
-                                Enroll now
-                            </Button>
+                            {pending ?
+                                <LoadingButton >Enrolling...</LoadingButton>
+                                :
+                                <Button className="bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] transition-colors text-white" onClick={() => action()}>
+                                    Enroll now
+                                </Button>
+                            }
                             <Button variant="outline" onClick={() => setOpen()}>
                                 Cancel
                             </Button>
