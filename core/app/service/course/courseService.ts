@@ -17,13 +17,10 @@ export const courseAlreadyExists = async (courseName: string): Promise<boolean> 
     return Boolean(course);
 }
 
-export const getCourses = async (): Promise<CourseDto[]> => {
-    if (!await isValidAdminSession()) {
-        redirect(UNAUTHORIZED_REDIRECT);
-    }
-    const courses: (Course & { tags: CourseTag[] })[] = await db.course.findMany({ include: { tags: true } });
+export const courseExists = async (courseId: string): Promise<boolean> => {
+    const course = await db.course.findUnique({ where: { id: courseId } });
 
-    return fromCoursesToDto(courses);
+    return Boolean(course);
 }
 
 export const getAvailableCourses = async (): Promise<CourseDto[]> => {
