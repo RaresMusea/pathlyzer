@@ -158,4 +158,10 @@ export type CourseMutationDto = {
     tags: CourseTag[]
 }
 
+export type EnrollmentRetrievalDto = {
+    courseId: string;
+    progress: number;
+    lastAccessedLessonId: string;
+}
+
 // #endregion

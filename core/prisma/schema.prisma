@@ -137,11 +137,10 @@ model Enrollment {
   id                   String   @id @default(uuid())
   userId               String   @map("user_id")
   courseId             String   @map("course_id")
-  enrolledAt           DateTime @default(now())
+  enrolledAt           DateTime @default(now()) @map("enrolled_at")
   progress             Float    @default(0.0)
   completed            Boolean  @default(false)
-  lastAccessedLessonId String?
-  certificateUrl       String?
+  lastAccessedLessonId String?  @map("last_accessed_lesson_id")
 
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
