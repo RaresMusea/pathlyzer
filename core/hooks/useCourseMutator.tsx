@@ -8,8 +8,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { CourseMutationSchema } from "@/schemas/CourseMutationValidation";
-import { saveCourse, CourseManagementResult, updateCourse } from "@/actions/CoursesManagement";
+import { saveCourse, updateCourse } from "@/actions/CoursesManagement";
 import { toast } from "sonner";
+import { ServerActionResult } from "@/actions/globals/Generics";
 
 export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
     const router = useRouter();
@@ -84,14 +85,14 @@ export function useCourseMutator(tags: CourseTag[], course?: CourseDto) {
         }
     };
 
-    const handleMutationOutput = (output: CourseManagementResult) => {
-        if (output.isValid) {
+    const handleMutationOutput = (output: ServerActionResult) => {
+        if (output.success) {
             toast.success(output.message);
         } else {
             toast.error(output.message);
         }
 
-        return output.isValid;
+        return output.success;
     }
 
     const handleCourseSave = async (values: z.infer<typeof CourseMutationSchema>): Promise<boolean> => {
