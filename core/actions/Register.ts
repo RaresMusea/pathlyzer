@@ -7,6 +7,8 @@ import { db } from '@/persistency/Db';
 import { getUserByEmail } from '@/persistency/data/User';
 import { generateEmailVerifToken } from '@/lib/TokenGenerator';
 import { sendVerificationEmail } from '@/lib/Email';
+import { User } from '@prisma/client';
+import { createUserStats } from '@/app/service/user/userStatsService';
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
     const validatedFields = RegisterSchema.safeParse(values);
@@ -26,14 +28,26 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
         return { error: "The provided email address is already associated to another account!" }
     }
 
-    await db.user.create({
+    const createdUser: User | null = await db.user.create({
         data: {
             name,
             username,
             email,
             password: hashedPass
         }
-    })
+    });
+    const errorMsg: string = 'The user already exists!';
+
+    if (createdUser && createdUser.id) {
+        try {
+            await createUserStats(createdUser.id);
+        } catch (error) {
+            return { error: errorMsg };
+        }
+    }
+    else {
+        return { error: errorMsg };
+    }
 
     const verificationToken = await generateEmailVerifToken(email);
 
