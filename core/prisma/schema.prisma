@@ -42,6 +42,9 @@ model User {
   Project           Project[]
   Enrollment        Enrollment[]
   UserStats         UserStats?
+  LessonProgress    LessonProgress[]
+  LearningSession   LearningSession[]
+  UnitProgress      UnitProgress[]
 }
 
 model UserStats {
@@ -173,9 +176,10 @@ model Unit {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  course Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  Lesson Lesson[]
-  exam   Quiz?    @relation("UnitExam", fields: [examId], references: [id], onDelete: Cascade)
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  Lesson       Lesson[]
+  exam         Quiz?          @relation("UnitExam", fields: [examId], references: [id], onDelete: Cascade)
+  UnitProgress UnitProgress[]
 
   @@unique([courseId, order])
 }
@@ -190,8 +194,10 @@ model Lesson {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  unit Unit  @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  Quiz Quiz?
+  unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  Quiz            Quiz?
+  LessonProgress  LessonProgress[]
+  LearningSession LearningSession[]
 
   @@unique([unitId, order])
 }
@@ -255,4 +261,41 @@ model CodeSection {
   correct    String[]
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model LearningSession {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  lessonId  String?   @map("lesson_id")
+  startedAt DateTime  @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+  duration  Int?      @map("duration_seconds")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model LessonProgress {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  lessonId   String   @map("lesson_id")
+  completed  Boolean  @default(false)
+  accessedAt DateTime @default(now()) @map("accessed_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model UnitProgress {
+  id        String  @id @default(uuid())
+  userId    String  @map("user_id")
+  unitId    String  @map("unit_id")
+  completed Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, unitId])
 }
