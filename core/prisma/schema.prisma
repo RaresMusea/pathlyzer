@@ -45,12 +45,14 @@ model User {
 }
 
 model UserStats {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
-  xp        Int      @default(0)
-  level     Int      @default(1)
-  lives     Int      @default(5)
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(uuid())
+  userId           String   @unique @map("user_id")
+  xp               Int      @default(0)
+  level            Int      @default(1)
+  lives            Int      @default(5)
+  completedQuizzed Int      @default(0) @map("completed_quizzes")
+  completedExams   Int      @default(0) @map("completed_exams")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
