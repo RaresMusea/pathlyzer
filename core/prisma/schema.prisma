@@ -230,7 +230,19 @@ model Question {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  choices AnswerChoice[]
+  quiz    Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
   @@unique([quizId, order])
+}
+
+model AnswerChoice {
+  id         String  @id @default(uuid())
+  questionId String  @map("question_id")
+  text       String
+  isCorrect  Boolean @map("is_correct")
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, text])
 }
