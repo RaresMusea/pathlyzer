@@ -164,6 +164,7 @@ model Enrollment {
 model Unit {
   id          String   @id @default(uuid())
   courseId    String   @map("course_id")
+  examId      String?  @unique
   name        String
   description String
   order       Int
@@ -172,6 +173,7 @@ model Unit {
 
   course Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   Lesson Lesson[]
+  exam   Quiz?    @relation("UnitExam", fields: [examId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, order])
 }
@@ -186,7 +188,26 @@ model Lesson {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  unit Unit  @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  Quiz Quiz?
 
   @@unique([unitId, order])
+}
+
+enum QuizType {
+  LESSON_QUIZ
+  UNIT_EXAM
+}
+
+model Quiz {
+  id       String   @id @default(uuid())
+  lessonId String?  @unique @map("lesson_id")
+  type     QuizType
+  title    String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  unit   Unit?   @relation("UnitExam")
 }
