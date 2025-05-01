@@ -33,6 +33,15 @@ export const getAvailableCourses = async (): Promise<CourseDto[]> => {
 
 }
 
+export const getCourses = async (): Promise<CourseDto[]> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+    const courses: (Course & { tags: CourseTag[] })[] = await db.course.findMany({ include: { tags: true } });
+
+    return fromCoursesToDto(courses);
+}
+
 export const getCourseById = async (courseId: string): Promise<CourseDto | undefined> => {
     if (!await isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
