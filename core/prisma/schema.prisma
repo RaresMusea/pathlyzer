@@ -221,17 +221,17 @@ enum QuestionType {
 }
 
 model Question {
-  id     String       @id @default(uuid())
-  quizId String       @map("quiz_id")
-  type   QuestionType
-  order  Int
-  prompt String
+  id        String       @id @default(uuid())
+  quizId    String       @map("quiz_id")
+  type      QuestionType
+  order     Int
+  prompt    String
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  choices AnswerChoice[]
-  quiz    Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  choices     AnswerChoice[]
+  quiz        Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  CodeSection CodeSection[]
 
   @@unique([quizId, order])
 }
@@ -245,4 +245,14 @@ model AnswerChoice {
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([questionId, text])
+}
+
+model CodeSection {
+  id         String   @id @default(uuid())
+  questionId String   @map("question_id")
+  code       String
+  language   String?
+  correct    String[]
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
