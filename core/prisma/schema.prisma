@@ -135,6 +135,7 @@ model Course {
   updatedAt   DateTime         @updatedAt @map("updated_at")
   tags        CourseTag[]
   Enrollment  Enrollment[]
+  units       Unit[]
 
   @@index([name])
 }
@@ -158,4 +159,16 @@ model Enrollment {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+}
+
+model Unit {
+  id          String @id @default(uuid())
+  courseId    String @map("course_id")
+  name        String
+  description String
+  order       Int
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, order])
 }
