@@ -1,5 +1,5 @@
 import { UserRole } from "@prisma/client";
-import { User} from "lucide-react";
+import { User } from "lucide-react";
 import { Shield } from 'lucide-react';
 
 export interface UserAppRole {
@@ -43,4 +43,8 @@ export const getUserAppRoles = (userRole: UserRole | undefined): UserAppRole[] =
     }
 
     return roleMap[userRole ?? UserRole.USER] ?? []
+}
+
+export const getXpThreshold = (level: number): number => {
+    return Math.floor(100 * Math.pow(1.5, level - 1));
 }

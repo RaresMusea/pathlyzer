@@ -7,6 +7,7 @@ import { EnrollmentModal } from "../enrollment/EnrollmentModal";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useGamification } from "@/context/GamificationContext";
 
 type CoursesWrapperProps = {
     courses: CourseDto[];
@@ -17,6 +18,7 @@ export const CoursesWrapper = ({ courses, userEnrollments }: CoursesWrapperProps
     const [selectedCourse, setSelectedCourse] = useState<CourseDto | null>(null);
     const [isTransitioning, startTransition] = useTransition();
     const router = useRouter();
+    const {lives, xp} = useGamification();
 
     const closeEnrollmentModal = () => {
         setSelectedCourse(null);
@@ -58,7 +60,7 @@ export const CoursesWrapper = ({ courses, userEnrollments }: CoursesWrapperProps
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-3 2xl:gap-2">
                 {courses.map((course) => (
                     <div key={course.id}>
                         <CourseCard course={course} setSelectedCourse={setSelectedCourse} enrollment={userEnrollments.find(e => e.courseId === course.id)} />

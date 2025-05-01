@@ -1,18 +1,15 @@
+"use client";
+
 import { Heart, Star, Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
+import { useGamification } from "@/context/GamificationContext";
+import { getXpThreshold } from "@/lib/UserUtils";
 
-//TO BE REPLACED WITH REAL DATA
-
-const userStats = {
-    lives: 3,
-    maxLives: 5,
-    xp: 1250,
-    nextLevelXp: 2000,
-    level: 4,
-}
 
 export const UserProgress = () => {
+    const { lives, xp, level } = useGamification();
+
     return (
         <Card>
             <CardHeader>
@@ -27,14 +24,14 @@ export const UserProgress = () => {
                             Lifes
                         </h3>
                         <span className="font-bold">
-                            {userStats.lives}/{userStats.maxLives}
+                            {lives}/{5}
                         </span>
                     </div>
                     <div className="flex gap-1.5">
-                        {Array.from({ length: userStats.maxLives }).map((_, i) => (
+                        {Array.from({ length: 5 }).map((_, i) => (
                             <Heart
                                 key={i}
-                                className={`h-6 w-6 ${i < userStats.lives ? "text-red-500 fill-red-500" : "text-muted-foreground"}`}
+                                className={`h-6 w-6 ${i < lives ? "text-red-500 fill-red-500" : "text-muted-foreground"}`}
                             />
                         ))}
                     </div>
@@ -49,18 +46,18 @@ export const UserProgress = () => {
                             Experience (XP)
                         </h3>
                         <span className="font-bold">
-                            {userStats.xp}/{userStats.nextLevelXp}
+                            {xp}/{getXpThreshold(level + 1)}
                         </span>
                     </div>
-                    <Progress value={(userStats.xp / userStats.nextLevelXp) * 100} className="h-2" />
+                    <Progress value={(xp / getXpThreshold(level + 1)) * 100} className="h-2" />
                     <div className="flex justify-between items-center text-xs text-muted-foreground">
                         <div className="flex items-center">
                             <Star className="mr-1 h-4 w-4 text-yellow-500 fill-yellow-500" />
-                            Level {userStats.level}
+                            Level {level}
                         </div>
                         <div className="flex items-center">
                             <Star className="mr-1 h-4 w-4 text-yellow-500" />
-                            Level {userStats.level + 1}
+                            Level {level + 1}
                         </div>
                     </div>
                 </div>

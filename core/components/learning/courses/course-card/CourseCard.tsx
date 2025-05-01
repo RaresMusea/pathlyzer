@@ -11,7 +11,7 @@ import Link from "next/link";
 
 export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFooterContent = true }: { course: CourseDto, enrollment: EnrollmentRetrievalDto | undefined, includeFooterContent?: boolean, setSelectedCourse: (course: CourseDto) => void }) => {
     return (
-        <Card key={course.id} className="overflow-hidden hover:shadow-md transition-shadow max-w-md">
+        <Card className="flex flex-col h-full overflow-hidden hover:shadow-md transition-shadow max-w-md">
             <div className="relative w-full aspect-[16/9]">
                 <Image
                     src={course.imageSrc}
@@ -45,7 +45,7 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                 </div>
                 <CardDescription className="line-clamp-2">{course.description}</CardDescription>
             </CardHeader>
-            <CardContent className="pb-1 px-3">
+            <CardContent className="flex-1 pb-1 px-3">
                 <div className="flex flex-wrap gap-2">
                     {course.tags.map((tag) => (
                         <Badge key={tag.id} variant="outline" className="bg-muted/50">
@@ -55,7 +55,7 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                 </div>
             </CardContent>
             {includeFooterContent &&
-                <CardFooter className="flex justify-between items-center pb-1 px-3">
+                <CardFooter className="flex justify-between items-center pb-3 px-3">
                     <div className="flex items-center text-sm text-muted-foreground">
                         <Clock className="mr-1 h-4 w-4" />
                         35h
@@ -72,7 +72,8 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                                     </Link>
                                 </Button>
                                 :
-                                <Button variant="default" onClick={() => setSelectedCourse(course)}>
+                                <Button variant="default" className="transition-colors bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white"
+                                    onClick={() => setSelectedCourse(course)}>
                                     Enroll now
                                     <ClipboardPaste className="ml-1 h-4 w-4" />
                                 </Button>
