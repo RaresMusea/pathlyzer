@@ -8,11 +8,8 @@ import { isValidAdminSession } from "@/security/Security";
 import { CourseTag } from "@prisma/client";
 import { redirect } from "next/navigation";
 import * as z from "zod";
+import { handleError, handleSuccess, ServerActionResult } from "./globals/Generics";
 
-export interface CourseManagementResult {
-    isValid: boolean;
-    message?: string;
-}
 
 const getOrCreateExistingTags = async (tags: CourseTag[]): Promise<CourseTag[]> => {
     const existingTags = await Promise.all(
@@ -27,20 +24,6 @@ const getOrCreateExistingTags = async (tags: CourseTag[]): Promise<CourseTag[]> 
     );
 
     return existingTags;
-}
-
-const handleError = (message: string = 'An unexpected server error occurred. Please try again later.'): CourseManagementResult => {
-    return {
-        isValid: false,
-        message
-    };
-}
-
-const handleSuccess = (message: string): CourseManagementResult => {
-    return {
-        isValid: true,
-        message
-    }
 }
 
 const validate = async (values: z.infer<typeof CourseMutationSchema>) => {
@@ -74,7 +57,7 @@ const validateUpdate = async (values: z.infer<typeof CourseMutationSchema>, cour
     }
 }
 
-export const saveCourse = async (values: z.infer<typeof CourseMutationSchema>): Promise<CourseManagementResult> => {
+export const saveCourse = async (values: z.infer<typeof CourseMutationSchema>): Promise<ServerActionResult> => {
     await validate(values);
 
     const { name, description, image, difficulty, availability, tags } = values;
@@ -111,7 +94,7 @@ export const saveCourse = async (values: z.infer<typeof CourseMutationSchema>): 
     }
 }
 
-export const updateCourse = async (courseId: string | undefined, values: z.infer<typeof CourseMutationSchema>): Promise<CourseManagementResult> => {
+export const updateCourse = async (courseId: string | undefined, values: z.infer<typeof CourseMutationSchema>): Promise<ServerActionResult> => {
     await validateUpdate(values, courseId)
     const { name, description, image, difficulty, availability, tags } = values;
     const existingTags: CourseTag[] = await getOrCreateExistingTags(tags);
@@ -140,7 +123,7 @@ export const updateCourse = async (courseId: string | undefined, values: z.infer
     }
 }
 
-export const deleteCourse = async (courseId: string): Promise<CourseManagementResult> => {
+export const deleteCourse = async (courseId: string): Promise<ServerActionResult> => {
     if (!await isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
     }

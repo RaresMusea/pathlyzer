@@ -6,6 +6,17 @@ const PORT: number = 3001;
 export const ENDPOINT_ROOT: string = `http://localhost:${PORT}`;
 export const EXECUTION_ENGINE_URI: string = `ws://localhost:3001`;
 
+// #region UserStats-related types
+
+export type UserStatsDto = {
+    id: string;
+    lives: number;
+    xp: number;
+    level: number;
+}
+
+// #endregion
+
 // #region Project-related types
 
 export type Project = {
@@ -156,6 +167,12 @@ export type CourseMutationDto = {
     available: boolean
     image: string
     tags: CourseTag[]
+}
+
+export type EnrollmentRetrievalDto = {
+    courseId: string;
+    progress: number;
+    lastAccessedLessonId: string;
 }
 
 // #endregion

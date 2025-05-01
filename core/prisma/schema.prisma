@@ -40,6 +40,19 @@ model User {
   is2FAEnabled      Boolean                @default(false)
   TwoFAConfirmation TwoFactorConfirmation?
   Project           Project[]
+  Enrollment        Enrollment[]
+  UserStats         UserStats?
+}
+
+model UserStats {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  lives     Int      @default(5)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -121,6 +134,7 @@ model Course {
   createdAt   DateTime         @default(now()) @map("created_at")
   updatedAt   DateTime         @updatedAt @map("updated_at")
   tags        CourseTag[]
+  Enrollment  Enrollment[]
 
   @@index([name])
 }
@@ -129,4 +143,19 @@ model CourseTag {
   id      String   @id @default(uuid())
   name    String   @unique
   courses Course[]
+}
+
+model Enrollment {
+  id                   String   @id @default(uuid())
+  userId               String   @map("user_id")
+  courseId             String   @map("course_id")
+  enrolledAt           DateTime @default(now()) @map("enrolled_at")
+  progress             Float    @default(0.0)
+  completed            Boolean  @default(false)
+  lastAccessedLessonId String?  @map("last_accessed_lesson_id")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
 }

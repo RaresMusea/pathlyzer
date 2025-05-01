@@ -6,6 +6,8 @@ import { SidebarMenuButton } from "../ui/sidebar";
 import Link from "next/link";
 
 export const MainNavCollapsed = ({ items, setActiveItem }: { items: MainNavigationUnwrappedProps[], setActiveItem: (activeItemTitle: MainNavigationUnwrappedProps) => void }) => {
+    const exclude: string[] = ['Recent Projects'];
+
     return (
         <section className="font-nunito">
             {items.map((item, index) => (
@@ -40,15 +42,19 @@ export const MainNavCollapsed = ({ items, setActiveItem }: { items: MainNavigati
                             </DropdownMenuContent>
                         </DropdownMenu>
                         :
-                        <Link href={item.url}>
-                            <SidebarMenuButton
-                                tooltip={item.title}
-                                onClick={() => setActiveItem(item)}
-                                isActive={item.isActive}
-                            >
-                                {item.icon && <item.icon />}
-                            </SidebarMenuButton>
-                        </Link>
+                        <>
+                            {!exclude.includes(item.title) &&
+                                <Link href={item.url}>
+                                    <SidebarMenuButton
+                                        tooltip={item.title}
+                                        onClick={() => setActiveItem(item)}
+                                        isActive={item.isActive}
+                                    >
+                                        {item.icon && <item.icon />}
+                                    </SidebarMenuButton>
+                                </Link>
+                            }
+                        </>
                     }
                 </div>
             ))}
