@@ -202,14 +202,35 @@ enum QuizType {
 }
 
 model Quiz {
-  id       String   @id @default(uuid())
-  lessonId String?  @unique @map("lesson_id")
-  type     QuizType
-  title    String
+  id        String   @id @default(uuid())
+  lessonId  String?  @unique @map("lesson_id")
+  type      QuizType
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  lesson    Lesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  unit      Unit?      @relation("UnitExam")
+  questions Question[]
+}
+
+enum QuestionType {
+  SINGLE
+  MULTIPLE
+  CODE_FILL
+}
+
+model Question {
+  id     String       @id @default(uuid())
+  quizId String       @map("quiz_id")
+  type   QuestionType
+  order  Int
+  prompt String
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  unit   Unit?   @relation("UnitExam")
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@unique([quizId, order])
 }
