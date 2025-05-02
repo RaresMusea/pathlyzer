@@ -169,7 +169,7 @@ model Enrollment {
 model Unit {
   id          String   @id @default(uuid())
   courseId    String   @map("course_id")
-  examId      String?  @unique
+  examId      String?  @unique @map("exam_id")
   name        String
   description String
   order       Int

@@ -175,4 +175,19 @@ export type EnrollmentRetrievalDto = {
     lastAccessedLessonId: string;
 }
 
+export interface CourseUnitDto {
+    id: string;
+    name: string;
+    description: string;
+    order: number;
+    lessons: LessonDto[];
+}
+
+export interface LessonDto {
+    id: string;
+    title: string;
+    description: string;
+    order: number;
+}
+
 // #endregion

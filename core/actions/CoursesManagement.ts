@@ -1,6 +1,6 @@
 "use server";
 
-import { courseAlreadyExists, courseWithIdAlreadyExists } from "@/app/service/course/courseService";
+import { courseAlreadyExists, courseWithIdAlreadyExists } from "@/app/service/learning/course/courseService";
 import { db } from "@/persistency/Db";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
 import { CourseMutationSchema } from "@/schemas/CourseMutationValidation";
