@@ -41,3 +41,23 @@ export const getUnits = cache(async (courseId: string): Promise<CourseUnitDto[]>
 
     return courseUnitDtos;
 });
+
+export const getLowerstOrderUnitId = cache(async (courseId: string): Promise<string | null> => {
+    if (!await isValidSession()) {
+        redirect(LOGIN_PAGE);
+    }
+
+    const result: { id: string } | null = await db.unit.findFirst({
+        where: {
+            courseId: courseId,
+        },
+        orderBy: {
+            order: 'asc',
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    return result?.id ?? null;
+})
