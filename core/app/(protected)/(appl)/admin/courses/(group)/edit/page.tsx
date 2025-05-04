@@ -1,4 +1,4 @@
-import { getCourseById, getCourseTags } from "@/app/service/course/courseService";
+import { getCourseById, getCourseTags } from "@/app/service/learning/course/courseService";
 import { CourseForm } from "@/components/admin/courses/CourseForm";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { Button } from "@/components/ui/button";

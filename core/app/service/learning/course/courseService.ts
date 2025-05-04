@@ -55,6 +55,19 @@ export const getCourseById = async (courseId: string): Promise<CourseDto | undef
     return fromCourseDto(requestedCourse);
 }
 
+export const getCourseByIdUser = async (courseId: string): Promise<CourseDto | undefined> => {
+    if (!await isValidSession()) {
+        redirect(LOGIN_PAGE);
+    }
+    const requestedCourse = await db.course.findUnique({ where: { id: courseId }, include: { tags: true } });
+
+    if (!requestedCourse) {
+        return undefined;
+    }
+
+    return fromCourseDto(requestedCourse);
+}
+
 export const courseWithIdAlreadyExists = async (courseId: string): Promise<boolean> => {
     if (!(await isValidAdminSession())) {
         redirect(UNAUTHORIZED_REDIRECT);

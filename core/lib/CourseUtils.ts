@@ -1,3 +1,4 @@
+import { LearningPathItem } from '@/types/types';
 import { CourseDifficulty } from '@prisma/client'
 
 export const getDifficultyLabel = (difficulty: CourseDifficulty): string => {
@@ -25,3 +26,23 @@ export const getDifficultyColorStyles = (difficulty: CourseDifficulty): string =
             return ''
     }
 };
+
+export interface LearningPathProgress {
+    totalLessons: number;
+    completedLessons: number;
+}
+
+export const getCurrentProgress = (learningPath: LearningPathItem[]): LearningPathProgress => {
+    return learningPath.reduce(
+        (acc, item) => {
+            const progress = item.progress;
+            console.log("Progress", item.progress);
+            if (progress) {
+                acc.totalLessons += progress.totalLessons;
+                acc.completedLessons += progress.completedLessons;
+            }
+            return acc;
+        },
+        { totalLessons: 0, completedLessons: 0 }
+    );
+}

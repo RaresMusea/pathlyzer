@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserStats } from "@/components/user/UserStats";
 import { UserProgress } from "@/components/user/UserProgress";
 import { CourseDto, EnrollmentRetrievalDto, UserStatsDto } from "@/types/types";
-import { getAvailableCourses } from "@/app/service/course/courseService";
+import { getAvailableCourses } from "@/app/service/learning/course/courseService";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { CoursesWrapper } from "@/components/learning/courses/CoursesWrapper";
-import { getUserEnrollments } from "@/app/service/course/enrollmentService";
+import { getUserEnrollments } from "@/app/service/learning/course/enrollmentService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { GamificationProvider } from "@/context/GamificationContext";
 
