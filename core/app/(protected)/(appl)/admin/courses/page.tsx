@@ -1,4 +1,4 @@
-import { getCourses } from "@/app/service/course/courseService";
+import { getCourses } from "@/app/service/learning/course/courseService";
 import { ManageCoursesPageWrapper } from "@/components/admin/courses/ManageCoursesPageWrapper";
 import { CourseDto } from "@/types/types";
 

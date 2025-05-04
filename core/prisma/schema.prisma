@@ -169,7 +169,7 @@ model Enrollment {
 model Unit {
   id          String   @id @default(uuid())
   courseId    String   @map("course_id")
-  examId      String?  @unique
+  examId      String?  @unique @map("exam_id")
   name        String
   description String
   order       Int
@@ -280,6 +280,7 @@ model LessonProgress {
   userId     String   @map("user_id")
   lessonId   String   @map("lesson_id")
   completed  Boolean  @default(false)
+  progress   Float    @default(0)
   accessedAt DateTime @default(now()) @map("accessed_at")
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

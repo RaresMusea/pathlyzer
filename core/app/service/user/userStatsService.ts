@@ -3,7 +3,7 @@ import { fromUserStatsToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE } from "@/routes";
 import { getCurrentlyLoggedInUserId } from "@/security/Security";
-import { UserStatsDto } from "@/types/types";
+import { SummarizedUserStats, UserStatsDto } from "@/types/types";
 import { select } from "@heroui/theme";
 import { UserStats } from "@prisma/client";
 import { redirect } from "next/navigation";
@@ -43,4 +43,16 @@ export const createAuthorizedUserStats = cache(async (): Promise<UserStatsDto | 
     }
 
     return null;
+});
+
+export const getSummarizedUserStats = cache(async (): Promise<SummarizedUserStats | null> => {
+    const userId: string = await getCurrentlyLoggedInUserId();
+
+    if (!userId) {
+        redirect(LOGIN_PAGE);
+    }
+
+    const userStats: SummarizedUserStats | null = await db.userStats.findUnique({ where: { userId: userId }, select: { lives: true, xp: true } })
+
+    return userStats ?? null;
 });

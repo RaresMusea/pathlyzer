@@ -175,4 +175,50 @@ export type EnrollmentRetrievalDto = {
     lastAccessedLessonId: string;
 }
 
+export interface CourseUnitDto {
+    id: string;
+    name: string;
+    description: string;
+    order: number;
+    lessons: LessonDto[];
+}
+
+export interface UserCourseUnitDto {
+    id: string;
+    name: string;
+    description: string;
+    order: number;
+    lessons: LearningLessonItem[];
+}
+
+export interface LessonDto {
+    id: string;
+    title: string;
+    description: string;
+    order: number;
+}
+
+export interface LearningLessonItem {
+    lessonInfo: LessonDto
+    learningProgress: number
+    isCurrent: boolean;
+    isCompleted: boolean;
+    isAccessible: boolean;
+}
+
+export interface LearningPathItem {
+    unit: UserCourseUnitDto;
+    isCurrent: boolean;
+    isCompleted: boolean;
+    progress?: {
+        completedLessons: number;
+        totalLessons: number;
+    };
+}
+
+export interface SummarizedUserStats {
+    lives: number;
+    xp: number;
+}
+
 // #endregion
