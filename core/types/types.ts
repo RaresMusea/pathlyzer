@@ -200,6 +200,7 @@ export interface LessonDto {
 
 export interface LearningLessonItem {
     lessonInfo: LessonDto
+    learningProgress: number
     isCurrent: boolean;
     isCompleted: boolean;
     isAccessible: boolean;

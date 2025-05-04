@@ -53,19 +53,26 @@ export const getLearningPath = cache(async (courseId: string): Promise<LearningP
     ]);
 
     const currentUnitId = unitProgress?.unitId ?? null;
-    const completedLessonIds = new Set(
-        lessonProgress
-            .filter(lp => lp.completed)
-            .map(lp => lp.lessonId)
-    );
+
+    const lessonProgressMap = new Map<string, { completed: boolean; progress: number }>();
+    for (const lp of lessonProgress) {
+        lessonProgressMap.set(lp.lessonId, {
+            completed: lp.completed,
+            progress: lp.progress ?? 0,
+        });
+    }
 
     const path: LearningPathItem[] = units.map((unit) => {
         const isCurrentUnit = unit.id === currentUnitId;
 
         const lessons: LearningLessonItem[] = unit.Lesson.map((lesson) => {
-            const isCompleted = completedLessonIds.has(lesson.id);
+            const progressInfo = lessonProgressMap.get(lesson.id);
+            const isCompleted = progressInfo?.completed ?? false;
+            const learningProgress = progressInfo?.progress ?? 0;
+
             return {
                 lessonInfo: lesson,
+                learningProgress,
                 isCompleted,
                 isCurrent: false,
                 isAccessible: false,

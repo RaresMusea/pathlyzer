@@ -50,8 +50,6 @@ export default async function CoursePathPage({ params, }: { params: Promise<{ co
                         <Unit item={item} />
                     </div>
                 ))}
-
-                <div className="h-[2000px]"></div>
             </div>
         </PageTransition>
     );
