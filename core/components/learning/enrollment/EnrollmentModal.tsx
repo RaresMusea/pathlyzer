@@ -15,7 +15,7 @@ type EnrollmentModalProps = {
     action: () => void;
 }
 
-export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action, pending }: EnrollmentModalProps) => {
+export const EnrollmentModal = ({ courseTitle, open, setOpen, action, pending }: EnrollmentModalProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="font-nunito max-w-[700px]">
