@@ -11,13 +11,8 @@ import { UnitMutationDto } from "@/types/types";
 import { motion } from "framer-motion";
 import React from "react";
 
-export const UnitForm = ({ unit }: { unit?: UnitMutationDto }) => {
-
-    const { form, isPending, router } = useUnitMutator(unit);
-
-    const onSubmit = () => {
-
-    }
+export const UnitForm = ({ courseId, unit }: { courseId: string, unit?: UnitMutationDto }) => {
+    const { form, isPending, router, onSubmit } = useUnitMutator(courseId, unit);
 
     return (
         <div className="w-full">
@@ -91,5 +86,4 @@ export const UnitForm = ({ unit }: { unit?: UnitMutationDto }) => {
             </Form>
         </div>
     )
-
 }

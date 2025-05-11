@@ -29,7 +29,7 @@ export default async function CreateUnitPage({ params, }: { params: Promise<{ co
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold">{course.name} - New unit</h1>
                 </div>
-                <UnitForm />
+                <UnitForm courseId={courseId} />
             </div>
         </PageTransition>
     )

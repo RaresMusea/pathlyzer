@@ -229,9 +229,10 @@ export interface UnitRearrangementDto {
 }
 
 export interface UnitMutationDto {
-    id: string;
+    id?: string;
     name: string;
     description: string; 
 }
+
 
 // #endregion

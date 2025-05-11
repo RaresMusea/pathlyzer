@@ -42,8 +42,6 @@ const validateUpdate = async (values: z.infer<typeof CourseMutationSchema>, cour
     try {
         await validate(values);
 
-        console.log("Image", values.image);
-
         if (!courseId) {
             handleError('Cannot update course due to unknown identifier!');
         }

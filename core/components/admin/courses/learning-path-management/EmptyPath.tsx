@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { AlertTriangle, CirclePlus, GraduationCap } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const EmptyPath = () => {
     const [isVisible, setIsVisible] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -77,7 +79,7 @@ export const EmptyPath = () => {
                 transition={{ delay: 0.9, duration: 0.5 }}
             >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => router.push('learning-path/create-unit')}>
                         <CirclePlus className="mr-2 h-5 w-5" />
                         Add first unit
                     </Button>
