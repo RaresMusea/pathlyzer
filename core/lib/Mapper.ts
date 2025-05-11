@@ -1,6 +1,6 @@
 import { Option } from "@/components/ui/multiselect";
 import { CourseDto, CourseUnitDto, EnrollmentRetrievalDto, LessonDto, UserStatsDto } from "@/types/types";
-import { Course, CourseTag, Enrollment, Lesson, Unit, UserStats } from "@prisma/client";
+import { Course, CourseTag, Enrollment, Unit, UserStats } from "@prisma/client";
 
 export function fromCourseDto(course: Course & { tags: CourseTag[] }): CourseDto {
     return {

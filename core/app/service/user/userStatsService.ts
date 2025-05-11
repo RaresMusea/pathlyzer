@@ -1,10 +1,8 @@
-import { auth } from "@/auth";
 import { fromUserStatsToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE } from "@/routes";
 import { getCurrentlyLoggedInUserId } from "@/security/Security";
 import { SummarizedUserStats, UserStatsDto } from "@/types/types";
-import { select } from "@heroui/theme";
 import { UserStats } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react";

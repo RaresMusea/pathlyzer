@@ -159,7 +159,7 @@ export const LoginForm = () => {
                                 Or continue with
                             </span>
                         </div>
-                        <SocialAuthMethods setError={setError} />
+                        <SocialAuthMethods />
                         <div className="text-center text-sm mb-5">
                             Don&apos;t have an account?{" "}
                             <Link href="/register" className="underline underline-offset-4">

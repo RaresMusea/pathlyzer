@@ -8,6 +8,7 @@ export const AdminLesson = ({ lesson, index, totalAmount }: { lesson: LessonDto,
     const cycleLength = 8;
     const cycleIndex = index % cycleLength;
     let indentationLevel;
+    console.log(lesson);
 
     if (cycleIndex <= 2) {
         indentationLevel = cycleIndex;
@@ -24,6 +25,7 @@ export const AdminLesson = ({ lesson, index, totalAmount }: { lesson: LessonDto,
     const rightPosition = indentationLevel * 40;
     const isFirst = index === 0;
     const isLast = index === totalAmount;
+    console.log(isLast);
 
     return (
         <div className="relative"

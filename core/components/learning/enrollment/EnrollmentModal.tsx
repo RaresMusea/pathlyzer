@@ -16,6 +16,7 @@ type EnrollmentModalProps = {
 }
 
 export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action, pending }: EnrollmentModalProps) => {
+    console.log(courseId);
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="font-nunito max-w-[700px]">
@@ -29,12 +30,12 @@ export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action, 
                         <DialogHeader>
                             <DialogTitle>Enrollment: {courseTitle}</DialogTitle>
                             <DialogDescription>
-                                <p className="text-sm mt-3">You're about to enroll in this course.<br />
-                                    Once enrolled, you'll gain full access to all lessons, quizzes, and track your learning progress.</p>
+                                <p className="text-sm mt-3">You&apos;re about to enroll in this course.<br />
+                                    Once enrolled, you&apos;ll gain full access to all lessons, quizzes, and track your learning progress.</p>
                                 <p className="font-bold text-md mt-2">After enrolling:</p>
                                 <ul className="list-disc pl-5 mb-3">
                                     <li>
-                                        You'll start from the first available unit.
+                                        You&apos;ll start from the first available unit.
                                     </li>
                                     <li>
                                         You can always resume where you left off.
