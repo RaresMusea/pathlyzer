@@ -16,7 +16,6 @@ type EnrollmentModalProps = {
 }
 
 export const EnrollmentModal = ({ courseId, courseTitle, open, setOpen, action, pending }: EnrollmentModalProps) => {
-    console.log(courseId);
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="font-nunito max-w-[700px]">
