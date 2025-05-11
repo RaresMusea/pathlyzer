@@ -1,6 +1,6 @@
 "use client";
 
-import { CourseUnitDto, LearningPathItem, UserCourseUnitDto } from "@/types/types";
+import { LearningPathItem } from "@/types/types";
 import { UnitBanner } from "./UnitBanner";
 import { Lesson } from "../lesson/Lesson";
 

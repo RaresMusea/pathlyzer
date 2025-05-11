@@ -1,6 +1,6 @@
 import { Option } from "@/components/ui/multiselect";
-import { CourseDto, CourseUnitDto, EnrollmentRetrievalDto, LessonDto, UserStatsDto } from "@/types/types";
-import { Course, CourseTag, Enrollment, Lesson, Unit, UserStats } from "@prisma/client";
+import { CourseDto, CourseUnitDto, EnrollmentRetrievalDto, LessonDto, UnitRearrangementDto, UserStatsDto } from "@/types/types";
+import { Course, CourseTag, Enrollment, Unit, UserStats } from "@prisma/client";
 
 export function fromCourseDto(course: Course & { tags: CourseTag[] }): CourseDto {
     return {
@@ -75,4 +75,16 @@ export function fromUnitToDto(unit: Unit, lessonsDtos: LessonDto[]): CourseUnitD
     };
 
     return courseUnitDto;
+}
+
+function fromUnitDtoToRearrangementDto (unit: CourseUnitDto): UnitRearrangementDto {
+    return {
+        id: unit.id,
+        title: unit.name,
+        order: unit.order
+    }
+}
+
+export function fromUnitDtoListToRearrangementDtoList (units: CourseUnitDto[]): UnitRearrangementDto[] {
+    return units.map(u => fromUnitDtoToRearrangementDto(u));
 }

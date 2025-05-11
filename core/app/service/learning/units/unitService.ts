@@ -1,8 +1,8 @@
 import { fromUnitToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
-import { LOGIN_PAGE } from "@/routes";
-import { isValidSession } from "@/security/Security";
-import { CourseUnitDto } from "@/types/types";
+import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
+import { isValidAdminSession, isValidSession } from "@/security/Security";
+import { CourseUnitDto, UnitRearrangementDto } from "@/types/types";
 import { redirect } from "next/navigation";
 import { cache } from "react"
 
@@ -61,3 +61,25 @@ export const getLowerstOrderUnitId = cache(async (courseId: string): Promise<str
 
     return result?.id ?? null;
 })
+
+export const rearrangeUnits = async (units: UnitRearrangementDto[]): Promise<void> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const tempUpdates = units.map((unit, index) =>
+        db.unit.update({
+            where: { id: unit.id },
+            data: { order: -(index + 1) },
+        })
+    );
+
+    const finalUpdates = units.map((unit, index) =>
+        db.unit.update({
+            where: { id: unit.id },
+            data: { order: index + 1 },
+        })
+    );
+
+    await db.$transaction([...tempUpdates, ...finalUpdates]);
+};

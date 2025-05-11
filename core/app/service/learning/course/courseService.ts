@@ -1,6 +1,6 @@
 import { fromCourseDto, fromCoursesToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
-import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
+import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { isValidAdminSession, isValidSession } from "@/security/Security";
 import { CourseDto } from "@/types/types";
 import { Course, CourseTag } from "@prisma/client";
