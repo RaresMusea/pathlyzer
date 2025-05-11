@@ -68,8 +68,8 @@ export const Lesson = ({ lessonInfo, isCurrent, learningProgress, isAccessible, 
                                     }
                                 }}>
                                 <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                                    <PopoverTrigger onMouseEnter={() => setPopoverOpen(true)} onMouseLeave={() => setPopoverOpen(false)} asChild>
-                                        <Button size="rounded" variant={!isAccessible ? "lockedLesson" : "accessibleLesson"}
+                                    <PopoverTrigger onMouseEnter={() => { if (popoverOpen) { setPopoverOpen(false); } setPopoverOpen(true) }} onMouseLeave={() => setPopoverOpen(false)} asChild>
+                                        <Button size="rounded" disabled={!isAccessible} variant={!isAccessible ? "lockedLesson" : "accessibleLesson"}
                                             className="h-[70px] w-[70px] border-b-8">
                                             <Icon className={cn("h-10 w-10", !isAccessible ? "fill-neutral-400 text-neutral-400 stroke-neutral-400" : "fill-primary-foreground text-primary-foregound", isCompleted && "fill-none stroke-[4]")} />
                                         </Button>
@@ -97,14 +97,24 @@ export const Lesson = ({ lessonInfo, isCurrent, learningProgress, isAccessible, 
                                         stroke: 'hsl(var(--muted) / 0.1);'
                                     }
                                 }}>
-                                <Button size="rounded" variant={!isAccessible ? "lockedLesson" : "accessibleLesson"}
-                                    className="h-[70px] w-[70px] border-b-8">
-                                    <Icon className={cn("h-10 w-10", !isAccessible ? "fill-neutral-400 text-neutral-400 stroke-neutral-400" : "fill-primary-foreground text-primary-foregound", isCompleted && "fill-none stroke-[4]")} />
-                                </Button>
+                                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                    <PopoverTrigger onMouseEnter={() => { if (popoverOpen) { setPopoverOpen(false); } setPopoverOpen(true) }} onMouseLeave={() => setPopoverOpen(false)} asChild>
+                                        <Button size="rounded" variant={!isAccessible ? "lockedLesson" : "accessibleLesson"}
+                                            className="h-[70px] w-[70px] border-b-8">
+                                            <Icon className={cn("h-10 w-10", !isAccessible ? "fill-neutral-400 text-neutral-400 stroke-neutral-400" : "fill-primary-foreground text-primary-foregound", isCompleted && "fill-none stroke-[4]")} />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent onMouseEnter={() => setPopoverOpen(true)}
+                                        onMouseLeave={() => setTimeout(() => setPopoverOpen(false), 150)}
+                                        className="w-70 font-nunito">
+                                        <h4 className="text-lg font-bold">Lesson {index + 1}:  {lessonInfo.title}</h4>
+                                        <p className="text-sm">{lessonInfo.description}</p>
+
+                                    </PopoverContent>
+                                </Popover>
                             </CircularProgressbarWithChildren>
                         </div>
                 }
-
             </div>
         </Link>
     );

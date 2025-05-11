@@ -12,6 +12,7 @@
     "@auth/prisma-adapter": "^2.7.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@hello-pangea/dnd": "^18.0.1",
     "@heroui/accordion": "^2.2.14",
     "@heroui/chip": "^2.2.13",
     "@heroui/input": "^2.4.16",

@@ -221,4 +221,10 @@ export interface SummarizedUserStats {
     xp: number;
 }
 
+export interface UnitRearrangementDto {
+    id: string;
+    title: string;
+    order: number;
+}
+
 // #endregion

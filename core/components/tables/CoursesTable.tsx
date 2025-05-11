@@ -3,7 +3,7 @@
 import { useAdminCourses } from "@/hooks/useAdminCourses";
 import { CourseDto } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpDown, Download, Edit, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react";
+import { ArrowUpDown, Download, Edit, Eye, Filter, MoreHorizontal, Search, Split, Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
@@ -96,7 +96,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                 Advanced Filters
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[350px] sm:w-[425px]">
+                        <PopoverContent className="w-[350px] sm:w-[425px] font-nunito">
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="difficulty-filter">Difficulty Level</Label>
@@ -502,7 +502,7 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                             <MoreHorizontal className="h-4 w-4" />
                                                                         </Button>
                                                                     </DropdownMenuTrigger>
-                                                                    <DropdownMenuContent align="end">
+                                                                    <DropdownMenuContent align="end" className="font-nunito">
                                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                                         <DropdownMenuItem asChild>
                                                                             <Link href={`/admin/courses/details?courseId=${encodeURIComponent(course.id)}`}>
@@ -514,6 +514,12 @@ export const CoursesTable = ({ initialCourses }: CoursesTableProps) => {
                                                                             <Link href={`/admin/courses/edit?courseId=${encodeURIComponent(course.id)}`}>
                                                                                 <Edit className="mr-2 h-4 w-4" />
                                                                                 Edit
+                                                                            </Link>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem asChild>
+                                                                            <Link href={`/admin/courses/${course.id}/learning-path`}>
+                                                                                <Split className="mr-2 h-4 w-4" />
+                                                                                Manage learning path
                                                                             </Link>
                                                                         </DropdownMenuItem>
                                                                         <DropdownMenuSeparator />

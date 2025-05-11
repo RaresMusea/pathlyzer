@@ -7,12 +7,16 @@ import { CourseDto } from "@/types/types";
 import { LessonProgress, UnitProgress } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest, { params }: { params: { courseId: string } }): Promise<NextResponse> {
+export async function POST(
+    request: NextRequest,
+    { params }: { params: Promise<{ courseId: string }>} 
+): Promise<NextResponse> {
+
     if (!await isValidSession()) {
         return NextResponse.json({ message: "Unauthorized!" }, { status: 401 });
     }
 
-    const { courseId } = params;
+    const courseId = (await (params)).courseId;
 
     if (!courseId) {
         return NextResponse.json({ success: false, message: 'The course ID cannot be empty!' }, { status: 400 });
