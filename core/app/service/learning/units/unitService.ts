@@ -3,7 +3,6 @@ import { db } from "@/persistency/Db";
 import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { isValidAdminSession, isValidSession } from "@/security/Security";
 import { CourseUnitDto, UnitRearrangementDto } from "@/types/types";
-import { Unit } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
 
@@ -63,21 +62,24 @@ export const getLowerstOrderUnitId = cache(async (courseId: string): Promise<str
     return result?.id ?? null;
 })
 
-export const rearrangeUnits = cache(async (units: UnitRearrangementDto[]): Promise<void> => {
+export const rearrangeUnits = async (units: UnitRearrangementDto[]): Promise<void> => {
     if (!await isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
     }
 
-    const updateOperations = units.map((unit, index) => {
-        return db.unit.update({
+    const tempUpdates = units.map((unit, index) =>
+        db.unit.update({
             where: { id: unit.id },
-            data: { order: unit.order }
+            data: { order: -(index + 1) },
         })
-    });
+    );
 
-    const result: Unit[] = await db.$transaction(updateOperations);
+    const finalUpdates = units.map((unit, index) =>
+        db.unit.update({
+            where: { id: unit.id },
+            data: { order: index + 1 },
+        })
+    );
 
-    if (!result) {
-        throw new Error('Unable to perform units rearrangement');
-    }
-});
+    await db.$transaction([...tempUpdates, ...finalUpdates]);
+};

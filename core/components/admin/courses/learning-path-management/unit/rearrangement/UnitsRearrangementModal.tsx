@@ -2,29 +2,20 @@
 
 import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { GripVertical } from "lucide-react";
+import { ArrowUpDown, GripVertical } from "lucide-react";
 import { useState, useTransition } from "react";
-import {
-    DragDropContext,
-    Droppable,
-    Draggable,
-    DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { UnitRearrangementDto } from "@/types/types";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type UnitsRearrangementModalProps = {
     open: boolean;
     setOpen: (newState: boolean) => void;
-    action: () => void;
+    courseId: string;
     courseTitle: string;
     units: UnitRearrangementDto[];
 };
@@ -32,13 +23,13 @@ type UnitsRearrangementModalProps = {
 export const UnitsRearrangementModal = ({
     open,
     setOpen,
-    action,
+    courseId,
     courseTitle,
     units,
 }: UnitsRearrangementModalProps) => {
     const [pending, startTransition] = useTransition();
-    const [localUnits, setLocalUnits] =
-        useState<UnitRearrangementDto[]>(units);
+    const [localUnits, setLocalUnits] = useState<UnitRearrangementDto[]>(units);
+    const router = useRouter();
 
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return;
@@ -48,6 +39,35 @@ export const UnitsRearrangementModal = ({
         reordered.splice(result.destination.index, 0, removed);
         setLocalUnits(reordered);
     };
+
+    const handleRearrange = async () => {
+        if (localUnits) {
+            startTransition(async () => {
+                try {
+                    const response = await axios.patch(`/api/admin/courses/${courseId}/rearrange-units`, {
+                        units: localUnits
+                    });
+
+                    if (response.status === 200) {
+                        toast.success(response.data.message);
+                        setOpen(false);
+                        setTimeout(() => router.refresh(), 100);
+                    }
+                    else {
+                        toast.error(response.data.message);
+                    }
+                } catch (error) {
+
+                    if (axios.isAxiosError(error)) {
+                        toast.error(error.response?.data?.message || "Unexpected error occurred during units rearrangement.");
+                    } else {
+                        toast.error("An unexpected error occurred. Please try again later.");
+                    }
+                    console.error(error);
+                }
+            })
+        }
+    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -131,8 +151,9 @@ export const UnitsRearrangementModal = ({
                         ) : (
                             <Button
                                 className="bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] transition-colors text-white"
-                                onClick={() => action()}
+                                onClick={handleRearrange}
                             >
+                                <ArrowUpDown className="mr-2" />
                                 Rearrange units
                             </Button>
                         )}

@@ -8,7 +8,7 @@ import { UnitsRearrangementModal } from "./unit/rearrangement/UnitsRearrangement
 import { useState } from "react";
 import { fromUnitDtoListToRearrangementDtoList } from "@/lib/Mapper";
 
-export const LearningPathManagementHeader = ({ courseName, path }: { courseName: string, path: CourseUnitDto[] | null }) => {
+export const LearningPathManagementHeader = ({ courseName, path, courseId }: { courseName: string, courseId: string, path: CourseUnitDto[] | null }) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     return (
@@ -25,13 +25,17 @@ export const LearningPathManagementHeader = ({ courseName, path }: { courseName:
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button variant="outline" onClick={() => setModalOpen(true)}>
                             <ArrowUpDown className="mr-2 h-4 w-4" />
-                            Re-arange units
+                            Rearrange units
                         </Button>
                     </motion.div>
                 </div>
             </div>
             {path &&
-                <UnitsRearrangementModal open={modalOpen} setOpen={setModalOpen} courseTitle={courseName} units={fromUnitDtoListToRearrangementDtoList(path)} action={() => { }} />
+                <UnitsRearrangementModal open={modalOpen}
+                    setOpen={setModalOpen}
+                    courseTitle={courseName}
+                    units={fromUnitDtoListToRearrangementDtoList(path)}
+                    courseId={courseId} />
             }
         </div>
     );

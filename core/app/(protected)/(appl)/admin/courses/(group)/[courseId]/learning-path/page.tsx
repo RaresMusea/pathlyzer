@@ -30,7 +30,7 @@ export default async function ManageLearningPathPage({ params, }: { params: Prom
                             </Button>
                         </Link>
                     </div>
-                    <LearningPathManagementHeader courseName={course.name} path={learningPath} />
+                    <LearningPathManagementHeader courseName={course.name} courseId={courseId} path={learningPath} />
                     {learningPath.map((item) => (
                         <div key={item.id} className="mb-10">
                             <AdminUnit unit={item} />

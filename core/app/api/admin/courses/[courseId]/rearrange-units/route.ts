@@ -10,12 +10,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const courseId = (await params).courseId;
+    console.log("Course ID", courseId)
 
     if (!courseId) {
         return NextResponse.json({ success: false, message: 'The course ID cannot be empty!' }, { status: 400 });
     }
 
     const course: CourseDto | undefined = await getCourseById(courseId);
+    console.log("Course", course?.name);
+
 
     if (!course) {
         return NextResponse.json({
@@ -26,6 +29,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     try {
         const body = await request.json();
         const units: UnitRearrangementDto[] = body.units;
+        console.log('Units', units);
 
         if (!Array.isArray(units)) {
             return NextResponse.json({ success: false, message: "Invalid payload" }, { status: 400 });
@@ -35,6 +39,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
         return NextResponse.json({ success: true, message: 'Units were successfully rearranged!' });
     } catch (error) {
+        console.log('A prins eroarea');
         console.error("Error while rearranging units:", error);
         return NextResponse.json({ success: false, message: "Unable to rearrange the course units due to an internal server error!" });
     }
