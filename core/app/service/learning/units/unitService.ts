@@ -1,8 +1,9 @@
 import { fromUnitToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
-import { LOGIN_PAGE } from "@/routes";
-import { isValidSession } from "@/security/Security";
-import { CourseUnitDto } from "@/types/types";
+import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
+import { isValidAdminSession, isValidSession } from "@/security/Security";
+import { CourseUnitDto, UnitRearrangementDto } from "@/types/types";
+import { Unit } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
 
@@ -61,3 +62,22 @@ export const getLowerstOrderUnitId = cache(async (courseId: string): Promise<str
 
     return result?.id ?? null;
 })
+
+export const rearrangeUnits = cache(async (units: UnitRearrangementDto[]): Promise<void> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const updateOperations = units.map((unit, index) => {
+        return db.unit.update({
+            where: { id: unit.id },
+            data: { order: unit.order }
+        })
+    });
+
+    const result: Unit[] = await db.$transaction(updateOperations);
+
+    if (!result) {
+        throw new Error('Unable to perform units rearrangement');
+    }
+});
