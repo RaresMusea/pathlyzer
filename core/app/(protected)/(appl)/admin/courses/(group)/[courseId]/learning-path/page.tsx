@@ -1,5 +1,6 @@
 import { getCourseById } from "@/app/service/learning/course/courseService";
 import { getUnits } from "@/app/service/learning/units/unitService";
+import { EmptyPath } from "@/components/admin/courses/learning-path-management/EmptyPath";
 import { LearningPathManagementHeader } from "@/components/admin/courses/learning-path-management/LearningPathManagementHeader";
 import { AdminUnit } from "@/components/admin/courses/learning-path-management/unit/AdminUnit";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
@@ -21,22 +22,24 @@ export default async function ManageLearningPathPage({ params, }: { params: Prom
 
     return (
         <PageTransition>
-                <div className="container mx-auto px-4 space-y-8 sticky">
-                    <div className="mb-6">
-                        <Link href="/admin/courses">
-                            <Button variant="outline" size="sm">
-                                <ChevronLeft className="mr-2 h-4 w-4" />
-                                Back to courses
-                            </Button>
-                        </Link>
-                    </div>
-                    <LearningPathManagementHeader courseName={course.name} courseId={courseId} path={learningPath} />
-                    {learningPath.map((item) => (
-                        <div key={item.id} className="mb-10">
-                            <AdminUnit unit={item} />
-                        </div>
-                    ))}
+            <div className="container mx-auto px-4 space-y-8 sticky">
+                <div className="mb-6">
+                    <Link href="/admin/courses">
+                        <Button variant="outline" size="sm">
+                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            Back to courses
+                        </Button>
+                    </Link>
                 </div>
+                <LearningPathManagementHeader courseName={course.name} courseId={courseId} path={learningPath} />
+                {learningPath.length ? learningPath.map((item) => (
+                    <div key={item.id} className="mb-10">
+                        <AdminUnit unit={item} />
+                    </div>
+                )) :
+                    <EmptyPath />
+                }
+            </div>
         </PageTransition>
     )
 }

@@ -2,7 +2,8 @@ import { fromUnitToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { isValidAdminSession, isValidSession } from "@/security/Security";
-import { CourseUnitDto, UnitRearrangementDto } from "@/types/types";
+import { CourseUnitDto, UnitMutationDto, UnitRearrangementDto } from "@/types/types";
+import { Unit } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
 
@@ -83,3 +84,31 @@ export const rearrangeUnits = async (units: UnitRearrangementDto[]): Promise<voi
 
     await db.$transaction([...tempUpdates, ...finalUpdates]);
 };
+
+const getHighestOrderUnit = async (courseId: string): Promise<number> => {
+    const maxOrder = await db.unit.aggregate({
+        _max: {
+            order: true,
+        },
+        where: { courseId: courseId }
+    });
+
+    return maxOrder._max.order ?? 0;
+}
+
+export const addUnit = async (unitData: UnitMutationDto, courseId: string): Promise<Unit | null> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const createdUnit: Unit | null = await db.unit.create({
+        data: {
+            name: unitData.name,
+            description: unitData.description,
+            order: (await getHighestOrderUnit(courseId)) + 1,
+            course: { connect: { id: courseId } }
+        }
+    });
+
+    return createdUnit ?? null;
+}

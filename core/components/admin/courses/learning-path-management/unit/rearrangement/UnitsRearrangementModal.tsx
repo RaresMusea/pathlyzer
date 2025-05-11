@@ -118,7 +118,7 @@ export const UnitsRearrangementModal = ({
                                                         index={index}
                                                         disableInteractiveElementBlocking
                                                     >
-                                                        {(provided, snapshot) => (
+                                                        {(provided) => (
                                                             <div
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
