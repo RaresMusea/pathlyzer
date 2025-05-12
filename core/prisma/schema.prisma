@@ -42,15 +42,20 @@ model User {
   Project           Project[]
   Enrollment        Enrollment[]
   UserStats         UserStats?
+  LessonProgress    LessonProgress[]
+  LearningSession   LearningSession[]
+  UnitProgress      UnitProgress[]
 }
 
 model UserStats {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
-  xp        Int      @default(0)
-  level     Int      @default(1)
-  lives     Int      @default(5)
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(uuid())
+  userId           String   @unique @map("user_id")
+  xp               Int      @default(0)
+  level            Int      @default(1)
+  lives            Int      @default(5)
+  completedQuizzed Int      @default(0) @map("completed_quizzes")
+  completedExams   Int      @default(0) @map("completed_exams")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -135,6 +140,7 @@ model Course {
   updatedAt   DateTime         @updatedAt @map("updated_at")
   tags        CourseTag[]
   Enrollment  Enrollment[]
+  units       Unit[]
 
   @@index([name])
 }
@@ -158,4 +164,139 @@ model Enrollment {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+}
+
+model Unit {
+  id          String   @id @default(uuid())
+  courseId    String   @map("course_id")
+  examId      String?  @unique @map("exam_id")
+  name        String
+  description String
+  order       Int
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  Lesson       Lesson[]
+  exam         Quiz?          @relation("UnitExam", fields: [examId], references: [id], onDelete: Cascade)
+  UnitProgress UnitProgress[]
+
+  @@unique([courseId, order])
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  unitId      String   @map("unit_id")
+  title       String
+  description String
+  content     Json
+  order       Int
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  Quiz            Quiz?
+  LessonProgress  LessonProgress[]
+  LearningSession LearningSession[]
+
+  @@unique([unitId, order])
+}
+
+enum QuizType {
+  LESSON_QUIZ
+  UNIT_EXAM
+}
+
+model Quiz {
+  id        String   @id @default(uuid())
+  lessonId  String?  @unique @map("lesson_id")
+  type      QuizType
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  lesson    Lesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  unit      Unit?      @relation("UnitExam")
+  questions Question[]
+}
+
+enum QuestionType {
+  SINGLE
+  MULTIPLE
+  CODE_FILL
+}
+
+model Question {
+  id        String       @id @default(uuid())
+  quizId    String       @map("quiz_id")
+  type      QuestionType
+  order     Int
+  prompt    String
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  choices     AnswerChoice[]
+  quiz        Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  CodeSection CodeSection[]
+
+  @@unique([quizId, order])
+}
+
+model AnswerChoice {
+  id         String  @id @default(uuid())
+  questionId String  @map("question_id")
+  text       String
+  isCorrect  Boolean @map("is_correct")
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, text])
+}
+
+model CodeSection {
+  id         String   @id @default(uuid())
+  questionId String   @map("question_id")
+  code       String
+  language   String?
+  correct    String[]
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model LearningSession {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  lessonId  String?   @map("lesson_id")
+  startedAt DateTime  @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+  duration  Int?      @map("duration_seconds")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model LessonProgress {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  lessonId   String   @map("lesson_id")
+  completed  Boolean  @default(false)
+  progress   Float    @default(0)
+  accessedAt DateTime @default(now()) @map("accessed_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model UnitProgress {
+  id        String  @id @default(uuid())
+  userId    String  @map("user_id")
+  unitId    String  @map("unit_id")
+  completed Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, unitId])
 }

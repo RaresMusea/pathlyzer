@@ -2,10 +2,11 @@
 
 import { CourseDto } from "@/types/types";
 import { Course } from "@prisma/client";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import debounce from "lodash/debounce";
-import { CourseManagementResult, deleteCourse } from "@/actions/CoursesManagement";
+import { deleteCourse } from "@/actions/CoursesManagement";
+import { ServerActionResult } from "@/actions/globals/Generics";
 import { toast } from "sonner";
 
 export function useAdminCourses(initialCourses: CourseDto[]) {
@@ -198,8 +199,8 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
 
         startTransition(() => {
             deleteCourse(courseToDelete.id)
-                .then((data: CourseManagementResult) => {
-                    if (data.isValid) {
+                .then((data: ServerActionResult) => {
+                    if (data.success) {
                         toast.success(data.message);
                     } else {
                         toast.error(data.message);
@@ -207,7 +208,6 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
                 })
                 .catch((e) => {
                     console.error(e);
-                    console.log('Inside error block');
                     toast.error("An unexpected error occurred while attempting to delete a course. Please try again later.");
                     setTimeout(() => {
                         setErrors(true);

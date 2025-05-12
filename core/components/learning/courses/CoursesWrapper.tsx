@@ -19,6 +19,7 @@ export const CoursesWrapper = ({ courses, userEnrollments }: CoursesWrapperProps
     const [isTransitioning, startTransition] = useTransition();
     const router = useRouter();
     const {lives, xp} = useGamification();
+    console.log(lives, xp);
 
     const closeEnrollmentModal = () => {
         setSelectedCourse(null);

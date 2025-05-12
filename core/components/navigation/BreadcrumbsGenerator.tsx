@@ -2,14 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import React from 'react';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -19,19 +12,18 @@ const isUUID = (str: string): boolean => {
   return uuidRegex.test(str);
 };
 
+
 export const BreadcrumbsGenerator = () => {
   const pathname = usePathname();
   const segments = pathname.split('/').filter(Boolean);
 
-  const breadcrumbs = segments
-  .filter((segment) => !isUUID(segment))
-  .map((segment, index) => {
+  const breadcrumbs = segments.map((segment, index) => {
     const href = '/' + segments.slice(0, index + 1).join('/');
     return {
-      label: capitalize(segment),
+      label: isUUID(segment) ? null : capitalize(segment),
       href,
     };
-  });
+  }).filter(crumb => crumb.label !== null);
 
   return (
     <Breadcrumb>

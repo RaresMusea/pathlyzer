@@ -1,6 +1,6 @@
 import { fromCourseDto, fromCoursesToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
-import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
+import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { isValidAdminSession, isValidSession } from "@/security/Security";
 import { CourseDto } from "@/types/types";
 import { Course, CourseTag } from "@prisma/client";
@@ -45,6 +45,19 @@ export const getCourses = async (): Promise<CourseDto[]> => {
 export const getCourseById = async (courseId: string): Promise<CourseDto | undefined> => {
     if (!await isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
+    }
+    const requestedCourse = await db.course.findUnique({ where: { id: courseId }, include: { tags: true } });
+
+    if (!requestedCourse) {
+        return undefined;
+    }
+
+    return fromCourseDto(requestedCourse);
+}
+
+export const getCourseByIdUser = async (courseId: string): Promise<CourseDto | undefined> => {
+    if (!await isValidSession()) {
+        redirect(LOGIN_PAGE);
     }
     const requestedCourse = await db.course.findUnique({ where: { id: courseId }, include: { tags: true } });
 

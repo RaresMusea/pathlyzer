@@ -1,10 +1,22 @@
 import { CourseDifficulty, CourseTag } from "@prisma/client";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import { StringLiteralUnion } from "shiki";
 
 const PORT: number = 3001;
 export const ENDPOINT_ROOT: string = `http://localhost:${PORT}`;
 export const EXECUTION_ENGINE_URI: string = `ws://localhost:3001`;
+
+// #region UserStats-related types
+
+export type UserStatsDto = {
+    id: string;
+    lives: number;
+    xp: number;
+    level: number;
+}
+
+// #endregion
 
 // #region UserStats-related types
 
@@ -174,5 +186,64 @@ export type EnrollmentRetrievalDto = {
     progress: number;
     lastAccessedLessonId: string;
 }
+
+export interface CourseUnitDto {
+    id: string;
+    name: string;
+    description: string;
+    order: number;
+    lessons: LessonDto[];
+}
+
+export interface UserCourseUnitDto {
+    id: string;
+    name: string;
+    description: string;
+    order: number;
+    lessons: LearningLessonItem[];
+}
+
+export interface LessonDto {
+    id: string;
+    title: string;
+    description: string;
+    order: number;
+}
+
+export interface LearningLessonItem {
+    lessonInfo: LessonDto
+    learningProgress: number
+    isCurrent: boolean;
+    isCompleted: boolean;
+    isAccessible: boolean;
+}
+
+export interface LearningPathItem {
+    unit: UserCourseUnitDto;
+    isCurrent: boolean;
+    isCompleted: boolean;
+    progress?: {
+        completedLessons: number;
+        totalLessons: number;
+    };
+}
+
+export interface SummarizedUserStats {
+    lives: number;
+    xp: number;
+}
+
+export interface UnitRearrangementDto {
+    id: string;
+    title: string;
+    order: number;
+}
+
+export interface UnitMutationDto {
+    id?: string;
+    name: string;
+    description: string; 
+}
+
 
 // #endregion

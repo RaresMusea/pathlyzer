@@ -1,11 +1,11 @@
 "use server";
 
-import { enrollmentExists, enrollToCourse } from "@/app/service/course/enrollmentService";
+import { enrollmentExists, enrollToCourse } from "@/app/service/learning/course/enrollmentService";
 import { LOGIN_PAGE } from "@/routes";
 import { isValidSession } from "@/security/Security";
 import { redirect } from "next/navigation";
 import { handleError, handleSuccess, ServerActionResult } from "./globals/Generics";
-import { getCourseById } from "@/app/service/course/courseService";
+import { getCourseById } from "@/app/service/learning/course/courseService";
 import { CourseDto } from "@/types/types";
 
 

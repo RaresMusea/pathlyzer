@@ -1,6 +1,6 @@
 "use server";
 
-import { courseAlreadyExists, courseWithIdAlreadyExists } from "@/app/service/course/courseService";
+import { courseAlreadyExists, courseWithIdAlreadyExists } from "@/app/service/learning/course/courseService";
 import { db } from "@/persistency/Db";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
 import { CourseMutationSchema } from "@/schemas/CourseMutationValidation";
@@ -41,8 +41,6 @@ const validate = async (values: z.infer<typeof CourseMutationSchema>) => {
 const validateUpdate = async (values: z.infer<typeof CourseMutationSchema>, courseId: string | undefined) => {
     try {
         await validate(values);
-
-        console.log("Image", values.image);
 
         if (!courseId) {
             handleError('Cannot update course due to unknown identifier!');

@@ -5,6 +5,7 @@ import { UserStats } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+    console.log(request);
     const session = await auth();
 
     if (!session || !session.user) {
