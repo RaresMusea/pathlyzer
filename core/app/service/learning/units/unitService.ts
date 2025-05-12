@@ -126,3 +126,16 @@ export const getSummarizedUnitDataByCourseId = cache(async (unitId: string): Pro
 
     return null;
 })
+
+export const unitWithIdAlreadyExists = cache(async (unitId: string): Promise<boolean> => {
+    if (!(await isValidAdminSession())) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const requestedId = await db.unit.findUnique({
+        where: { id: unitId },
+        select: { id: true },
+    });
+
+    return !!requestedId;
+});
