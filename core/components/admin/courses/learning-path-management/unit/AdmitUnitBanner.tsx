@@ -6,9 +6,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuSepar
 import { ChevronRight, Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { UnitDeletionModal } from "./UnitDeletionModal";
 
 export const AdminUnitBanner = ({ title, description, unitId }: { title: string, description: string, unitId: string }) => {
     const [toggled, setToggled] = useState(false);
+    const [unitModalOpen, setUnitModalOpen] = useState(false);
     const router = useRouter();
 
     return (
@@ -32,13 +34,14 @@ export const AdminUnitBanner = ({ title, description, unitId }: { title: string,
                             <Edit/>
                             Edit unit
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500">
+                        <DropdownMenuItem className="text-red-500" onSelect={() => setUnitModalOpen(true)}>
                             <Trash2/>
                             Delete unit
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
+            <UnitDeletionModal open={unitModalOpen} unitId={unitId} setOpen={setUnitModalOpen} unitTitle={title} />
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import { getCourseById } from "@/app/service/learning/course/courseService";
-import { getSummarizedUnitDataByCourseId } from "@/app/service/learning/units/unitService";
+import { getSummarizedUnitDataById } from "@/app/service/learning/units/unitService";
 import { UnitForm } from "@/components/admin/courses/learning-path-management/unit/UnitForm";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 export default async function EditUnitPage({ params }: { params: Promise<{ courseId: string, unitId: string }> }) {
     const { courseId, unitId } = await params;
     const course: CourseDto | undefined = await getCourseById(courseId);
-    const unit: UnitMutationDto | null = await getSummarizedUnitDataByCourseId(unitId);
+    const unit: UnitMutationDto | null = await getSummarizedUnitDataById(unitId);
 
     if (!courseId || !course || !unitId || !unit) {
         notFound();
