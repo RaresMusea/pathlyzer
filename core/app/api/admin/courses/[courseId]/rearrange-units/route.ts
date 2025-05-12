@@ -10,15 +10,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const courseId = (await params).courseId;
-    console.log("Course ID", courseId)
 
     if (!courseId) {
         return NextResponse.json({ success: false, message: 'The course ID cannot be empty!' }, { status: 400 });
     }
 
     const course: CourseDto | undefined = await getCourseById(courseId);
-    console.log("Course", course?.name);
-
 
     if (!course) {
         return NextResponse.json({

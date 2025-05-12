@@ -113,7 +113,7 @@ export const addUnit = async (unitData: UnitMutationDto, courseId: string): Prom
     return createdUnit ?? null;
 }
 
-export const getSummarizedUnitDataByCourseId = cache(async (unitId: string): Promise<UnitMutationDto | null> => {
+export const getSummarizedUnitDataById = cache(async (unitId: string): Promise<UnitMutationDto | null> => {
     if (!await isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
     }
@@ -139,3 +139,17 @@ export const unitWithIdAlreadyExists = cache(async (unitId: string): Promise<boo
 
     return !!requestedId;
 });
+
+export const deleteUnit = async (unitId: string): Promise<boolean> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const deletedUnit: Unit | null = await db.unit.delete({where: {id: unitId}});
+
+    if (deletedUnit) {
+        return true;
+    }
+
+    return false;
+};
