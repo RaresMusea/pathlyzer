@@ -6,7 +6,8 @@ import { handleError, handleSuccess, ServerActionResult } from "./globals/Generi
 import { isValidAdminSession } from "@/security/Security";
 import { redirect } from "next/navigation";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
-import { addUnit } from "@/app/service/learning/units/unitService";
+import { addUnit, unitWithIdAlreadyExists } from "@/app/service/learning/units/unitService";
+import { db } from "@/persistency/Db";
 
 async function validate(values: z.infer<typeof UnitMutationValidator>) {
     if (!await isValidAdminSession()) {
@@ -17,6 +18,23 @@ async function validate(values: z.infer<typeof UnitMutationValidator>) {
 
     if (!validatedFields.success) {
         handleError(validatedFields.error.message);
+    }
+}
+
+async function validateUpdate(values: z.infer<typeof UnitMutationValidator>, unitId: string) {
+    try {
+        await validate(values);
+
+        if (!unitId) {
+            handleError('The unit ID cannot be empty!');
+        }
+
+        if (!unitWithIdAlreadyExists(unitId)) {
+            handleError('The unit ID cannot be modified!');
+        }
+    } catch (error) {
+        console.error(error);
+        throw new Error('An unexpected error occurred while attempting to update the unit. Please try again later.');
     }
 }
 
@@ -38,5 +56,27 @@ export async function saveUnit(values: z.infer<typeof UnitMutationValidator>, co
     } catch (error) {
         console.error(error);
         return handleError('An unexpected error occurred while attempting to create the unit. Please try again later.');
+    }
+}
+
+export async function updateUnit(values: z.infer<typeof UnitMutationValidator>, unitId: string): Promise<ServerActionResult> {
+    await validateUpdate(values, unitId);
+    const { name, description } = values;
+
+    try {
+        const updatedUnit = await db.unit.update({
+            where: { id: unitId },
+            data: {
+                name,
+                description,
+            },
+        });
+
+        if (updatedUnit) {
+            return handleSuccess('Course updated successfully!');
+        }
+        return handleError('An unexpected error occurred while attempting to create the course. Please try again later.');
+    } catch (error) {
+        throw new Error('An unexpected error occurred while attempting to create the course. Please try again later.');
     }
 }
