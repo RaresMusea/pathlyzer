@@ -18,17 +18,6 @@ export type UserStatsDto = {
 
 // #endregion
 
-// #region UserStats-related types
-
-export type UserStatsDto = {
-    id: string;
-    lives: number;
-    xp: number;
-    level: number;
-}
-
-// #endregion
-
 // #region Project-related types
 
 export type Project = {
@@ -244,6 +233,4 @@ export interface UnitMutationDto {
     name: string;
     description: string; 
 }
-
-
 // #endregion

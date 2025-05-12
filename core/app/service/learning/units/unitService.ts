@@ -153,3 +153,13 @@ export const deleteUnit = async (unitId: string): Promise<boolean> => {
 
     return false;
 };
+
+export const getUnitOrderById = cache(async (unitId: string): Promise<number | null> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const unitOrder: {order: number} | null = await db.unit.findUnique({where: {id: unitId}, select:{order: true}});
+
+    return unitOrder?.order ?? null;
+});
