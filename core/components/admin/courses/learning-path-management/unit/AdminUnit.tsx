@@ -7,7 +7,7 @@ import { AdminLesson } from "../lesson/AdminLesson";
 export const AdminUnit = ({ unit }: { unit: CourseUnitDto }) => {
     return (
         <>
-            <AdminUnitBanner title={unit.name} description={unit.description} />
+            <AdminUnitBanner title={unit.name} description={unit.description} unitId={unit.id} />
             <div className="flex items-center flex-col relative">
                 {
                     unit.lessons.map((lesson, index) => (
