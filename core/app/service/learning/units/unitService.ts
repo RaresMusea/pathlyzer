@@ -1,4 +1,4 @@
-import { fromUnitToDto } from "@/lib/Mapper";
+import { fromUnitToDto, fromUnitToMutationDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { isValidAdminSession, isValidSession } from "@/security/Security";
@@ -112,3 +112,17 @@ export const addUnit = async (unitData: UnitMutationDto, courseId: string): Prom
 
     return createdUnit ?? null;
 }
+
+export const getSummarizedUnitDataByCourseId = cache(async (unitId: string): Promise<UnitMutationDto | null> => {
+    if (!await isValidAdminSession()) {
+        redirect(UNAUTHORIZED_REDIRECT);
+    }
+
+    const requestedUnit: Unit | null = await db.unit.findUnique({ where: { id: unitId } });
+
+    if (requestedUnit) {
+        return fromUnitToMutationDto(requestedUnit);
+    }
+
+    return null;
+})
