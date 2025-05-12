@@ -208,7 +208,6 @@ export function useAdminCourses(initialCourses: CourseDto[]) {
                 })
                 .catch((e) => {
                     console.error(e);
-                    console.log('Inside error block');
                     toast.error("An unexpected error occurred while attempting to delete a course. Please try again later.");
                     setTimeout(() => {
                         setErrors(true);
