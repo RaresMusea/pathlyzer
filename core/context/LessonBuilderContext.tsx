@@ -89,6 +89,7 @@ export const LessonBuilderProvider: React.FC<{ children: React.ReactNode, lesson
             toast.error('The lesson content cannot be empty!');
         }
         else {
+            form.setValue("content.content", content);
             setCurrentStep(3);
         }
     }

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save } from "lucide-react";
 
 const TOTAL_STEPS: number = 3;
 
@@ -68,9 +68,10 @@ export const LessonFormNavigator = () => {
                         </Button>
                     </motion.div>
                 ) : (
-                    <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-md">
-                        Save course
-                    </button>
+                    <Button type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white rounded-md">
+                        <Save className="h-4 w-4 mr-2" />
+                        Save lesson
+                    </Button>
                 )}
             </div>
         </div>
