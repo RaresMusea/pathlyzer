@@ -8,8 +8,8 @@ import { useLessonBuilder } from "@/context/LessonBuilderContext";
 import { motion } from "framer-motion";
 import React from "react";
 
-export const CourseDetailsForm = () => {
-    const { form, onSubmit } = useLessonBuilder();
+export const LessonDetailsForm = () => {
+    const { form } = useLessonBuilder();
 
     return (
         <motion.div
