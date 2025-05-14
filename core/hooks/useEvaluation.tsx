@@ -1,7 +1,7 @@
 "use client";
 
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
-import { CodeFillQuestionDto, MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
+import { BaseChoiceDto, CodeFillQuestionDto, MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
 import { DropResult } from "@hello-pangea/dnd";
 import { QuestionType } from "@prisma/client";
 import { CheckCircle, CheckSquare, Code, FileText } from "lucide-react";
@@ -73,6 +73,25 @@ export function useEvaluation() {
 
         setQuestions([...questions, newQuestion]);
         setEditingQuestionIndex(questions.length);
+    }
+
+    const addAnswerChoice = (question: QuestionMutationDto) => {
+        const newAnswerChoice: BaseChoiceDto = {
+            id: `option-${Date.now()}`,
+            text: 'New option',
+            isCorrect: false,
+        }
+
+        if (editingQuestionIndex !== null) {
+            updateQuestion(editingQuestionIndex, question)
+        }
+    }
+
+    const removeAnswerChoice = (question: SingleChoiceQuestionDto | MultipleChoiceQuestionDto, index: number) => {
+        const newOptions = [...question.choices];
+        newOptions.splice(index, 1);
+
+        updateQuestion(editingQuestionIndex)
     }
 
     const removeQuestion = (index: number) => {
@@ -210,6 +229,7 @@ export function useEvaluation() {
         addSingleChoiceQuestion,
         addMultipleChoiceQuestion,
         addCodeFillQuestion,
+        addAnswerChoice,
         removeQuestion,
         saveQuiz,
         updateQuestion,
