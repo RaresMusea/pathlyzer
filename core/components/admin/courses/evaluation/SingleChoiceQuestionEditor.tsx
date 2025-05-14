@@ -7,6 +7,6 @@ export const SingleChoiceQuestionEditor = ({question, onChange}: {question: Sing
     const { addAnswerChoice } = useEvaluation();
 
     return (
-        
+        <div></div>
     )
 }
