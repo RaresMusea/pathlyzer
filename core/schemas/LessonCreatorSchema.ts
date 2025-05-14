@@ -18,6 +18,9 @@ const SingleQuestionSchema = z.object({
     type: z.literal("SINGLE"),
     prompt: z.string().min(1, "Prompt is required"),
     order: z.number().int().nonnegative(),
+    rewardXp: z.number()
+        .int("Reward XP must be an integer")
+        .positive("Reward XP must be greater than 0"),
     choices: z.array(
         z.object({
             text: z.string().min(1, "Choice text is required"),
@@ -34,6 +37,9 @@ const MultipleQuestionSchema = z.object({
     type: z.literal("MULTIPLE"),
     prompt: z.string().min(1),
     order: z.number().int().nonnegative(),
+    rewardXp: z.number()
+        .int("Reward XP must be an integer")
+        .positive("Reward XP must be greater than 0"),
     choices: z.array(
         z.object({
             text: z.string().min(1),
@@ -50,6 +56,9 @@ const CodeFillQuestionSchema = z.object({
     type: z.literal("CODE_FILL"),
     prompt: z.string().min(1),
     order: z.number().int().nonnegative(),
+    rewardXp: z.number()
+        .int("Reward XP must be an integer")
+        .positive("Reward XP must be greater than 0"),
     codeSections: z.array(
         z.object({
             code: z.string().min(1, "Code section is required"),
