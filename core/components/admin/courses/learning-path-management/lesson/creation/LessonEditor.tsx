@@ -13,16 +13,41 @@ export const LessonEditor = () => {
     const [exportedContent, setExportedContent] = useState<JSONContent>();
     const [activeTab, setActiveTab] = useState("editor");
 
-    const onExportedContent = () => {
-        setExportedContent(editor?.getJSON());
-    }
-
     useEffect(() => {
         if (activeTab === 'preview') {
             setExportedContent(editor?.getJSON());
             console.log(JSON.stringify(exportedContent));
         }
-    }, [activeTab])
+    }, [activeTab]);
+
+    const handleTabChange = (newTab: string) => {
+        if (newTab === 'preview' && editor) {
+            const { state } = editor;
+            const { selection } = state;
+            const { $from } = selection;
+
+            let node = null;
+
+            for (let depth = $from.depth; depth >= 0; depth--) {
+                const currentNode = $from.node(depth);
+                if (currentNode.type.name === 'codeBlock' || currentNode.type.name === 'codeGroup') {
+                    node = currentNode;
+                    break;
+                }
+            }
+
+            if (node) {
+                const pos = $from.before();
+                editor
+                    .chain()
+                    .focus()
+                    .setTextSelection(pos)
+                    .run();
+            }
+        }
+
+        setActiveTab(newTab);
+    }
 
     return (
         <motion.div
@@ -37,7 +62,7 @@ export const LessonEditor = () => {
             className="w-full"
         >
             <h4 className="text-lg my-3">Use the editor to build the core learning material for this lesson.</h4>
-            <Tabs defaultValue="editor" onValueChange={setActiveTab} className="w-full h-full">
+            <Tabs defaultValue="editor" onValueChange={handleTabChange} className="w-full h-full">
                 <TabsList className="grid mx-auto w-[70%] grid-cols-2">
                     <TabsTrigger value="editor">Editor</TabsTrigger>
                     <TabsTrigger value="preview">Preview</TabsTrigger>

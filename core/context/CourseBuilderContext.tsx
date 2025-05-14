@@ -32,8 +32,6 @@ export const CourseBuilderProvider: React.FC<{ children: React.ReactNode }> = ({
     const [isCodeBlock, setIsCodeBlock] = useState<boolean>(false);
     const [isCodeGroup, setIsCodeGroup] = useState<boolean>(false);
 
-
-
     const editor = useEditor({
         editorProps: {
             attributes: {
@@ -150,56 +148,88 @@ export const CourseBuilderProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     useEffect(() => {
-        if (!editor) return;
+        console.log("Editor content", editor?.getJSON())
+    }, [editor]);
 
-        const { state } = editor;
-        const { selection } = state;
-        const { $from } = selection;
+    // useEffect(() => {
+    //     if (!editor) return;
 
-        const node = $from.node();
+    //     const { state } = editor;
+    //     const { selection } = state;
+    //     const { $from } = selection;
 
-        console.log("NODE", node);
+    //     const node = $from.node();
 
-        if (node && (node.type.name === "codeBlock" || node.type.name === 'codeGroup')) {
-            const pos = $from.before();
-            console.log("POS", pos);
-            
-            if (typeof pos === 'number') {
-                editor
-                    .chain()
-                    .focus()
-                    .command(({ tr }) => {
-                        tr.setNodeMarkup(pos, undefined, {
-                            ...node.attrs,
-                            language,
-                        });
-                        return true;
-                    })
-                    .run();
-            }
-        }
-    }, [language, editor]);
+    //     console.log("NODE", node);
+
+    //     if (node && (node.type.name === "codeBlock" || node.type.name === 'codeGroup') && node.attrs.language !== language) {
+    //         const pos = $from.before();
+
+    //         if (typeof pos === 'number') {
+    //             editor
+    //                 .chain()
+    //                 .focus()
+    //                 .command(({ tr }) => {
+    //                     tr.setNodeMarkup(pos, undefined, {
+    //                         ...node.attrs,
+    //                         language,
+    //                     });
+    //                     return true;
+    //                 })
+    //                 .run();
+    //         }
+    //     }
+    // }, [language, editor]);
 
     useEffect(() => {
-        if (!editor) return
+        if (!editor) return;
 
         const handler = () => {
-            const { state } = editor
-            const { doc, selection } = state
-            const { $from } = selection
+            const { state } = editor;
+            const { selection } = state;
+            const { $from } = selection;
 
-            const node = $from.node()
-            if (node.type.name === 'codeBlock' && node.attrs.language) {
-                setLanguage(node.attrs.language)
+            let node = null;
+            for (let depth = $from.depth; depth >= 0; depth--) {
+                const currentNode = $from.node(depth);
+                if (currentNode.type.name === 'codeBlock' || currentNode.type.name === 'codeGroup') {
+                    node = currentNode;
+                    break;
+                }
             }
-        }
 
-        editor.on('transaction', handler)
+            if (node && node.attrs.language && node.attrs.language !== language) {
+                setLanguage(node.attrs.language);
+            }
+        };
+
+        editor.on('selectionUpdate', handler);
 
         return () => {
-            editor.off('transaction', handler)
-        }
+            editor.off('selectionUpdate', handler);
+        };
     }, [editor]);
+
+    // useEffect(() => {
+    //     if (!editor) return
+
+    //     const handler = () => {
+    //         const { state } = editor
+    //         const { doc, selection } = state
+    //         const { $from } = selection
+
+    //         const node = $from.node()
+    //         if (node.type.name === 'codeBlock' && node.attrs.language) {
+    //             setLanguage(node.attrs.language)
+    //         }
+    //     }
+
+    //     editor.on('transaction', handler)
+
+    //     return () => {
+    //         editor.off('transaction', handler)
+    //     }
+    // }, [editor]);
 
     return (
         <CourseBuilderContext.Provider value={{
