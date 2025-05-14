@@ -15,6 +15,7 @@ const LessonContentSchema = z.object({
 });
 
 const SingleQuestionSchema = z.object({
+    id: z.string().optional(),
     type: z.literal("SINGLE"),
     prompt: z.string().min(1, "Prompt is required"),
     order: z.number().int().nonnegative(),
@@ -23,6 +24,7 @@ const SingleQuestionSchema = z.object({
         .positive("Reward XP must be greater than 0"),
     choices: z.array(
         z.object({
+            id: z.string().optional(),
             text: z.string().min(1, "Choice text is required"),
             isCorrect: z.boolean(),
         })
@@ -34,6 +36,7 @@ const SingleQuestionSchema = z.object({
 });
 
 const MultipleQuestionSchema = z.object({
+    id: z.string().optional(),
     type: z.literal("MULTIPLE"),
     prompt: z.string().min(1),
     order: z.number().int().nonnegative(),
@@ -42,6 +45,7 @@ const MultipleQuestionSchema = z.object({
         .positive("Reward XP must be greater than 0"),
     choices: z.array(
         z.object({
+            id: z.string().optional(),
             text: z.string().min(1),
             isCorrect: z.boolean(),
         })
@@ -53,6 +57,7 @@ const MultipleQuestionSchema = z.object({
 });
 
 const CodeFillQuestionSchema = z.object({
+    id: z.string().optional(),
     type: z.literal("CODE_FILL"),
     prompt: z.string().min(1),
     order: z.number().int().nonnegative(),
@@ -61,6 +66,7 @@ const CodeFillQuestionSchema = z.object({
         .positive("Reward XP must be greater than 0"),
     codeSections: z.array(
         z.object({
+            id: z.string().optional(),
             code: z.string().min(1, "Code section is required"),
             language: z.string().optional(),
             correct: z.array(z.string().min(1)).min(1)
