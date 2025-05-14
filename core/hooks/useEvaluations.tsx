@@ -94,6 +94,14 @@ export function useEvaluation() {
         }
     }
 
+    const saveQuiz = () => {
+
+    }
+
+    const updateQuestion = (index: number, updatedQuestion: QuestionMutationDto): void => {
+
+    }
+
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return
 
@@ -181,6 +189,19 @@ export function useEvaluation() {
         }
     }
 
+    const getQuestionTypeLabel = (type: QuestionType): string => {
+        switch (type) {
+            case QuestionType.SINGLE:
+                return 'Single choice';
+            case QuestionType.MULTIPLE:
+                return 'Multiple choice';
+            case QuestionType.CODE_FILL:
+                return 'Code fill';
+            default:
+                return 'Unknown';
+        }
+    }
+
     return {
         form,
         editingQuestionIndex,
@@ -190,9 +211,12 @@ export function useEvaluation() {
         addMultipleChoiceQuestion,
         addCodeFillQuestion,
         removeQuestion,
+        saveQuiz,
+        updateQuestion,
         moveQuestionUp,
         moveQuestionDown,
         handleDragEnd,
-        getQuestionTypeIcon
+        getQuestionTypeIcon,
+        getQuestionTypeLabel
     }
 }

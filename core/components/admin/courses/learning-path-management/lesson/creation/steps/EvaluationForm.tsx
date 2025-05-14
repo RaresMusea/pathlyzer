@@ -12,6 +12,7 @@ const getFormattedType = (quizType: QuizType): string => {
 
 export const EvaluationForm = ({ quizType }: { quizType: QuizType }) => {
     const [activeTab, setActiveTab] = useState<string>(`builder`);
+
     return (
         <motion.div
             initial={{ x: "100%", opacity: 0 }}
@@ -31,7 +32,7 @@ export const EvaluationForm = ({ quizType }: { quizType: QuizType }) => {
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
                 <TabsContent value="builder" className="mt-6">
-                    <EvaluationBuilder evaluationType={quizType} />
+                    <EvaluationBuilder evaluationType={getFormattedType(quizType)} setActiveTab={setActiveTab} />
                 </TabsContent>
             </Tabs>
         </motion.div>
