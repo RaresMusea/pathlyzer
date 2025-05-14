@@ -1,4 +1,4 @@
-import { CourseDifficulty, CourseTag } from "@prisma/client";
+import { CourseDifficulty, CourseTag, QuestionType } from "@prisma/client";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { StringLiteralUnion } from "shiki";
@@ -231,6 +231,42 @@ export interface UnitRearrangementDto {
 export interface UnitMutationDto {
     id?: string;
     name: string;
-    description: string; 
+    description: string;
 }
+
+export interface BaseQuestionDto {
+    id?: string;
+    type: QuestionType;
+    order: number;
+    prompt: string;
+    rewardXp: number;
+}
+
+export interface BaseChoiceDto {
+    id?: string;
+    text: string;
+    isCorrect: boolean;
+}
+
+export interface SingleChoiceQuestionDto extends BaseQuestionDto {
+    type: "SINGLE";
+    choices: BaseChoiceDto[];
+}
+
+interface MultipleChoiceQuestionDto extends BaseQuestionDto {
+    type: "MULTIPLE";
+    choices: BaseChoiceDto[];
+}
+
+interface CodeFillQuestionDto extends BaseQuestionDto {
+    type: "CODE_FILL";
+    codeSections: {
+        code: string;
+        language?: string;
+        correct: string[];
+    }[];
+}
+
+export type QuestionMutationDto = SingleChoiceQuestionDto | MultipleChoiceQuestionDto | CodeFillQuestionDto;
+
 // #endregion
