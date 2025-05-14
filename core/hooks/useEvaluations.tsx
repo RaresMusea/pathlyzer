@@ -1,7 +1,7 @@
 "use client";
 
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
-import { MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
+import { CodeFillQuestionDto, MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
 import { DropResult } from "@hello-pangea/dnd";
 import { QuestionType } from "@prisma/client";
 import { CheckCircle, CheckSquare, Code, FileText } from "lucide-react";
@@ -43,7 +43,7 @@ export function useEvaluation() {
             id: `question-${Date.now()}`,
             type: QuestionType.MULTIPLE,
             prompt: "Multiple choice question",
-            order: getQuestions().length + 1,
+            order: questions.length + 1,
             rewardXp: 5,
             choices: [
                 { id: `option-${Date.now()}-1`, text: 'Option 1', isCorrect: true },
@@ -51,6 +51,25 @@ export function useEvaluation() {
                 { id: `option-${Date.now()}-3`, text: 'Option 3', isCorrect: false },
             ]
         }
+
+        setQuestions([...questions, newQuestion]);
+        setEditingQuestionIndex(questions.length);
+    }
+
+    const addCodeFillQuestion = () => {
+        const questions = getQuestions();
+        const newQuestion: CodeFillQuestionDto = {
+            id: `question-${Date.now()}`,
+            type: QuestionType.CODE_FILL,
+            prompt: 'Code fill question',
+            order: questions.length + 1,
+            rewardXp: 5,
+            codeSections: [{
+                language: 'javascript',
+                code: 'function func() {\n  // Your code here\n  [[return 42]]\n}',
+                correct: ['return 42'],
+            }]
+        };
 
         setQuestions([...questions, newQuestion]);
         setEditingQuestionIndex(questions.length);
@@ -169,6 +188,7 @@ export function useEvaluation() {
         getQuestions,
         addSingleChoiceQuestion,
         addMultipleChoiceQuestion,
+        addCodeFillQuestion,
         removeQuestion,
         moveQuestionUp,
         moveQuestionDown,

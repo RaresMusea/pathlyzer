@@ -258,7 +258,7 @@ export interface MultipleChoiceQuestionDto extends BaseQuestionDto {
     choices: BaseChoiceDto[];
 }
 
-interface CodeFillQuestionDto extends BaseQuestionDto {
+export interface CodeFillQuestionDto extends BaseQuestionDto {
     type: "CODE_FILL";
     codeSections: {
         code: string;

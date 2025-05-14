@@ -20,6 +20,7 @@ export const EvaluationBuilder = ({ evaluationType }: { evaluationType: QuizType
         moveQuestionDown,
         addSingleChoiceQuestion,
         addMultipleChoiceQuestion,
+        addCodeFillQuestion,
         removeQuestion
     } = useEvaluation();
 
@@ -69,7 +70,7 @@ export const EvaluationBuilder = ({ evaluationType }: { evaluationType: QuizType
                                 <span className="text-xs sm:text-sm">Multiple choice</span>
                             </Button>
                             <Button
-                                onClick={() => { }}
+                                onClick={addCodeFillQuestion}
                                 variant="outline"
                                 className="flex flex-col h-auto py-2 px-1 sm:flex-row sm:py-1">
                                 <Code className="h-4 w-4 mb-1 sm:mb-0 sm:mr-1" />
