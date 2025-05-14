@@ -3,12 +3,13 @@
 import CourseEditorToolbar from "@/components/learning/courses/course-editor/toolbar/CourseEditorToolbar";
 import { CoursePreview } from "@/components/learning/courses/course-preview/CoursePreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Editor, EditorContent, JSONContent } from "@tiptap/react";
+import { useLessonBuilder } from "@/context/LessonBuilderContext";
+import { EditorContent, JSONContent } from "@tiptap/react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-export const LessonEditor = ({ editor }: { editor: Editor | null }) => {
-
+export const LessonEditor = () => {
+    const { editor } = useLessonBuilder();
     const [exportedContent, setExportedContent] = useState<JSONContent>();
     const [activeTab, setActiveTab] = useState("editor");
 
@@ -19,6 +20,7 @@ export const LessonEditor = ({ editor }: { editor: Editor | null }) => {
     useEffect(() => {
         if (activeTab === 'preview') {
             setExportedContent(editor?.getJSON());
+            console.log(JSON.stringify(exportedContent));
         }
     }, [activeTab])
 

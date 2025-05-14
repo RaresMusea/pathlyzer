@@ -13,8 +13,8 @@ export const LessonCreator = () => {
         <div className="container mx-auto px-4">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="relative" style={{ minHeight: "400px" }}>
-                        <AnimatePresence mode="wait" initial={false}>
+                    <div className="relative overflow-hidden" style={{ minHeight: "400px" }}>
+                        <AnimatePresence mode="sync" initial={false}>
                             {currentStep === 1 && <LessonDetailsForm key="step1" />}
                             {currentStep === 2 && <LessonContentCreator key="step2"/>}
                         </AnimatePresence>
