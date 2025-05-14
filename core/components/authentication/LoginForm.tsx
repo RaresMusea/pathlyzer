@@ -58,7 +58,6 @@ export const LoginForm = () => {
                     if (e?.digest?.startsWith("NEXT_REDIRECT")) {
                         return;
                     }
-                    }
                     setError(`Something went wrong while attempting to log you in.\nMore details: ${e}.`);
                 })
         });
@@ -67,15 +66,6 @@ export const LoginForm = () => {
     return (
         <>
             <Form {...form}>
-                <div className="flex flex-col gap-6 mt-5">
-                    <div className="flex flex-col items-center text-center">
-                        <h1 className="text-2xl font-bold">Welcome back!</h1>
-                        <p className="text-balance text-muted-foreground">
-                            Login to your Pathlyzer account
-                        </p>
-                    </div>
-                    <form className="flex flex-col gap-6 p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
-
                 <div className="flex flex-col gap-6 mt-5">
                     <div className="flex flex-col items-center text-center">
                         <h1 className="text-2xl font-bold">Welcome back!</h1>
@@ -158,13 +148,9 @@ export const LoginForm = () => {
                         <AuthAlert message={success} hasCloseButton={true} type={AlertType.SUCCESS} />
                         <AuthAlert message={error || urlError} hasCloseButton={true} type={AlertType.ERROR} />
 
-
                         <Button type="submit" className="w-[60%] text-center m-auto font-extrabold">
                             Login
                         </Button>
-                    </form>
-
-                    <div className="flex flex-col gap-4 px-3">
                     </form>
 
                     <div className="flex flex-col gap-4 px-3">
@@ -181,8 +167,6 @@ export const LoginForm = () => {
                             </Link>
                         </div>
                     </div>
-                </div>
-            </Form >
                 </div>
             </Form >
         </>
