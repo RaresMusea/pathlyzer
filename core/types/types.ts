@@ -253,7 +253,7 @@ export interface SingleChoiceQuestionDto extends BaseQuestionDto {
     choices: BaseChoiceDto[];
 }
 
-interface MultipleChoiceQuestionDto extends BaseQuestionDto {
+export interface MultipleChoiceQuestionDto extends BaseQuestionDto {
     type: "MULTIPLE";
     choices: BaseChoiceDto[];
 }

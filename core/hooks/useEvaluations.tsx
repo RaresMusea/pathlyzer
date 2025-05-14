@@ -1,7 +1,7 @@
 "use client";
 
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
-import { QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
+import { MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
 import { DropResult } from "@hello-pangea/dnd";
 import { QuestionType } from "@prisma/client";
 import { CheckCircle, CheckSquare, Code, FileText } from "lucide-react";
@@ -19,12 +19,13 @@ export function useEvaluation() {
         form.setValue("quiz.questions", questions)
     }
 
-    const addSignleChoiceQuestion = () => {
+    const addSingleChoiceQuestion = () => {
+        const questions: QuestionMutationDto[] = getQuestions();
         const newQuestion: SingleChoiceQuestionDto = {
             id: `question-${Date.now()}`,
             type: QuestionType.SINGLE,
             prompt: "Single choice question",
-            order: getQuestions().length + 1,
+            order: questions.length + 1,
             rewardXp: 5,
             choices: [
                 { id: `option-${Date.now()}-1`, text: 'Option 1', isCorrect: true },
@@ -32,7 +33,25 @@ export function useEvaluation() {
             ]
         }
 
-        const questions: QuestionMutationDto[] = getQuestions();
+        setQuestions([...questions, newQuestion]);
+        setEditingQuestionIndex(questions.length);
+    }
+
+    const addMultipleChoiceQuestion = () => {
+        const questions = getQuestions();
+        const newQuestion: MultipleChoiceQuestionDto = {
+            id: `question-${Date.now()}`,
+            type: QuestionType.MULTIPLE,
+            prompt: "Multiple choice question",
+            order: getQuestions().length + 1,
+            rewardXp: 5,
+            choices: [
+                { id: `option-${Date.now()}-1`, text: 'Option 1', isCorrect: true },
+                { id: `option-${Date.now()}-2`, text: 'Option 2', isCorrect: true },
+                { id: `option-${Date.now()}-3`, text: 'Option 3', isCorrect: false },
+            ]
+        }
+
         setQuestions([...questions, newQuestion]);
         setEditingQuestionIndex(questions.length);
     }
@@ -148,7 +167,8 @@ export function useEvaluation() {
         editingQuestionIndex,
         setEditingQuestionIndex,
         getQuestions,
-        addSignleChoiceQuestion,
+        addSingleChoiceQuestion,
+        addMultipleChoiceQuestion,
         removeQuestion,
         moveQuestionUp,
         moveQuestionDown,
