@@ -5,6 +5,7 @@ import { QuizType } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { EvaluationBuilder } from "../EvaluationBuilder";
+import { EditingQuestionProvider } from "@/context/EditingQuestionContext";
 
 const getFormattedType = (quizType: QuizType): string => {
     return (quizType === QuizType.LESSON_QUIZ) ? 'Lesson quiz' : 'Exam';
@@ -32,7 +33,9 @@ export const EvaluationForm = ({ quizType }: { quizType: QuizType }) => {
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
                 <TabsContent value="builder" className="mt-6">
-                    <EvaluationBuilder evaluationType={getFormattedType(quizType)} setActiveTab={setActiveTab} />
+                    <EditingQuestionProvider>
+                        <EvaluationBuilder evaluationType={getFormattedType(quizType)} setActiveTab={setActiveTab} />
+                    </EditingQuestionProvider>
                 </TabsContent>
             </Tabs>
         </motion.div>

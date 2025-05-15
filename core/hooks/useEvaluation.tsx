@@ -1,15 +1,15 @@
 "use client";
 
+import { useEditingQuestion } from "@/context/EditingQuestionContext";
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
 import { BaseChoiceDto, CodeFillQuestionDto, MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
 import { DropResult } from "@hello-pangea/dnd";
 import { QuestionType } from "@prisma/client";
 import { CheckCircle, CheckSquare, Code, FileText } from "lucide-react";
-import { useState } from "react";
 
 export function useEvaluation() {
     const { form } = useLessonBuilder();
-    const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
+    const { editingQuestionIndex, setEditingQuestionIndex } = useEditingQuestion();
 
     const getQuestions = (): QuestionMutationDto[] => {
         return form.getValues("quiz.questions");
@@ -76,22 +76,73 @@ export function useEvaluation() {
     }
 
     const addAnswerChoice = (question: QuestionMutationDto) => {
-        const newAnswerChoice: BaseChoiceDto = {
-            id: `option-${Date.now()}`,
-            text: 'New option',
-            isCorrect: false,
+        console.log("Editing question index", editingQuestionIndex);
+
+        if (!isChoiceQuestion(question)) {
+            return;
         }
 
+        const newAnswerChoice: BaseChoiceDto = {
+            id: `option-${Date.now()}`,
+            text: "New option",
+            isCorrect: false,
+        };
+
         if (editingQuestionIndex !== null) {
-            updateQuestion(editingQuestionIndex, question)
+            updateQuestion(editingQuestionIndex, {
+                ...question,
+                choices: [...question.choices, newAnswerChoice],
+            } as typeof question);
         }
     }
 
-    const removeAnswerChoice = (question: SingleChoiceQuestionDto | MultipleChoiceQuestionDto, index: number) => {
-        const newOptions = [...question.choices];
-        newOptions.splice(index, 1);
+    const updateAnswerChoice = (index: number, question: QuestionMutationDto, updatedChoice: Partial<BaseChoiceDto>) => {
+        if (!isChoiceQuestion(question)) return;
+        if (editingQuestionIndex === null) return;
 
-        updateQuestion(editingQuestionIndex)
+        const newChoices = [...question.choices];
+
+        if (question.type === "SINGLE" && updatedChoice.isCorrect === true) {
+            newChoices.forEach((choice, i) => {
+                if (i !== index) {
+                    newChoices[i] = { ...choice, isCorrect: false };
+                }
+            });
+        }
+
+        newChoices[index] = { ...newChoices[index], ...updatedChoice };
+
+        const updatedQuestion: QuestionMutationDto = {
+            ...question,
+            choices: newChoices
+        } as QuestionMutationDto;
+
+        updateQuestion(editingQuestionIndex, { ...question, choices: newChoices });
+    };
+
+    const updateQuestionPrompt = (question: QuestionMutationDto, prompt: string) => {
+        if (editingQuestionIndex === null) {
+            return;
+        }
+
+        updateQuestion(editingQuestionIndex, { ...question, prompt })
+    }
+
+    const removeAnswerChoice = (question: QuestionMutationDto, index: number) => {
+        if (!isChoiceQuestion(question)) {
+            return;
+        }
+
+        if (editingQuestionIndex === null) return;
+
+
+        const newChoices = [...question.choices];
+        newChoices.splice(index, 1);
+
+        updateQuestion(editingQuestionIndex, {
+            ...question,
+            choices: newChoices
+        });
     }
 
     const removeQuestion = (index: number) => {
@@ -118,8 +169,12 @@ export function useEvaluation() {
     }
 
     const updateQuestion = (index: number, updatedQuestion: QuestionMutationDto): void => {
-
-    }
+        form.setValue(
+            `quiz.questions.${index}`,
+            updatedQuestion,
+            { shouldDirty: true, shouldValidate: true }
+        );
+    };
 
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return
@@ -221,15 +276,20 @@ export function useEvaluation() {
         }
     }
 
+    const isChoiceQuestion = (question: QuestionMutationDto): question is SingleChoiceQuestionDto | MultipleChoiceQuestionDto => {
+        return "choices" in question;
+    }
+
     return {
         form,
-        editingQuestionIndex,
-        setEditingQuestionIndex,
         getQuestions,
         addSingleChoiceQuestion,
         addMultipleChoiceQuestion,
         addCodeFillQuestion,
         addAnswerChoice,
+        updateAnswerChoice,
+        removeAnswerChoice,
+        updateQuestionPrompt,
         removeQuestion,
         saveQuiz,
         updateQuestion,

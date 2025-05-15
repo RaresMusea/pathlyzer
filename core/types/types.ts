@@ -1,7 +1,6 @@
 import { CourseDifficulty, CourseTag, QuestionType } from "@prisma/client";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
-import { StringLiteralUnion } from "shiki";
 
 const PORT: number = 3001;
 export const ENDPOINT_ROOT: string = `http://localhost:${PORT}`;
