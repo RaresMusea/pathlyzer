@@ -6,20 +6,18 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { useEvaluation } from "@/hooks/useEvaluation";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { QuestionType } from "@prisma/client";
-import { CheckCircle, CheckSquare, Code, Eye, MoveDown, MoveUp, PlusCircle, Save, Trash2 } from "lucide-react";
+import { CheckCircle, CheckSquare, Code, Eye, MoveDown, MoveUp, PlusCircle, Save, Trash2, Trophy } from "lucide-react";
 import { SingleChoiceQuestionEditor } from "../../../evaluation/SingleChoiceQuestionEditor";
 import { CodeFillQuestionDto, MultipleChoiceQuestionDto, SingleChoiceQuestionDto } from "@/types/types";
 import { MultipleChoiceQuestionEditor } from "../../../evaluation/MultipleChoiceQuestionEditor";
 import { CodeFillQuestionEditor } from "../../../evaluation/CodeFillQuestionEditor";
+import { useEditingQuestion } from "@/context/EditingQuestionContext";
 
 export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluationType: string, setActiveTab: (tab: string) => void }) => {
     const {
         form,
-        editingQuestionIndex,
-        setEditingQuestionIndex,
         getQuestionTypeIcon,
         getQuestionTypeLabel,
-        getQuestions,
         handleDragEnd,
         moveQuestionUp,
         moveQuestionDown,
@@ -30,6 +28,10 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
         saveQuiz,
         updateQuestion
     } = useEvaluation();
+
+    const questions = form.watch("quiz.questions");
+
+    const { editingQuestionIndex, setEditingQuestionIndex } = useEditingQuestion();
 
     return (
         <div className="flex flex-col lg:flex-row gap-6">
@@ -56,7 +58,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                 </FormItem>
                             )} />
                         </CardTitle>
-                        <CardDescription>{form.getValues("quiz.questions").length} questions</CardDescription>
+                        <CardDescription>{questions.length} questions</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-3 gap-2 mb-4">
@@ -89,7 +91,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                             <Droppable droppableId="questions">
                                 {(provided) => (
                                     <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
-                                        {getQuestions().map((question, index) => (
+                                        {questions.map((question, index) => (
                                             <Draggable key={question.id} draggableId={String(question.id) || String(Date.now())} index={index}>
                                                 {(provided) => (
                                                     <div
@@ -107,7 +109,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                                                 <span className="truncate max-w-[120px]">{question.prompt}</span>
                                                             </div>
                                                         </div>
-                                                        <div className="flex gap-1">
+                                                        <div className="flex items-center gap-1">
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
@@ -126,7 +128,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                                                     e.stopPropagation()
                                                                     moveQuestionDown(index)
                                                                 }}
-                                                                disabled={index === getQuestions().length - 1}
+                                                                disabled={index === questions.length - 1}
                                                             >
                                                                 <MoveDown className="h-4 w-4" />
                                                             </Button>
@@ -140,6 +142,10 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                                             >
                                                                 <Trash2 className="h-4 w-4 text-red-500" />
                                                             </Button>
+                                                            <div className="flex items-center text-small">
+                                                                <Trophy className="h-4 w-4 mr-1 text-yellow-500" />
+                                                                {question?.rewardXp} XP
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 )}
@@ -150,7 +156,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                 )}
                             </Droppable>
                         </DragDropContext>
-                        {getQuestions().length === 0 && (
+                        {questions.length === 0 && (
                             <div className="text-center py-8 text-gray-500">
                                 <PlusCircle className="mx-auto h-12 w-12 mb-2 opacity-20" />
                                 <p>Add the first question using the buttons above.</p>
@@ -170,26 +176,25 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                 </Card>
             </div>
             <div className="w-full lg:w-2/3">
-                {editingQuestionIndex !== null && getQuestions()[editingQuestionIndex] ? (
+                {editingQuestionIndex !== null && questions[editingQuestionIndex] ? (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Editare Întrebare {editingQuestionIndex + 1}</CardTitle>
-                            <CardDescription>{getQuestionTypeLabel(getQuestions()[editingQuestionIndex].type)}</CardDescription>
+                            <CardTitle>Edit question {editingQuestionIndex + 1}</CardTitle>
+                            <CardDescription>{getQuestionTypeLabel(questions[editingQuestionIndex].type)}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {getQuestions()[editingQuestionIndex].type === QuestionType.SINGLE ? (
+                            {questions[editingQuestionIndex].type === QuestionType.SINGLE ? (
                                 <SingleChoiceQuestionEditor
-                                    question={getQuestions()[editingQuestionIndex] as SingleChoiceQuestionDto}
-                                    onChange={(updatedQuestion) => updateQuestion(editingQuestionIndex, updatedQuestion)}
+                                    question={questions[editingQuestionIndex] as SingleChoiceQuestionDto}
                                 />
-                            ) : getQuestions()[editingQuestionIndex].type === QuestionType.MULTIPLE ? (
+                            ) : questions[editingQuestionIndex].type === QuestionType.MULTIPLE ? (
                                 <MultipleChoiceQuestionEditor
-                                    question={getQuestions()[editingQuestionIndex] as MultipleChoiceQuestionDto}
+                                    question={questions[editingQuestionIndex] as MultipleChoiceQuestionDto}
                                     onChange={(updatedQuestion) => updateQuestion(editingQuestionIndex, updatedQuestion)}
                                 />
                             ) : (
                                 <CodeFillQuestionEditor
-                                    question={getQuestions()[editingQuestionIndex] as CodeFillQuestionDto}
+                                    question={questions[editingQuestionIndex] as CodeFillQuestionDto}
                                     onChange={(updatedQuestion) => updateQuestion(editingQuestionIndex, updatedQuestion)}
                                 />
                             )}

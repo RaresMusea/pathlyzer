@@ -17,7 +17,7 @@ const LessonContentSchema = z.object({
 const SingleQuestionSchema = z.object({
     id: z.string().optional(),
     type: z.literal("SINGLE"),
-    prompt: z.string().min(1, "Prompt is required"),
+    prompt: z.string().min(1, "Question prompt is required!").max(400, "The question prompt cannot exceed 400 characters!"),
     order: z.number().int().nonnegative(),
     rewardXp: z.number()
         .int("Reward XP must be an integer")
