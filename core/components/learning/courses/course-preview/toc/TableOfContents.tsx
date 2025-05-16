@@ -30,9 +30,11 @@ const generateHeadingId = (headingElem: Element): string => {
 }
 
 const getCurrentScrollParams = (): ScrollParams => {
-    const scrollPosition: number = window.scrollY;
-    const windowHeight: number = window.innerHeight;
-    const documentHeight: number = document.documentElement.scrollHeight;
+    const scrollContainer = document.querySelector('.scrollContainer');
+
+    const scrollPosition: number = scrollContainer?.scrollTop || window.scrollY;
+    const windowHeight: number = scrollContainer?.clientHeight || window.innerHeight;
+    const documentHeight: number = scrollContainer?.scrollHeight || document.documentElement.scrollHeight;
     const scrollPercentage: number = scrollPosition / (documentHeight - windowHeight);
 
     return {
@@ -52,7 +54,6 @@ export const TableOfContents = (props: TableOfContentsProps) => {
         if (!props.content) return;
 
         //@TODO: To be extended once adding more headings to the course editor
-        console.log("PROSE", document.querySelector('.prose'));
         const elements = Array.from(document.querySelector(".prose")?.querySelectorAll("h1, h2, h3") || []);
 
         console.log("Headings", elements);
@@ -74,6 +75,7 @@ export const TableOfContents = (props: TableOfContentsProps) => {
         }
 
         const findActiveHeading = () => {
+            console.log("scrollY", window.scrollY);
             if (userClickedRef.current) {
                 const { id, timestamp } = userClickedRef.current;
                 const now = Date.now();
@@ -154,8 +156,9 @@ export const TableOfContents = (props: TableOfContentsProps) => {
     }, [props.onHeadingsChange, props.content, props]);
 
     const smoothScrollToElement = (elementId: string) => {
+        const scrollContainer = document.querySelector('.scrollContainer') as HTMLElement | null;
         const element = document.getElementById(elementId);
-        if (!element) return;
+        if (!element || !scrollContainer) return;
 
         setActiveId(elementId)
 
@@ -166,9 +169,10 @@ export const TableOfContents = (props: TableOfContentsProps) => {
 
         const headerOffset = 20;
         const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const containerTop = scrollContainer.getBoundingClientRect().top;
+        const offsetPosition = elementPosition - containerTop + scrollContainer.scrollTop - headerOffset;
 
-        window.scrollTo({
+        scrollContainer.scrollTo({
             top: offsetPosition,
             behavior: "smooth",
         });

@@ -94,7 +94,30 @@ export const CodeSectionTools = () => {
             </Tooltip>
 
             {(isCodeBlock || isCodeGroup) && (
-                <Select value={language || "txt"} onValueChange={setLanguage}>
+                <Select value={language || "txt"} onValueChange={(newLanguage) => {
+                    setLanguage(newLanguage);
+                    if (!editor) return;
+
+                    const { state } = editor;
+                    const { selection } = state;
+                    const { $from } = selection;
+                    const node = $from.node();
+                    const pos = $from.before();
+
+                    if (node && node.type.name === "codeBlock" && typeof pos === 'number') {
+                        editor
+                            .chain()
+                            .focus()
+                            .command(({ tr }) => {
+                                tr.setNodeMarkup(pos, undefined, {
+                                    ...node.attrs,
+                                    language: newLanguage,
+                                });
+                                return true;
+                            })
+                            .run();
+                    }
+                }}>
                     <SelectTrigger className="h-8 w-40 bg-gray-100 dark:bg-gray-700">
                         <SelectValue placeholder="Language" />
                     </SelectTrigger>

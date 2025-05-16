@@ -3,12 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronRight, Edit, Trash2 } from "lucide-react";
+import { ArrowUpDown, ChevronRight, Edit, PlusCircle, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UnitDeletionModal } from "./UnitDeletionModal";
+import { LessonDto } from "@/types/types";
 
-export const AdminUnitBanner = ({ title, description, unitId }: { title: string, description: string, unitId: string }) => {
+export const AdminUnitBanner = ({ title, description, unitId, lessons }: { title: string, description: string, unitId: string, lessons: LessonDto[] }) => {
     const [toggled, setToggled] = useState(false);
     const [unitModalOpen, setUnitModalOpen] = useState(false);
     const router = useRouter();
@@ -28,16 +29,30 @@ export const AdminUnitBanner = ({ title, description, unitId }: { title: string,
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="font-nunito">
                     <DropdownMenuLabel>Unit-specific</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem onSelect={() => router.push(`learning-path/unit/${unitId}/edit`)}>
-                            <Edit/>
+                            <Edit />
                             Edit unit
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-500" onSelect={() => setUnitModalOpen(true)}>
-                            <Trash2/>
+                            <Trash2 />
                             Delete unit
                         </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Lesson-specific</DropdownMenuLabel>
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem onSelect={() => router.push(`learning-path/unit/${unitId}/create-lesson`)}>
+                            <PlusCircle />
+                            Add lesson
+                        </DropdownMenuItem>
+                        {
+                            lessons && lessons.length > 2 &&
+                            <DropdownMenuItem onSelect={() => router.push(``)}>
+                                <ArrowUpDown />
+                                Rearrange lessons
+                            </DropdownMenuItem>
+                        }
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -232,6 +232,7 @@ model Question {
   type      QuestionType
   order     Int
   prompt    String
+  rewardXp  Int          @map("reward_xp")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
