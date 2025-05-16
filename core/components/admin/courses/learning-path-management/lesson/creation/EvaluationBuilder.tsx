@@ -7,10 +7,10 @@ import { useEvaluation } from "@/hooks/useEvaluation";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { QuestionType } from "@prisma/client";
 import { CheckCircle, CheckSquare, Code, Eye, MoveDown, MoveUp, PlusCircle, Save, Trash2, Trophy } from "lucide-react";
-import { SingleChoiceQuestionEditor } from "../../../evaluation/SingleChoiceQuestionEditor";
+import { SingleChoiceQuestionEditor } from "../../../evaluation/edit/SingleChoiceQuestionEditor";
 import { CodeFillQuestionDto, MultipleChoiceQuestionDto, SingleChoiceQuestionDto } from "@/types/types";
-import { MultipleChoiceQuestionEditor } from "../../../evaluation/MultipleChoiceQuestionEditor";
-import { CodeFillQuestionEditor } from "../../../evaluation/CodeFillQuestionEditor";
+import { MultipleChoiceQuestionEditor } from "../../../evaluation/edit/MultipleChoiceQuestionEditor"; 
+import { CodeFillQuestionEditor } from "../../../evaluation/edit/CodeFillQuestionEditor"; 
 import { useEditingQuestion } from "@/context/EditingQuestionContext";
 import { FullLessonFormType } from "@/schemas/LessonCreatorSchema";
 
