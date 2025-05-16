@@ -27,7 +27,6 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
         addCodeFillQuestion,
         removeQuestion,
         saveQuiz,
-        updateQuestion
     } = useEvaluation();
 
     const questions: FullLessonFormType["quiz"]["questions"] = form.watch("quiz.questions");

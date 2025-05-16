@@ -15,10 +15,10 @@ export const LessonEditor = () => {
 
     useEffect(() => {
         if (activeTab === 'preview') {
-            setExportedContent(editor?.getJSON());
-            console.log(JSON.stringify(exportedContent));
+            const content = editor?.getJSON();
+            setExportedContent(content);
         }
-    }, [activeTab, editor, exportedContent]);
+    }, [activeTab, editor]);
 
     const handleTabChange = (newTab: string) => {
         if (newTab === 'preview' && editor) {

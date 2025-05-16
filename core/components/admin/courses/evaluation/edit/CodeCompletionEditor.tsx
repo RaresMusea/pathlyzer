@@ -14,18 +14,17 @@ export const CodeCompletionEditor = ({ question }: { question: CodeFillQuestionD
     const { editingQuestionIndex } = useEditingQuestion();
     const [codeSnippet, setCodeSnippet] = useState<string>(question.codeSection.code);
 
-    if (editingQuestionIndex === null) {
-        return null;
-    }
-
     useEffect(() => {
         if (editingQuestionIndex === null) return;
 
         const matches = [...codeSnippet.matchAll(/~~(.*?)~~/g)].map(m => m[1]);
 
         form.setValue(`quiz.questions.${editingQuestionIndex}.codeSection.correct`, matches, { shouldValidate: true });
-        console.log(form.getValues(`quiz.questions.${editingQuestionIndex}.codeSection.correct`));
-    }, [codeSnippet, editingQuestionIndex, form])
+    }, [codeSnippet, editingQuestionIndex, form]);
+
+    if (editingQuestionIndex === null) {
+        return null;
+    }
 
     const handleCodeChange = (value: string) => {
         setCodeSnippet(value);
@@ -42,7 +41,7 @@ export const CodeCompletionEditor = ({ question }: { question: CodeFillQuestionD
                 {parts.map((part, index) => {
                     if (part.startsWith('~~') && part.endsWith('~~')) {
                         const content = part.substring(2, part.length - 2);
-                        
+
                         return (
                             <span key={index} className="bg-primary/10 text-primary border border-dashed border-primary/40 rounded px-1 mx-0.5">
                                 {content}
