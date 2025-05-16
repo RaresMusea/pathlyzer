@@ -6,6 +6,16 @@ const PORT: number = 3001;
 export const ENDPOINT_ROOT: string = `http://localhost:${PORT}`;
 export const EXECUTION_ENGINE_URI: string = `ws://localhost:3001`;
 
+// #region Animations related types
+
+export enum AnimationDirection {
+    FORWARDS,
+    BACKWARDS,
+    NONE
+}
+
+// #endregion
+
 // #region UserStats-related types
 
 export type UserStatsDto = {

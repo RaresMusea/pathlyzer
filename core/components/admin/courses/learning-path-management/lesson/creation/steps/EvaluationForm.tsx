@@ -37,6 +37,9 @@ export const EvaluationForm = ({ quizType }: { quizType: QuizType }) => {
                         <EvaluationBuilder evaluationType={getFormattedType(quizType)} setActiveTab={setActiveTab} />
                     </EditingQuestionProvider>
                 </TabsContent>
+                <TabsContent value="preview" className="mt-6">
+                    
+                </TabsContent>
             </Tabs>
         </motion.div>
     )

@@ -1,7 +1,7 @@
 "use client";
 
 import { CodeFillQuestionDto } from "@/types/types";
-import { QuestionEditorFormGeneric } from "./QuestionEditorFormGeneric";
+import { QuestionEditorFormGeneric } from "./QuestionEditorFormGeneric"; 
 import { CodeCompletionEditor } from "./CodeCompletionEditor";
 
 export const CodeFillQuestionEditor = ({ question }: { question: CodeFillQuestionDto }) => {
