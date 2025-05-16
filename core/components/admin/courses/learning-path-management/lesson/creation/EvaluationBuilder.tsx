@@ -12,6 +12,7 @@ import { CodeFillQuestionDto, MultipleChoiceQuestionDto, SingleChoiceQuestionDto
 import { MultipleChoiceQuestionEditor } from "../../../evaluation/MultipleChoiceQuestionEditor";
 import { CodeFillQuestionEditor } from "../../../evaluation/CodeFillQuestionEditor";
 import { useEditingQuestion } from "@/context/EditingQuestionContext";
+import { FullLessonFormType } from "@/schemas/LessonCreatorSchema";
 
 export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluationType: string, setActiveTab: (tab: string) => void }) => {
     const {
@@ -29,7 +30,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
         updateQuestion
     } = useEvaluation();
 
-    const questions = form.watch("quiz.questions");
+    const questions: FullLessonFormType["quiz"]["questions"] = form.watch("quiz.questions");
 
     const { editingQuestionIndex, setEditingQuestionIndex } = useEditingQuestion();
 

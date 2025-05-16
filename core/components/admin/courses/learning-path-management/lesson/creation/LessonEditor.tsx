@@ -18,7 +18,7 @@ export const LessonEditor = () => {
             setExportedContent(editor?.getJSON());
             console.log(JSON.stringify(exportedContent));
         }
-    }, [activeTab]);
+    }, [activeTab, editor, exportedContent]);
 
     const handleTabChange = (newTab: string) => {
         if (newTab === 'preview' && editor) {

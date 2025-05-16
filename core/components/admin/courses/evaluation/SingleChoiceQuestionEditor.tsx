@@ -13,6 +13,7 @@ import { SingleChoiceQuestionDto } from "@/types/types";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Select, SelectItem } from "@/components/ui/select";
 import { GripVertical, PlusCircle, Trash2 } from "lucide-react";
+import { SingleChoiceQuestionError } from "@/schemas/LessonCreatorSchema";
 
 const xpRewards: number[] = [5, 10, 20, 25, 50, 75, 100];
 
@@ -116,15 +117,20 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                     render={({ field, fieldState }) => {
                         console.log("Field state error", fieldState.error);
 
-                        const choices = field.value;
-                        const correctChoiceId = choices.find((c) => c.isCorrect)?.id || "";
-                        const questionError = form.formState.errors.quiz?.questions?.[editingQuestionIndex];
+                        const choices = field.value as Array<{ id?: string; text: string; isCorrect: boolean }>;
 
+                        const correctChoiceId = choices.find((c) => c.isCorrect)?.id || "";
+                        const questionError = form.formState.errors.quiz?.questions?.[editingQuestionIndex] as SingleChoiceQuestionError;
                         const globalChoicesError =
-                            questionError && typeof (questionError as any)?.choices === "object" && "message" in (questionError as any).choices
-                                ? ((questionError as any).choices as { message: string }).message
+                            questionError?.choices &&
+                                !Array.isArray(questionError.choices) &&
+                                "message" in questionError.choices
+                                ? questionError.choices.message
                                 : null;
-                        const choiceErrors = (form.formState.errors.quiz?.questions?.[editingQuestionIndex] as any)?.choices;
+
+                        const choiceErrors = Array.isArray(questionError?.choices)
+                            ? questionError.choices
+                            : undefined;
 
                         console.warn("Global choices error", globalChoicesError);
 

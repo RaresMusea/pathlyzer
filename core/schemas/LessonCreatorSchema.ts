@@ -1,3 +1,4 @@
+import { FieldErrors } from 'react-hook-form';
 import * as z from 'zod';
 
 const LessonDetailsSchema = z.object({
@@ -97,3 +98,11 @@ export const FullLessonSchema = z.object({
 });
 
 export type FullLessonFormType = z.infer<typeof FullLessonSchema>;
+
+type SingleQuestion = z.infer<typeof SingleQuestionSchema>;
+type MultipleQuestion = z.infer<typeof MultipleQuestionSchema>;
+type CodeFillQuestion = z.infer<typeof CodeFillQuestionSchema>;
+
+type Question = SingleQuestion | MultipleQuestion | CodeFillQuestion;
+export type QuestionError = FieldErrors<Question>;
+export type SingleChoiceQuestionError = FieldErrors<SingleQuestion>;
