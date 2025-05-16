@@ -14,7 +14,7 @@ import { SingleChoiceQuestionError } from "@/schemas/LessonCreatorSchema";
 import { QuestionEditorFormGeneric } from "./QuestionEditorFormGeneric";
 
 export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoiceQuestionDto }) => {
-    const { form, addAnswerChoice, removeAnswerChoice, updateQuestion, updateQuestionPrompt, handlChoiceDragEnd } = useEvaluation();
+    const { form, addAnswerChoice, removeAnswerChoice, updateQuestion, handlChoiceDragEnd } = useEvaluation();
     const { editingQuestionIndex } = useEditingQuestion();
 
     if (editingQuestionIndex === null) {
@@ -35,7 +35,7 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                 <FormField
                     control={form.control}
                     name={`quiz.questions.${editingQuestionIndex}.choices`}
-                    render={({ field, fieldState }) => {
+                    render={({ field }) => {
                         const choices = field.value as Array<{ id?: string; text: string; isCorrect: boolean }>;
 
                         const correctChoiceId = choices.find((c) => c.isCorrect)?.id || "";

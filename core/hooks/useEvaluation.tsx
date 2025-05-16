@@ -64,11 +64,11 @@ export function useEvaluation() {
             prompt: 'Code fill question',
             order: questions.length + 1,
             rewardXp: 5,
-            codeSections: [{
-                language: 'javascript',
-                code: 'function func() {\n  // Your code here\n  [[return 42]]\n}',
+            codeSection: {
+                language: 'js',
+                code: 'function func() {\n  // Your code here\n  ~~return 42~~\n}',
                 correct: ['return 42'],
-            }]
+            }
         };
 
         setQuestions([...questions, newQuestion]);

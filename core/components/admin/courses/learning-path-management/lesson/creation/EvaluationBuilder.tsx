@@ -195,7 +195,6 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                             ) : (
                                 <CodeFillQuestionEditor
                                     question={questions[editingQuestionIndex] as CodeFillQuestionDto}
-                                    onChange={(updatedQuestion) => updateQuestion(editingQuestionIndex, updatedQuestion)}
                                 />
                             )}
                         </CardContent>
