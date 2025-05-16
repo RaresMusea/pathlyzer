@@ -207,6 +207,22 @@ export function useEvaluation() {
         }
     }
 
+    const handlChoiceDragEnd = (result: DropResult, question: SingleChoiceQuestionDto | MultipleChoiceQuestionDto) => {
+        if (!result.destination) return;
+
+        const newChoices = [...question.choices];
+        const [movedChoice] = newChoices.splice(result.source.index, 1);
+        newChoices.splice(result.destination.index, 0, movedChoice);
+
+        if (editingQuestionIndex !== null) {
+            const updatedQuestion = {
+                ...question,
+                choices: newChoices
+            };
+            updateQuestion(editingQuestionIndex, updatedQuestion);
+        }
+    }
+
     const moveQuestionUp = (index: number) => {
         if (index === 0) return;
 
@@ -296,6 +312,7 @@ export function useEvaluation() {
         moveQuestionUp,
         moveQuestionDown,
         handleDragEnd,
+        handlChoiceDragEnd,
         getQuestionTypeIcon,
         getQuestionTypeLabel
     }

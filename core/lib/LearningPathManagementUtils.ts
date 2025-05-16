@@ -1,0 +1,1 @@
+export const xpRewards: number[] = [5, 10, 20, 25, 50, 75, 100];

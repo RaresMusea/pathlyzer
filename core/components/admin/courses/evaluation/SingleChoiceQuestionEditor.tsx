@@ -10,36 +10,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEditingQuestion } from "@/context/EditingQuestionContext";
 import { useEvaluation } from "@/hooks/useEvaluation";
 import { SingleChoiceQuestionDto } from "@/types/types";
-import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Select, SelectItem } from "@/components/ui/select";
 import { GripVertical, PlusCircle, Trash2 } from "lucide-react";
 import { SingleChoiceQuestionError } from "@/schemas/LessonCreatorSchema";
-
-const xpRewards: number[] = [5, 10, 20, 25, 50, 75, 100];
+import { xpRewards } from "@/lib/LearningPathManagementUtils";
+import { QuestionEditorFormGeneric } from "./QuestionEditorFormGeneric";
 
 export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoiceQuestionDto }) => {
-    const { form, addAnswerChoice, removeAnswerChoice, updateQuestion, updateQuestionPrompt } = useEvaluation();
+    const { form, addAnswerChoice, removeAnswerChoice, updateQuestion, updateQuestionPrompt, handlChoiceDragEnd } = useEvaluation();
     const { editingQuestionIndex } = useEditingQuestion();
-
-    if (editingQuestionIndex === null) {
-        return;
-    }
-
-    const handleDragEnd = (result: DropResult) => {
-        if (!result.destination) return;
-
-        const newChoices = [...question.choices];
-        const [movedChoice] = newChoices.splice(result.source.index, 1);
-        newChoices.splice(result.destination.index, 0, movedChoice);
-
-        if (editingQuestionIndex !== null) {
-            const updatedQuestion = {
-                ...question,
-                choices: newChoices
-            };
-            updateQuestion(editingQuestionIndex, updatedQuestion);
-        }
-    }
 
     if (editingQuestionIndex === null) {
         return null
@@ -47,6 +27,7 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
 
     return (
         <div className="space-y-6">
+            <QuestionEditorFormGeneric question={question} />
             <div>
                 <FormField control={form.control} name={`quiz.questions.${editingQuestionIndex}.prompt`} render={({ field }) => (
                     <FormItem>
@@ -156,7 +137,7 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                         return (
                             <FormItem>
                                 {globalChoicesError !== null && <FormMessage />}
-                                <DragDropContext onDragEnd={handleDragEnd}>
+                                <DragDropContext onDragEnd={(result) => handlChoiceDragEnd(result, question)}>
                                     <Droppable droppableId="options">
                                         {(provided) => (
                                             <div
@@ -167,13 +148,10 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                                                 <RadioGroup
                                                     value={correctChoiceId}
                                                     onValueChange={onCorrectChange}
-                                                    className="space-y-3"
+                                                    className="space-y-1"
                                                 >
                                                     {choices.map((choice, index) => {
                                                         const errorMessage = choiceErrors?.[index]?.text?.message;
-
-                                                        console.log("Error Message", errorMessage)
-
                                                         return (
                                                             <Draggable
                                                                 key={choice.id}
