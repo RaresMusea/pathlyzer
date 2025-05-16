@@ -191,7 +191,6 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                             ) : questions[editingQuestionIndex].type === QuestionType.MULTIPLE ? (
                                 <MultipleChoiceQuestionEditor
                                     question={questions[editingQuestionIndex] as MultipleChoiceQuestionDto}
-                                    onChange={(updatedQuestion) => updateQuestion(editingQuestionIndex, updatedQuestion)}
                                 />
                             ) : (
                                 <CodeFillQuestionEditor

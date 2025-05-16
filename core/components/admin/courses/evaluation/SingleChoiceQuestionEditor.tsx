@@ -1,20 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { SelectContent, SelectGroup, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useEditingQuestion } from "@/context/EditingQuestionContext";
 import { useEvaluation } from "@/hooks/useEvaluation";
 import { SingleChoiceQuestionDto } from "@/types/types";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import { Select, SelectItem } from "@/components/ui/select";
 import { GripVertical, PlusCircle, Trash2 } from "lucide-react";
 import { SingleChoiceQuestionError } from "@/schemas/LessonCreatorSchema";
-import { xpRewards } from "@/lib/LearningPathManagementUtils";
 import { QuestionEditorFormGeneric } from "./QuestionEditorFormGeneric";
 
 export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoiceQuestionDto }) => {
@@ -29,62 +25,6 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
         <div className="space-y-6">
             <QuestionEditorFormGeneric question={question} />
             <div>
-                <FormField control={form.control} name={`quiz.questions.${editingQuestionIndex}.prompt`} render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Question prompt</FormLabel>
-                        <FormControl>
-                            <Textarea
-                                id="question-text"
-                                {...field}
-                                onChange={(e) => {
-                                    field.onChange(e);
-                                    updateQuestionPrompt(question, e.target.value);
-                                }}
-                                className="mt-1"
-                                rows={3}
-                            />
-                        </FormControl>
-                        <FormMessage></FormMessage>
-                    </FormItem>
-                )} />
-                <FormField
-                    control={form.control}
-                    name={`quiz.questions.${editingQuestionIndex}.rewardXp`}
-                    render={({ field }) => (
-                        <FormItem className="mt-3">
-                            <FormLabel>XP reward</FormLabel>
-                            <FormControl>
-                                <Select
-                                    value={String(field.value ?? "")}
-                                    onValueChange={(newValue) => {
-                                        field.onChange(parseInt(newValue));
-                                        updateQuestion(editingQuestionIndex, {
-                                            ...question,
-                                            rewardXp: parseInt(newValue),
-                                        });
-                                    }}
-                                >
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Choose a reward" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {xpRewards.map((reward, index) => (
-                                                <SelectItem key={index} value={`${reward}`}>
-                                                    {reward} XP
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </div>
-
-            <div>
                 <div className="flex justify-between items-center mb-2">
                     <Label>Answer choices (only one valid answer)</Label>
                     <Button variant="outline" size="sm" onClick={() => addAnswerChoice(question)}>
@@ -96,8 +36,6 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                     control={form.control}
                     name={`quiz.questions.${editingQuestionIndex}.choices`}
                     render={({ field, fieldState }) => {
-                        console.log("Field state error", fieldState.error);
-
                         const choices = field.value as Array<{ id?: string; text: string; isCorrect: boolean }>;
 
                         const correctChoiceId = choices.find((c) => c.isCorrect)?.id || "";

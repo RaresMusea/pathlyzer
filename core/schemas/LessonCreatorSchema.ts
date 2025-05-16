@@ -26,7 +26,7 @@ const SingleQuestionSchema = z.object({
     choices: z.array(
         z.object({
             id: z.string().optional(),
-            text: z.string().min(1, "Choice text is required"),
+            text: z.string().min(1, "Answer choice text is required!").max(250, 'Answer choice must not exceed 250 characters!'),
             isCorrect: z.boolean(),
         })
     )
@@ -47,14 +47,14 @@ const MultipleQuestionSchema = z.object({
     choices: z.array(
         z.object({
             id: z.string().optional(),
-            text: z.string().min(1),
+            text: z.string().min(1, 'Answer choice text is required!').max(250, 'Answer choice must not exceed 250 characters!'),
             isCorrect: z.boolean(),
         })
     )
         .min(2)
-        .refine((choices) => choices.some(c => c.isCorrect), {
-            message: "At least one correct answer must be selected"
-        }),
+        .refine((choices) => choices.filter(c => c.isCorrect).length >= 2, {
+            message: "At least two correct answers must be selected"
+        })
 });
 
 const CodeFillQuestionSchema = z.object({
@@ -106,3 +106,4 @@ type CodeFillQuestion = z.infer<typeof CodeFillQuestionSchema>;
 type Question = SingleQuestion | MultipleQuestion | CodeFillQuestion;
 export type QuestionError = FieldErrors<Question>;
 export type SingleChoiceQuestionError = FieldErrors<SingleQuestion>;
+export type MultipleChoiceQuestionError = FieldErrors<MultipleQuestion>;
