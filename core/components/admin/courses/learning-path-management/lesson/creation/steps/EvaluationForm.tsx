@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { EvaluationBuilder } from "../EvaluationBuilder";
 import { EditingQuestionProvider } from "@/context/EditingQuestionContext";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { EvaluationPreview } from "@/components/admin/courses/evaluation/preview/EvaluationPreview";
 
 const getFormattedType = (quizType: QuizType): string => {
     return (quizType === QuizType.LESSON_QUIZ) ? 'Lesson quiz' : 'Exam';
@@ -32,14 +34,15 @@ export const EvaluationForm = ({ quizType }: { quizType: QuizType }) => {
                     <TabsTrigger value="builder">{getFormattedType(quizType)} builder</TabsTrigger>
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
-                <TabsContent value="builder" className="mt-6">
-                    <EditingQuestionProvider>
+                <EditingQuestionProvider>
+                    <TabsContent value="builder" className="mt-6">
+
                         <EvaluationBuilder evaluationType={getFormattedType(quizType)} setActiveTab={setActiveTab} />
-                    </EditingQuestionProvider>
-                </TabsContent>
-                <TabsContent value="preview" className="mt-6">
-                    
-                </TabsContent>
+                    </TabsContent>
+                    <TabsContent value="preview" className="mt-6">
+                        <EvaluationPreview goBack={() => { setActiveTab('builder') }} />
+                    </TabsContent>
+                </EditingQuestionProvider>
             </Tabs>
         </motion.div>
     )

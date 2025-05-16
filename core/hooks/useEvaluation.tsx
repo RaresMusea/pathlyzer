@@ -4,7 +4,7 @@ import { useEditingQuestion } from "@/context/EditingQuestionContext";
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
 import { BaseChoiceDto, CodeFillQuestionDto, MultipleChoiceQuestionDto, QuestionMutationDto, SingleChoiceQuestionDto } from "@/types/types";
 import { DropResult } from "@hello-pangea/dnd";
-import { QuestionType } from "@prisma/client";
+import { QuestionType, QuizType } from "@prisma/client";
 import { CheckCircle, CheckSquare, Code, FileText } from "lucide-react";
 
 export function useEvaluation() {
@@ -292,6 +292,16 @@ export function useEvaluation() {
         }
     }
 
+    const getEvaluationType = () => {
+        const type = form.getValues('quiz.type');
+
+        if (type === QuizType.LESSON_QUIZ) {
+            return 'lesson quiz'
+        }
+
+        return 'unit exam';
+    }
+
     const isChoiceQuestion = (question: QuestionMutationDto): question is SingleChoiceQuestionDto | MultipleChoiceQuestionDto => {
         return "choices" in question;
     }
@@ -314,6 +324,7 @@ export function useEvaluation() {
         handleDragEnd,
         handlChoiceDragEnd,
         getQuestionTypeIcon,
-        getQuestionTypeLabel
+        getQuestionTypeLabel,
+        getEvaluationType
     }
 }

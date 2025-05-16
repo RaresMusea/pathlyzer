@@ -8,15 +8,50 @@ import { useEvaluation } from "@/hooks/useEvaluation";
 import { FullLessonFormType } from "@/schemas/LessonCreatorSchema";
 import { AnimationDirection, CodeFillQuestionDto, MultipleChoiceQuestionDto, SingleChoiceQuestionDto } from "@/types/types";
 import { QuestionType } from "@prisma/client";
-import { CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import { useCallback, useState } from "react";
+import { NoQuestions } from "./NoQuestions";
+import { AnimatePresence, motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { getLogoBasedOnTech } from "@/exporters/LogoExporter";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import { getCodeFillLangLabelBasedOnValue } from "@/lib/LearningPathManagementUtils";
 
-export const EvaluationPreview = () => {
-    const { form } = useEvaluation();
+const animationVariants = {
+    enter: (direction: number) => {
+        return {
+            x: direction > 0 ? 1000 : -1000,
+            opacity: 0,
+        }
+    },
+    center: {
+        x: 0,
+        opacity: 1,
+    },
+    exit: (direction: number) => {
+        return {
+            x: direction < 0 ? 1000 : -1000,
+            opacity: 0,
+        }
+    },
+};
+
+const transitionConfig = {
+    type: "spring",
+    stiffness: 300,
+    damping: 30,
+}
+
+
+export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
+    const { form, getEvaluationType } = useEvaluation();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [showResults, setShowResults] = useState<boolean>(false)
     const [direction, setDirection] = useState<AnimationDirection>(AnimationDirection.NONE);
     const [answers, setAnswers] = useState<Record<string, any>>({});
+    const theme: string = useTheme().theme || 'dark';
 
     const questions: FullLessonFormType["quiz"]["questions"] = form.watch("quiz.questions");
 
@@ -27,22 +62,26 @@ export const EvaluationPreview = () => {
         });
     }, [setAnswers]);
 
-    const handleMultiChoiceAnswer = useCallback((questionId: string, choiceId: string, checked: boolean) => {
-        const currentAnswers = answers[questionId] || [];
-        let newAnswers
+    const handleMultiChoiceAnswer = useCallback(
+        (questionId: string, choiceId: string, checked: boolean) => {
+            setAnswers((prevAnswers) => {
+                const currentAnswers = prevAnswers[questionId] || [];
+                let newAnswers;
 
-        if (checked) {
-            newAnswers = [...currentAnswers, choiceId];
-        }
-        else {
-            newAnswers = currentAnswers.filter((id: string) => id !== choiceId);
-        }
+                if (checked) {
+                    newAnswers = [...currentAnswers, choiceId];
+                } else {
+                    newAnswers = currentAnswers.filter((id: string) => id !== choiceId);
+                }
 
-        setAnswers({
-            ...answers,
-            [questionId]: newAnswers
-        })
-    }, [setAnswers]);
+                return {
+                    ...prevAnswers,
+                    [questionId]: newAnswers,
+                };
+            });
+        },
+        []
+    );
 
     const handleCodeFillAnswer = useCallback((questionId: string, answerParts: string[]) => {
         setAnswers(prev => ({
@@ -220,36 +259,161 @@ export const EvaluationPreview = () => {
 
         const parts = question.codeSection.code.split(/(~~.*?~~)/g);
 
+        const blankCount = parts.filter((p) => p.startsWith("~~") && p.endsWith("~~")).length;
+
+        const userAnswer = (answers[question.id] || Array(blankCount).fill("")) as string[];
+
+        const handleChange = (index: number, value: string) => {
+            const newAnswers = [...userAnswer];
+            newAnswers[index] = value;
+            handleCodeFillAnswer(question.id!, newAnswers);
+        };
+
+        let blankIndex = 0;
+
         return (
-            <div className="border rounded-md overflow-hidden">
-                <div className="bg-muted p-2 text-xs border-b">
-                    Code Completion
+            <>
+                <h3 className="text-lg font-medium mb-4">{question.prompt}</h3>
+                <div className="border rounded-md overflow-hidden">
+                    <div className="bg-muted p-2 text-xs border-b">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center text-xs">
+                                <Image className="mr-2" src={getLogoBasedOnTech(getCodeFillLangLabelBasedOnValue(question.codeSection.language), theme)} width={25} height={25} alt="Logo tech image" />
+                                <span>{getCodeFillLangLabelBasedOnValue(question.codeSection.language)}</span>
+                            </div>
+                            <span>Code Completion</span>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-primary-foreground">
+                        <pre className="font-mono text-sm whitespace-pre-wrap">
+                            {parts.map((part, index) => {
+                                if (part.startsWith("~~") && part.endsWith("~~")) {
+                                    const currentIndex = blankIndex++;
+                                    return (
+                                        <span key={index} className="inline-block min-w-[100px] my-1">
+                                            <Input
+                                                className="font-mono h-7 px-2 py-1 text-xs"
+                                                placeholder="Fill in the blank"
+                                                value={userAnswer[currentIndex] || ""}
+                                                onChange={(e) => handleChange(currentIndex, e.target.value)}
+                                                disabled={showResults}
+                                            />
+                                        </span>
+                                    );
+                                }
+                                return <span key={index}>{part}</span>;
+                            })}
+                        </pre>
+                    </div>
                 </div>
-                <div className="p-4">
-                    <pre className="font-mono text-sm whitespace-pre-wrap">
-                        {parts.map((part, index) => {
-                            if (part.startsWith("~~") && part.endsWith("~~")) {
-                                const placeholder = part.substring(2, part.length - 2);
-                                return (
-                                    <span key={index} className="inline-block min-w-[100px] my-1">
-                                        <Input
-                                            className="font-mono h-7 px-2 py-1 text-xs"
-                                            placeholder="Fill in the blank"
-                                            defaultValue=""
-                                        />
-                                    </span>
-                                );
-                            }
-                            return <span key={index}>{part}</span>;
-                        })}
-                    </pre>
-                </div>
-            </div>
+            </>
         );
     };
 
-    return (
-        <div></div>
-    )
+    if (questions.length === 0) {
+        return (
+            <NoQuestions />
+        );
+    }
 
+    if (showResults) {
+        const { score, total, percentage } = computeScore();
+
+        return (
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={transitionConfig}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Evaluation Result</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-center py-8">
+                            <div className="text-5xl font-bold mb-4">
+                                {score}/{total}
+                            </div>
+                            <div className="text-2xl mb-6">{percentage}%</div>
+                            <div
+                                className={`text-lg font-medium ${percentage >= 70 ? "text-green-600" : percentage >= 40 ? "text-amber-600" : "text-red-600"
+                                    }`}
+                            >
+                                {percentage >= 95
+                                    ? "Well done! You've shown a strong understanding of the material"
+                                    : percentage >= 40
+                                        ? "Almost there! Let's try once again."
+                                        : "Unfortunately, you'll need to practice more before taking this test once again."}
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-center">
+                        <Button onClick={reset}>Try again</Button>
+                    </CardFooter>
+                </Card>
+            </motion.div>
+        );
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle><h1 className="text-2xl">{form.getValues('quiz.title')}</h1></CardTitle>
+                <CardDescription>Preview {getEvaluationType()}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div>
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="text-sm font-medium">
+                            Question {currentQuestionIndex + 1} of {questions.length}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                            {Math.round((currentQuestionIndex / questions.length) * 100)}% completed
+                        </div>
+                    </div>
+
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
+                        <motion.div
+                            className="bg-primary h-2 rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(currentQuestionIndex / questions.length) * 100}%` }}
+                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                        ></motion.div>
+                    </div>
+
+                    <div className="relative overflow-hidden">
+                        <AnimatePresence initial={false} custom={direction} mode="wait">
+                            <motion.div
+                                key={currentQuestionIndex}
+                                custom={direction}
+                                variants={animationVariants}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={transitionConfig}
+                                className="w-full"
+                            >
+                                {questions[currentQuestionIndex].type === QuestionType.SINGLE
+                                    ? renderSingleChoiceQuestion(questions[currentQuestionIndex] as SingleChoiceQuestionDto)
+                                    : questions[currentQuestionIndex].type === QuestionType.MULTIPLE
+                                        ? renderMultiChoiceQuestion(questions[currentQuestionIndex] as MultipleChoiceQuestionDto)
+                                        : renderCodeFillQuestion(questions[currentQuestionIndex] as CodeFillQuestionDto)}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+
+                    <div className="flex justify-between mt-8">
+                        <Button variant="outline" onClick={navigateToPreviousQuestion} disabled={currentQuestionIndex === 0}>
+                            Back
+                        </Button>
+                        <Button onClick={navigateToNextQuestion}>
+                            {currentQuestionIndex < questions.length - 1 ? "Next question" : "Finalize"}
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button variant="outline" onClick={goBack}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to editor
+                </Button>
+            </CardFooter>
+        </Card>
+    );
 }

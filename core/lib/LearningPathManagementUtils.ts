@@ -51,3 +51,7 @@ export const availableCodeFillProgrammingLanguages: CodeFillProgrammingLanguage[
         value: 'tsx',
     },
 ]
+
+export const getCodeFillLangLabelBasedOnValue = (value: string): string => {
+    return availableCodeFillProgrammingLanguages.find(p => p.value === value)?.label || '';
+}
