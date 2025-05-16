@@ -39,7 +39,7 @@ const SingleQuestionSchema = z.object({
 const MultipleQuestionSchema = z.object({
     id: z.string().optional(),
     type: z.literal("MULTIPLE"),
-    prompt: z.string().min(1),
+    prompt: z.string().min(1, 'Question prompt is required!').max(400, 'The question prompt cannot exceed 400 characters!'),
     order: z.number().int().nonnegative(),
     rewardXp: z.number()
         .int("Reward XP must be an integer")
@@ -60,19 +60,17 @@ const MultipleQuestionSchema = z.object({
 const CodeFillQuestionSchema = z.object({
     id: z.string().optional(),
     type: z.literal("CODE_FILL"),
-    prompt: z.string().min(1),
+    prompt: z.string().min(1, 'Question prompt is required!').max(400, 'The question prompt cannot exceed 400 characters!'),
     order: z.number().int().nonnegative(),
     rewardXp: z.number()
         .int("Reward XP must be an integer")
         .positive("Reward XP must be greater than 0"),
-    codeSections: z.array(
-        z.object({
-            id: z.string().optional(),
-            code: z.string().min(1, "Code section is required"),
-            language: z.string().optional(),
-            correct: z.array(z.string().min(1)).min(1)
-        })
-    ).min(1, "At least one code section is required")
+    codeSection: z.object({
+        id: z.string().optional(),
+        code: z.string().min(1, "Code section is required"),
+        language: z.string().min(1, "Language is required"),
+        correct: z.array(z.string().min(1)).min(1, "At least one correct answer is required"),
+    })
 });
 
 const QuestionSchema = z.discriminatedUnion("type", [

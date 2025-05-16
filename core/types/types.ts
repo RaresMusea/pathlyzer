@@ -259,11 +259,11 @@ export interface MultipleChoiceQuestionDto extends BaseQuestionDto {
 
 export interface CodeFillQuestionDto extends BaseQuestionDto {
     type: "CODE_FILL";
-    codeSections: {
+    codeSection: {
         code: string;
-        language?: string;
+        language: string;
         correct: string[];
-    }[];
+    };
 }
 
 export type QuestionMutationDto = SingleChoiceQuestionDto | MultipleChoiceQuestionDto | CodeFillQuestionDto;
