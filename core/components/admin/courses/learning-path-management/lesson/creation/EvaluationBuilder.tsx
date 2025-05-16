@@ -58,7 +58,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                 </FormItem>
                             )} />
                         </CardTitle>
-                        <CardDescription>{questions.length} questions</CardDescription>
+                        <CardDescription>{questions.length > 0 ? (questions.length === 1 ? `${questions.length} question` : `${questions.length} questions`) : 'No questions yet'}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-3 gap-2 mb-4">

@@ -5,7 +5,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectContent, SelectGroup, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useEditingQuestion } from "@/context/EditingQuestionContext";
 import { useEvaluation } from "@/hooks/useEvaluation";
@@ -17,8 +17,8 @@ import { GripVertical, PlusCircle, Trash2 } from "lucide-react";
 const xpRewards: number[] = [5, 10, 20, 25, 50, 75, 100];
 
 export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoiceQuestionDto }) => {
-    const { form, addAnswerChoice, removeAnswerChoice, updateAnswerChoice, updateQuestion, updateQuestionPrompt } = useEvaluation();
-    const { editingQuestionIndex, setEditingQuestionIndex } = useEditingQuestion();
+    const { form, addAnswerChoice, removeAnswerChoice, updateQuestion, updateQuestionPrompt } = useEvaluation();
+    const { editingQuestionIndex } = useEditingQuestion();
 
     if (editingQuestionIndex === null) {
         return;
@@ -114,12 +114,19 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                     control={form.control}
                     name={`quiz.questions.${editingQuestionIndex}.choices`}
                     render={({ field, fieldState }) => {
-                        console.log(fieldState.error);
+                        console.log("Field state error", fieldState.error);
 
                         const choices = field.value;
-                        console.log("Choices", choices);
                         const correctChoiceId = choices.find((c) => c.isCorrect)?.id || "";
-                        const choiceErrors = form.formState.errors.quiz?.questions?.[editingQuestionIndex]?.choices;
+                        const questionError = form.formState.errors.quiz?.questions?.[editingQuestionIndex];
+
+                        const globalChoicesError =
+                            questionError && typeof (questionError as any)?.choices === "object" && "message" in (questionError as any).choices
+                                ? ((questionError as any).choices as { message: string }).message
+                                : null;
+                        const choiceErrors = (form.formState.errors.quiz?.questions?.[editingQuestionIndex] as any)?.choices;
+
+                        console.warn("Global choices error", globalChoicesError);
 
                         const onCorrectChange = (selectedId: string) => {
                             const updatedChoices = choices.map((c) => ({
@@ -140,15 +147,9 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                             });
                         };
 
-                        const onRemoveChoice = (index: number) => {
-                            if (choices.length <= 2) return;
-                            const updatedChoices = [...choices];
-                            updatedChoices.splice(index, 1);
-                            field.onChange(updatedChoices);
-                        };
-
                         return (
                             <FormItem>
+                                {globalChoicesError !== null && <FormMessage />}
                                 <DragDropContext onDragEnd={handleDragEnd}>
                                     <Droppable droppableId="options">
                                         {(provided) => (
@@ -164,6 +165,9 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                                                 >
                                                     {choices.map((choice, index) => {
                                                         const errorMessage = choiceErrors?.[index]?.text?.message;
+
+                                                        console.log("Error Message", errorMessage)
+
                                                         return (
                                                             <Draggable
                                                                 key={choice.id}
@@ -199,7 +203,15 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                                                                         <Button
                                                                             variant="ghost"
                                                                             size="icon"
-                                                                            onClick={() => removeAnswerChoice(question, index)}
+                                                                            onClick={() => {
+                                                                                const wasCorrect = choice.isCorrect;
+                                                                                removeAnswerChoice(question, index);
+
+                                                                                if (wasCorrect) {
+                                                                                    const updatedChoices = question.choices.filter((_, i) => i !== index);
+                                                                                    field.onChange([...updatedChoices]);
+                                                                                }
+                                                                            }}
                                                                             disabled={choices.length <= 2}
                                                                         >
                                                                             <Trash2 className="h-4 w-4 text-red-500" />
@@ -223,7 +235,6 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                         );
                     }}
                 />
-
             </div>
         </div>
     )
