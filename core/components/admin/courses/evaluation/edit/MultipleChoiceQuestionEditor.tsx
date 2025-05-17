@@ -54,8 +54,9 @@ export const MultipleChoiceQuestionEditor = ({ question }: { question: MultipleC
                             const checked = checkState.valueOf();
 
                             const updatedChoices = choices.map((c) =>
-                                c.id === toggledId ? { ...c, isCorrect: !checked } : c
+                                c.id === toggledId ? { ...c, isCorrect: checked } : c
                             );
+
                             field.onChange(updatedChoices);
                         };
 
