@@ -41,9 +41,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                         <CardTitle>
                             <FormField control={form.control} name="quiz.title" render={({ field }) => (
                                 <FormItem>
-                                    {form.formState.touchedFields.quiz?.title && (
-                                        <FormMessage></FormMessage>
-                                    )}
+                                        <FormMessage />
                                     <FormLabel />
                                     <FormControl>
                                         <input

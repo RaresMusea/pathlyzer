@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { useLessonBuilder } from "@/context/LessonBuilderContext";
 import { motion } from "framer-motion";
@@ -8,7 +9,7 @@ import { ChevronLeft, ChevronRight, Save } from "lucide-react";
 const TOTAL_STEPS: number = 3;
 
 export const LessonFormNavigator = () => {
-    const { currentStep, buttonOptions, onPrevStep, onNextStep } = useLessonBuilder();
+    const { currentStep, buttonOptions, onPrevStep, onNextStep, isTransitioning } = useLessonBuilder();
 
     return (
         <div className="flex justify-between items-center pt-4">
@@ -68,10 +69,16 @@ export const LessonFormNavigator = () => {
                         </Button>
                     </motion.div>
                 ) : (
-                    <Button type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white rounded-md">
-                        <Save className="h-4 w-4 mr-2" />
-                        Save lesson
-                    </Button>
+                    <>
+                        {
+                            isTransitioning ?
+                                <LoadingButton type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] opacity-60 text-white rounded-md">Saving lesson...</LoadingButton> :
+                                <Button type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white rounded-md">
+                                    <Save className="h-4 w-4 mr-2" />
+                                    Save lesson
+                                </Button>
+                        }
+                    </>
                 )}
             </div>
         </div>

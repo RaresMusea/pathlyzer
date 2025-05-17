@@ -1,7 +1,7 @@
 "use client";
 
 import { FullLessonFormType, FullLessonSchema } from "@/schemas/LessonCreatorSchema";
-import { createContext, useCallback, useContext, useEffect, useState, useTransition } from "react";
+import { createContext, useCallback, useContext, useState, useTransition } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LessonDto } from "@/types/types";
@@ -9,7 +9,7 @@ import { useCourseBuilder } from "./CourseBuilderContext";
 import { Editor } from "@tiptap/react";
 import { toast } from "sonner";
 import { saveFullLesson } from "@/actions/LessonsManagement";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ServerActionResult } from "@/actions/globals/Generics";
 
 const BLANK_LESSON_CONTENT: string = '{"type":"doc","content":[{"type":"paragraph","attrs":{"textAlign":"left"}}]}';
@@ -34,6 +34,7 @@ export const LessonBuilderProvider: React.FC<{ children: React.ReactNode, lesson
     const [currentStep, setCurrentStep] = useState<number>(1);
     const pathname = usePathname();
     const { editor } = useCourseBuilder();
+    const router = useRouter();
 
     const form = useForm<FullLessonFormType>({
         resolver: zodResolver(FullLessonSchema),
@@ -70,6 +71,7 @@ export const LessonBuilderProvider: React.FC<{ children: React.ReactNode, lesson
                 
                 if (result.success) {
                     toast.success(result.message);
+                    router.push('../..')
                 }
                 else {
                     toast.error(result.message);
