@@ -344,7 +344,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-center">
-                        <Button onClick={reset}>Try again</Button>
+                        <Button type="button" onClick={reset}>Try again</Button>
                     </CardFooter>
                 </Card>
             </motion.div>
@@ -399,17 +399,17 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
                     </div>
 
                     <div className="flex justify-between mt-8">
-                        <Button variant="outline" onClick={navigateToPreviousQuestion} disabled={currentQuestionIndex === 0}>
+                        <Button type="button" variant="outline" onClick={navigateToPreviousQuestion} disabled={currentQuestionIndex === 0}>
                             Back
                         </Button>
-                        <Button onClick={navigateToNextQuestion}>
+                        <Button type="button" onClick={navigateToNextQuestion}>
                             {currentQuestionIndex < questions.length - 1 ? "Next question" : "Finalize"}
                         </Button>
                     </div>
                 </div>
             </CardContent>
             <CardFooter>
-                <Button variant="outline" onClick={goBack}>
+                <Button type="button" variant="outline" onClick={goBack}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back to editor
                 </Button>

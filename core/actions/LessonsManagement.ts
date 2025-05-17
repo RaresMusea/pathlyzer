@@ -20,8 +20,10 @@ const validate = async (values: FullLessonFormType): Promise<z.SafeParseReturnTy
     return validatedFields;
 }
 
-export async function saveFullLesson(values: FullLessonFormType, unitId: string): Promise<ServerActionResult> {
+export async function saveFullLesson(values: FullLessonFormType, unitId: string | undefined): Promise<ServerActionResult> {
     const validated = await validate(values);
+
+    console.log("Unit ID", unitId);
 
     if (!validated.success) {
         return handleError(validated.error.message);

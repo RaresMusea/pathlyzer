@@ -63,6 +63,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                     <CardContent>
                         <div className="grid grid-cols-3 gap-2 mb-4">
                             <Button
+                                type="button"
                                 onClick={addSingleChoiceQuestion}
                                 variant="outline"
                                 className="flex flex-col h-auto py-2 px-1 sm:flex-row sm:py-1"
@@ -71,6 +72,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                 <span className="text-xs sm:text-sm">Single choice</span>
                             </Button>
                             <Button
+                                type="button"
                                 onClick={addMultipleChoiceQuestion}
                                 variant="outline"
                                 className="flex flex-col h-auto py-2 px-1 sm:flex-row sm:py-1"
@@ -79,6 +81,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                 <span className="text-xs sm:text-sm">Multiple choice</span>
                             </Button>
                             <Button
+                                type="button"
                                 onClick={addCodeFillQuestion}
                                 variant="outline"
                                 className="flex flex-col h-auto py-2 px-1 sm:flex-row sm:py-1">
@@ -111,6 +114,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                                         </div>
                                                         <div className="flex items-center gap-1">
                                                             <Button
+                                                                type="button"
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={(e) => {
@@ -122,6 +126,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                                                 <MoveUp className="h-4 w-4" />
                                                             </Button>
                                                             <Button
+                                                                type="button"
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={(e) => {
@@ -133,6 +138,7 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                                                                 <MoveDown className="h-4 w-4" />
                                                             </Button>
                                                             <Button
+                                                                type="button"
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={(e) => {
@@ -164,11 +170,11 @@ export const EvaluationBuilder = ({ evaluationType, setActiveTab }: { evaluation
                         )}
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                        <Button variant="outline" onClick={() => setActiveTab("preview")}>
+                        <Button type="button" variant="outline" onClick={() => setActiveTab("preview")}>
                             <Eye className="mr-2 h-4 w-4" />
                             Preview {evaluationType.toLowerCase()}
                         </Button>
-                        <Button onClick={saveQuiz} className="bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white">
+                        <Button type="button" onClick={saveQuiz} className="bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white">
                             <Save className="mr-2 h-4 w-4" />
                             Save {evaluationType.toLowerCase()}
                         </Button>

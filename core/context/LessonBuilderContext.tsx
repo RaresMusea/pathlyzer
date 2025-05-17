@@ -1,13 +1,16 @@
 "use client";
 
 import { FullLessonFormType, FullLessonSchema } from "@/schemas/LessonCreatorSchema";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, useTransition } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LessonDto } from "@/types/types";
 import { useCourseBuilder } from "./CourseBuilderContext";
 import { Editor } from "@tiptap/react";
 import { toast } from "sonner";
+import { saveFullLesson } from "@/actions/LessonsManagement";
+import { usePathname } from "next/navigation";
+import { ServerActionResult } from "@/actions/globals/Generics";
 
 const BLANK_LESSON_CONTENT: string = '{"type":"doc","content":[{"type":"paragraph","attrs":{"textAlign":"left"}}]}';
 
@@ -16,6 +19,7 @@ interface LessonBuilderContextProps {
     form: UseFormReturn<FullLessonFormType>;
     buttonOptions: string[];
     editor: Editor | null;
+    isTransitioning: boolean;
 
     onSubmit: (values: FullLessonFormType) => void;
     onNextStep: () => void;
@@ -26,7 +30,9 @@ const LessonBuilderContext = createContext<LessonBuilderContextProps | undefined
 
 export const LessonBuilderProvider: React.FC<{ children: React.ReactNode, lesson?: LessonDto }> = ({ children, lesson }) => {
     const buttonOptions: string[] = ['lesson details', 'lesson content', 'lesson quiz'];
+    const [isTransitioning, startTransition] = useTransition();
     const [currentStep, setCurrentStep] = useState<number>(1);
+    const pathname = usePathname();
     const { editor } = useCourseBuilder();
 
     const form = useForm<FullLessonFormType>({
@@ -52,8 +58,27 @@ export const LessonBuilderProvider: React.FC<{ children: React.ReactNode, lesson
         },
     });
 
-    const onSubmit = async (values: FullLessonFormType) => {
+    const getUnitId = () => {
+        const segments: string[] = pathname.split('/').filter(Boolean);
+        return segments.at(-2);
+    }
 
+    const onSubmit = async (values: FullLessonFormType) => {
+        startTransition(async () => {
+            try {
+                const result: ServerActionResult = await saveFullLesson(values, getUnitId());
+                
+                if (result.success) {
+                    toast.success(result.message);
+                }
+                else {
+                    toast.error(result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error('Un unexpected internal server error occurred while attempting to add a lesson. Please try again later.');
+            }
+        });
     }
 
     const onPrevStep = useCallback(() => {
@@ -100,6 +125,7 @@ export const LessonBuilderProvider: React.FC<{ children: React.ReactNode, lesson
             form,
             buttonOptions,
             editor,
+            isTransitioning,
             onSubmit,
             onNextStep,
             onPrevStep

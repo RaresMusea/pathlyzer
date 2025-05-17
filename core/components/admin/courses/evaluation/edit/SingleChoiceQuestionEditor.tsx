@@ -27,7 +27,7 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
             <div>
                 <div className="flex justify-between items-center mb-2">
                     <Label>Answer choices (only one valid answer)</Label>
-                    <Button variant="outline" size="sm" onClick={() => addAnswerChoice(question)}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => addAnswerChoice(question)}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add choice
                     </Button>
@@ -123,6 +123,7 @@ export const SingleChoiceQuestionEditor = ({ question }: { question: SingleChoic
                                                                         />
 
                                                                         <Button
+                                                                            type="button"
                                                                             variant="ghost"
                                                                             size="icon"
                                                                             onClick={() => {
