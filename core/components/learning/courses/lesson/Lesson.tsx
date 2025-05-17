@@ -11,11 +11,13 @@ import 'react-circular-progressbar/dist/styles.css';
 import { Popover, PopoverArrow, PopoverTrigger } from "@radix-ui/react-popover";
 import { useState } from "react";
 import { PopoverContent } from "@/components/ui/popover";
+import { usePathname } from "next/navigation";
 
 
 type LessonProps = LearningLessonItem & { index: number, totalAmount: number };
 
 export const Lesson = ({ lessonInfo, isCurrent, learningProgress, isAccessible, isCompleted, index, totalAmount }: LessonProps) => {
+    const pathname = usePathname();
     const cycleLength = 8;
     const cycleIndex = index % cycleLength;
     let indentationLevel;
@@ -39,7 +41,7 @@ export const Lesson = ({ lessonInfo, isCurrent, learningProgress, isAccessible, 
     const Icon = isCompleted ? Check : isLast ? Crown : Star;
 
     //To be defined more precisely later on
-    const href = isCompleted ? `/lesson/${lessonInfo.id}` : '/lesson';
+    const href = isCompleted ? `/lesson/${lessonInfo.id}` : `${pathname}/lesson/${lessonInfo.id}`;
 
     const [popoverOpen, setPopoverOpen] = useState(false);
 
