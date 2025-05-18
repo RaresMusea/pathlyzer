@@ -1,6 +1,6 @@
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
-import { isValidAdminSession, isValidSession } from "@/security/Security";
+import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
 import { LessonContentDto } from "@/types/types";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -51,7 +51,19 @@ export const getLessonContent = cache(async (lessonId: string): Promise<LessonCo
         redirect(DEFAULT_LOGIN_REDIRECT);
     }
 
-    const lessonContent: LessonContentDto | null = await db.lesson.findUnique({where: { id: lessonId }, select: {title: true, content: true}});
+    const lessonContent: LessonContentDto | null = await db.lesson.findUnique({ where: { id: lessonId }, select: { title: true, content: true } });
 
     return lessonContent ?? null;
+});
+
+export const lessonExists = cache(async (lessonId: string): Promise<boolean | null> => {
+    const userId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!userId) {
+        return null;
+    }
+
+    const lessonExists: boolean = !!(await db.lesson.findUnique({ where: { id: lessonId }, select: { id: true } }));
+
+    return lessonExists;
 });
