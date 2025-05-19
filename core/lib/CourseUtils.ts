@@ -36,7 +36,6 @@ export const getCurrentProgress = (learningPath: LearningPathItem[]): LearningPa
     return learningPath.reduce(
         (acc, item) => {
             const progress = item.progress;
-            console.log("Progress", item.progress);
             if (progress) {
                 acc.totalLessons += progress.totalLessons;
                 acc.completedLessons += progress.completedLessons;

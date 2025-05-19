@@ -1,4 +1,5 @@
 import { CourseDifficulty, CourseTag, QuestionType } from "@prisma/client";
+import { JsonValue } from "@prisma/client/runtime/library";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
@@ -277,5 +278,10 @@ export interface CodeFillQuestionDto extends BaseQuestionDto {
 }
 
 export type QuestionMutationDto = SingleChoiceQuestionDto | MultipleChoiceQuestionDto | CodeFillQuestionDto;
+
+export interface LessonContentDto {
+    title: string;
+    content: JsonValue;
+}
 
 // #endregion

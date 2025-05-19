@@ -50,7 +50,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [showResults, setShowResults] = useState<boolean>(false)
     const [direction, setDirection] = useState<AnimationDirection>(AnimationDirection.NONE);
-    const [answers, setAnswers] = useState<Record<string, any>>({});
+    const [answers, setAnswers] = useState<Record<string, string[]>>({});
     const theme: string = useTheme().theme || 'dark';
 
     const questions: FullLessonFormType["quiz"]["questions"] = form.watch("quiz.questions");
@@ -58,7 +58,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
     const handleSingleChoiceAnswer = useCallback((questionId: string, optionId: string) => {
         setAnswers({
             ...answers,
-            [questionId]: optionId
+            [questionId]: [optionId]
         });
     }, [setAnswers]);
 
@@ -147,7 +147,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
 
             switch (question.type) {
                 case QuestionType.SINGLE:
-                    if (isSingleChoiceCorrect(question as SingleChoiceQuestionDto, userAnswer)) {
+                    if (isSingleChoiceCorrect(question as SingleChoiceQuestionDto, userAnswer?.[0])) {
                         correctAnswers++;
                     }
                     break;
@@ -184,7 +184,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
             <div>
                 <h3 className="text-lg font-medium mb-4">{question.prompt}</h3>
                 <RadioGroup
-                    value={answers[question.id] || ""}
+                    value={answers[question.id]?.[0] || ""}
                     onValueChange={(value) => handleSingleChoiceAnswer(question.id as string, value)}
                     className="space-y-3"
                 >
@@ -192,7 +192,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
                         <div
                             key={choice.id}
                             className={`flex items-center space-x-2 border p-3 rounded-md ${showResults && choice.isCorrect ? "border-green-500 bg-green-50" : ""
-                                } ${showResults && answers[question.id as string] === choice.id && !choice.isCorrect ? "border-red-500 bg-red-50" : ""
+                                } ${showResults && (answers[question.id as string]?.includes(choice.id ?? "")) && !choice.isCorrect ? "border-red-500 bg-red-50" : ""
                                 }`}
                         >
                             <RadioGroupItem value={choice.id as string} id={choice.id} disabled={showResults} />
@@ -200,7 +200,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
                                 {choice.text}
                             </Label>
                             {showResults && choice.isCorrect && <CheckCircle className="h-5 w-5 text-green-500" />}
-                            {showResults && answers[question.id as string] === choice.id && !choice.isCorrect && (
+                            {showResults && answers[question.id as string]?.includes(choice.id ?? "") && !choice.isCorrect && (
                                 <XCircle className="h-5 w-5 text-red-500" />
                             )}
                         </div>
@@ -218,7 +218,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
                 <h3 className="text-lg font-medium mb-4">{question.prompt}</h3>
                 <div className="space-y-3">
                     {question.choices.map((choice) => {
-                        const isSelected = selectedOptions.includes(choice.id)
+                        const isSelected = selectedOptions.includes(choice.id ?? "")
 
                         return (
                             <div
