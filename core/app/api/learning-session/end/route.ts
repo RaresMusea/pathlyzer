@@ -15,11 +15,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Invalid JSON" }, { status: 400 });
 
     const { lessonId, sessionId, duration = 0, progressType, progress } = body;
-    console.log("LessonId", lessonId);
-    console.log("SessionId", sessionId);
-    console.log("Duration", duration);
-    console.log("ProgressType", progressType);
-    console.log("Progress", progress);
 
     if (!sessionId || typeof duration !== "number")
         return NextResponse.json({ message: "sessionId & duration are required" }, { status: 400 });
