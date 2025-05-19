@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
             await db.lessonProgress.upsert({
                 where: { userId_lessonId: { userId, lessonId } },
                 create: { userId, lessonId, progress },
-                update: { progress, completed: progress >= 100 },
+                update: { progress: progress >= 97 ? 100 : progress, completed: progress >= 97 },
             });
         }
         else {
