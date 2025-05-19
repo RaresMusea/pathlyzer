@@ -3,7 +3,14 @@
 import axios from "axios";
 import { useEffect, useRef } from "react";
 
-export const useLearningSession = (lessonId: string) => {
+type ProgressProvider = () => number | null;
+
+export enum ProgressType {
+    LESSON,
+    QUIZ,
+}
+
+export const useLearningSession = (lessonId: string, progressType: ProgressType, getProgress?: ProgressProvider) => {
     const sessionIdRef = useRef<string | null>(null);
     const activeStartRef = useRef<number | null>(null);
     const pauseStartRef = useRef<number | null>(null);
@@ -37,12 +44,11 @@ export const useLearningSession = (lessonId: string) => {
         }
 
         const duration = Math.max(1, activeDuration);
+        const progress = getProgress ? getProgress() : null;
+        const payload = { lessonId, sessionId: sessionIdRef.current, duration, progressType, progress }
 
         try {
-            await axios.post("/api/learning-session/end", {
-                sessionId: sessionIdRef.current,
-                duration
-            });
+            await axios.post("/api/learning-session/end", payload);
         } catch (error) {
             navigator.sendBeacon(
                 "/api/learning-session/end",
@@ -61,7 +67,7 @@ export const useLearningSession = (lessonId: string) => {
                 pauseStartRef.current = Date.now();
             }
         } else if (pauseStartRef.current) {
-            
+
             if (activeStartRef.current) {
                 const pausedDuration = Date.now() - pauseStartRef.current;
                 activeStartRef.current += pausedDuration;

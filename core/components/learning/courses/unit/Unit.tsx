@@ -1,22 +1,40 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { LearningPathItem } from "@/types/types";
 import { UnitBanner } from "./UnitBanner";
 import { Lesson } from "../lesson/Lesson";
 
 export const Unit = ({ item }: { item: LearningPathItem }) => {
-    const unit = item.unit;
+    const unitRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (item.isCurrent && unitRef.current) {
+            unitRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }, [item.isCurrent]);
+
+    const { unit } = item;
 
     return (
-        <>
-            <UnitBanner title={unit.name} description={unit.description} isCurrent={item.isCurrent} isCompleted={item.isCompleted} />
-            <div className="flex items-center flex-col relative">
-                {
-                    unit.lessons.map((lesson, index) => (
-                        <Lesson key={lesson.lessonInfo.id} {...lesson} index={index} totalAmount={unit.lessons.length - 1} />
-                    ))
-                }
+        <div ref={unitRef} className="unitContainer">
+            <UnitBanner
+                title={unit.name}
+                description={unit.description}
+                isCurrent={item.isCurrent}
+                isCompleted={item.isCompleted}
+            />
+
+            <div className="flex flex-col items-center relative">
+                {unit.lessons.map((lesson, index) => (
+                    <Lesson
+                        key={lesson.lessonInfo.id}
+                        {...lesson}
+                        index={index}
+                        totalAmount={unit.lessons.length - 1}
+                    />
+                ))}
             </div>
-        </>
+        </div>
     );
-}
+};
