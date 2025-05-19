@@ -4,16 +4,20 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Lock, NotebookText } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type UnitBannerProps = {
     title: string;
     description: string;
     isCurrent: boolean;
-    isCompleted: boolean
+    isCompleted: boolean;
+    currentLessonId: string;
 }
 
 
-export const UnitBanner = ({ title, description, isCompleted, isCurrent }: UnitBannerProps) => {
+export const UnitBanner = ({ title, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
+    const pathname = usePathname();
+
     const containerClass = cn(
         "w-full rounded-xl p-5 text-black dark:text-white flex items-center justify-between transition-colors",
         isCurrent && "bg-[var(--pathlyzer-table-border)] text-white",
@@ -24,7 +28,7 @@ export const UnitBanner = ({ title, description, isCompleted, isCurrent }: UnitB
     const buttonClass = cn(
         "transition-colors text-white",
         isCurrent
-            ? "bg-[var(--pathlyzer)] hover:bg-[var(--pathlyzer-table-border)]"
+            ? "bg-primary-foreground/50 hover:bg-primary-foreground/40"
             : "bg-muted text-muted-foreground cursor-not-allowed pointer-events-none"
     );
 
@@ -40,7 +44,7 @@ export const UnitBanner = ({ title, description, isCompleted, isCurrent }: UnitB
                 <>
                     {
                         isCurrent &&
-                        <Link href="#">
+                        <Link href={`${pathname}/lesson/${currentLessonId}`}>
                             <Button className={buttonClass}>
                                 <NotebookText className="mr-2" />
                                 Continue

@@ -19,6 +19,7 @@ export const Unit = ({ item }: { item: LearningPathItem }) => {
     return (
         <div ref={unitRef} className="unitContainer">
             <UnitBanner
+                currentLessonId={item.unit.lessons.find(l => l.isCompleted)?.lessonInfo.id as string}
                 title={unit.name}
                 description={unit.description}
                 isCurrent={item.isCurrent}
