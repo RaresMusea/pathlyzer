@@ -30,4 +30,9 @@ export const getCurrentlyLoggedInUserId = async (): Promise<string> => {
     }
 
     return userId;
-} 
+}
+
+export const getCurrentlyLoggedInUserIdApiRoute = async (): Promise<string | null> => {
+    const session = await auth();
+    return session?.user?.id ?? null;
+};
