@@ -50,7 +50,7 @@ export const getSummarizedUserStats = cache(async (): Promise<SummarizedUserStat
         redirect(LOGIN_PAGE);
     }
 
-    const userStats: SummarizedUserStats | null = await db.userStats.findUnique({ where: { userId: userId }, select: { lives: true, xp: true } })
+    const userStats: SummarizedUserStats | null = await db.userStats.findUnique({ where: { userId: userId }, select: { lives: true, xp: true, level: true } })
 
     return userStats ?? null;
 });

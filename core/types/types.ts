@@ -230,6 +230,7 @@ export interface LearningPathItem {
 export interface SummarizedUserStats {
     lives: number;
     xp: number;
+    level: number;
 }
 
 export interface UnitRearrangementDto {
