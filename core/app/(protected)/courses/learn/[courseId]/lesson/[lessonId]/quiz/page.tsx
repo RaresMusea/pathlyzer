@@ -1,0 +1,18 @@
+import { ExaminationWrapper } from "@/components/learning/courses/examination/ExaminationWrapper";
+import { PageTransition } from "@/components/misc/animations/PageTransition";
+import { QuizType } from "@prisma/client";
+import { notFound } from "next/navigation";
+
+export default async function QuizPage({ params }: { params: Promise<{ courseId: string, lessonId: string }> }) {
+    const { courseId, lessonId } = await params;
+
+    if (!courseId || !lessonId) {
+        return notFound();
+    }
+
+    return (
+        <PageTransition>
+            <ExaminationWrapper type={QuizType.LESSON_QUIZ} />
+        </PageTransition>
+    )
+}
