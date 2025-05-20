@@ -11,8 +11,6 @@ export default async function QuizPage({ params }: { params: Promise<{ courseId:
     }
 
     return (
-        <PageTransition>
-            <ExaminationWrapper type={QuizType.LESSON_QUIZ} />
-        </PageTransition>
+        <ExaminationWrapper type={QuizType.LESSON_QUIZ} />
     )
 }

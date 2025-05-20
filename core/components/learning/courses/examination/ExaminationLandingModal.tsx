@@ -1,13 +1,11 @@
 "use client";
 
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { getAppNavLogo } from "@/exporters/LogoExporter";
+import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { QuizType } from "@prisma/client";
 import { motion } from "framer-motion";
-import { AlertTriangle, Brain, CheckCircle, Heart, X } from "lucide-react";
+import { AlertTriangle, Brain, CheckCircle, Heart } from "lucide-react";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -30,42 +28,11 @@ const itemVariants = {
     },
 }
 
-export const ExaminationLandingModal = ({ type, onExit, onStart }: { type: QuizType, onExit: () => void, onStart: () => void }) => {
-    const getFormattedType = (quizType: QuizType): string => {
-        return (quizType === QuizType.LESSON_QUIZ) ? 'Lesson quiz' : 'Exam';
-    }
+export const ExaminationLandingModal = ({ type, onExit, onStart, openDialog }: { type: QuizType, onExit: () => void, onStart: () => void, openDialog: () => void }) => {
 
     const theme = useTheme().theme;
-
     return (
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] flex flex-col font-nunito transition-colors">
-            <header className="border-b shadow-md border-[hsl(var(--border))] py-2 px-4 sm:px-6">
-                <div className="container mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-
-                    <div className="flex items-center justify-between">
-                        <Image src={getAppNavLogo(theme || 'dark')} width={80} height={96} alt="Logo" />
-                        <div className="flex items-center gap-2 sm:hidden">
-                            <Button variant="ghost" size="icon" onClick={onExit} className="rounded-full">
-                                <X className="h-5 w-5" />
-                            </Button>
-                            <ThemeToggle />
-                        </div>
-                    </div>
-
-                    <h1 className="text-lg sm:text-xl font-bold text-center w-full sm:w-auto">
-                        {getFormattedType(type)} preparation
-                    </h1>
-
-                    <div className="hidden sm:flex items-center gap-2 min-w-[140px] justify-end">
-                        <Button variant="ghost" size="icon" onClick={onExit} className="rounded-full">
-                            <X className="h-5 w-5" />
-                        </Button>
-                        <ThemeToggle />
-                    </div>
-
-                </div>
-            </header>
-
             <main className="flex-1 container mx-auto px-4 py-8 flex flex-col items-center justify-center">
                 <motion.div
                     className="max-w-2xl w-full bg-[hsl(var(--card))] dark:bg-primary-foreground/50 text-[hsl(var(--card-foreground))] rounded-xl shadow-xl overflow-hidden"
