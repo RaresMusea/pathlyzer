@@ -1,5 +1,4 @@
 import { ExaminationWrapper } from "@/components/learning/courses/examination/ExaminationWrapper";
-import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { QuizType } from "@prisma/client";
 import { notFound } from "next/navigation";
 

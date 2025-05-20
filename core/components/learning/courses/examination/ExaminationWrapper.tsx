@@ -36,7 +36,7 @@ export const ExaminationWrapper = ({ type }: { type: QuizType }) => {
                     />
                 )}
             </AnimatePresence>
-            <header className="border-b shadow-md border-[hsl(var(--border))] py-2 px-4 sm:px-6">
+            <header className="border-b font-nunito shadow-md border-[hsl(var(--border))] py-2 px-4 sm:px-6">
                 <div className="container mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                     <div className="flex items-center justify-between">
                         <Image src={getAppNavLogo(theme || 'dark')} width={80} height={96} alt="Logo" />
@@ -52,7 +52,7 @@ export const ExaminationWrapper = ({ type }: { type: QuizType }) => {
                         {getFormattedType(type)} preparation
                     </h1>
 
-                    <div className="hidden sm:flex items-center gap-2 min-w-[140px] justify-end">
+                    <div className="hidden sm:flex items-center gap-2 min-w-[120px] justify-end">
                         <Button variant="ghost" size="icon" onClick={() => setShowExitDialog(true)} className="rounded-full">
                             <X className="h-5 w-5" />
                         </Button>
@@ -63,7 +63,7 @@ export const ExaminationWrapper = ({ type }: { type: QuizType }) => {
             </header>
             {
                 isOnLanding &&
-                <ExaminationLandingModal type={type} onExit={onExit} onStart={() => setIsOnLanding(false)} openDialog={() => setShowExitDialog(true)} />
+                <ExaminationLandingModal type={type} onStart={() => setIsOnLanding(false)} />
             }
         </>
     )
