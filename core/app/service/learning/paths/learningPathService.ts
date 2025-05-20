@@ -3,9 +3,8 @@ import { LOGIN_PAGE } from "@/routes";
 import { getCurrentlyLoggedInUserId, isValidSession } from "@/security/Security";
 import { LearningLessonItem, LearningPathItem, UserCourseUnitDto } from "@/types/types";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 
-export const getLearningPath = cache(async (courseId: string): Promise<LearningPathItem[]> => {
+export const getLearningPath = (async (courseId: string): Promise<LearningPathItem[]> => {
     if (!await isValidSession()) {
         redirect(LOGIN_PAGE);
     }

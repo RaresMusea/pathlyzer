@@ -1,7 +1,7 @@
-import { LOGIN_PAGE } from "@/routes";
-import { getCurrentlyLoggedInUserId, isValidSession } from "@/security/Security";
+import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE } from "@/routes";
+import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute, isValidSession } from "@/security/Security";
 import { redirect } from "next/navigation";
-import { getLowerstOrderLessonId } from "./lessonService";
+import { getLowerstOrderLessonId, lessonExists } from "./lessonService";
 import { db } from "@/persistency/Db";
 import { LessonProgress } from "@prisma/client";
 
@@ -42,4 +42,27 @@ export const addLessonProgress = async (lessonId: string): Promise<LessonProgres
     })
 
     return result ?? null;
+}
+
+export const getCurrentUserLessonProgress = async (lessonId: string): Promise<number | null> => {
+    const currentUserId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!currentUserId) {
+        redirect(DEFAULT_LOGIN_REDIRECT);
+    }
+
+    if (!await lessonExists(lessonId)) {
+        throw new Error('The specified lesson could not be found! Maybe it got removed or your access over it was revoked in the meantime!');
+    }
+
+    const result: { progress: number } | null = await db.lessonProgress.findFirst({
+        where: { lessonId },
+        select: { progress: true }
+    });
+
+    if (!result) {
+        return null;
+    }
+
+    return result.progress;
 }

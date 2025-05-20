@@ -4,10 +4,11 @@ import { getSummarizedUserStats } from "@/app/service/user/userStatsService";
 import { Unit } from "@/components/learning/courses/unit/Unit";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { Progress } from "@/components/ui/progress";
+import { SummarizedUserStatsWrapper } from "@/components/user/SummarizedUserStats";
 import { getCurrentProgress } from "@/lib/CourseUtils";
-import { Heart, Trophy } from "lucide-react";
+import { SummarizedUserStats } from "@/types/types";
 
-export default async function CoursePathPage({ params, }: { params: Promise<{ courseId: string }> }) {
+export default async function CoursePathPage({ params }: { params: Promise<{ courseId: string }> }) {
     const { courseId } = await params;
     const learningPath = await getLearningPath(courseId);
     const course = await getCourseByIdUser(courseId);
@@ -20,19 +21,8 @@ export default async function CoursePathPage({ params, }: { params: Promise<{ co
                 <div className="flex flex-col gap-4 md:gap-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <h1 className="text-2xl font-semibold">{course?.name} - Learning Path</h1>
-
-                        <div className="flex items-center gap-4 text-sm font-medium cursor-pointer">
-                            <div className="flex items-center">
-                                <Heart className={`h-5 w-5 mr-2 ${userStats?.lives ? "text-red-500 fill-red-500" : "text-muted-foreground"}`} />
-                                {userStats?.lives}
-                            </div>
-                            <div className="flex items-center">
-                                <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
-                                {userStats?.xp} XP
-                            </div>
-                        </div>
+                        <SummarizedUserStatsWrapper userStats={userStats as SummarizedUserStats} />
                     </div>
-
                     <div className="w-full md:w-1/2 mx-auto space-y-1">
                         <div className="flex justify-between text-sm text-muted-foreground">
                             <span>Progress: {courseProgress.completedLessons}/{courseProgress.totalLessons}</span>
@@ -43,13 +33,13 @@ export default async function CoursePathPage({ params, }: { params: Promise<{ co
                             max={courseProgress.totalLessons}
                         />
                     </div>
-                </div>
 
-                {learningPath.map((item) => (
-                    <div key={item.unit.id} className="mb-10">
-                        <Unit item={item} />
-                    </div>
-                ))}
+                    {learningPath.map((item) => (
+                        <div key={item.unit.id} className="mb-10">
+                            <Unit item={item} />
+                        </div>
+                    ))}
+                </div>
             </div>
         </PageTransition>
     );
