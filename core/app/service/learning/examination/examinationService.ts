@@ -66,3 +66,22 @@ export const getClientViewQuestions = cache(async (
 
     return null;
 });
+
+export const getExaminationTitle = cache(async (entityId: string, evaluationType: QuizType): Promise<string | null> => {
+    if (!await isValidSession()) {
+        redirect(DEFAULT_LOGIN_REDIRECT);
+    }
+
+    switch (evaluationType) {
+        case QuizType.LESSON_QUIZ: {
+            const result = await db.quiz.findFirst({
+                where: { lessonId: entityId },
+                select: { title: true },
+            });
+            return result?.title ?? null;
+        }
+        //@TODO: Add for exams also
+        default:
+            return null;
+    }
+});
