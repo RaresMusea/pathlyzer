@@ -1,24 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useExamination } from "@/context/ExaminationContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 
-export const ExaminationExitConfirmationDialog = ({ onConfirm, onCancel }: { onConfirm: () => void, onCancel: () => void }) => {
-    const [isVisible, setIsVisible] = useState(true)
+export const ExaminationExitConfirmationDialog = () => {
+    const [isVisible, setIsVisible] = useState(true);
+
+    const {abortExamination, closeAbortModal} = useExamination();
 
     const handleConfirm = () => {
-        setIsVisible(false)
+        setIsVisible(false);
+        
         setTimeout(() => {
-            onConfirm()
+            abortExamination();
         }, 300)
     }
 
     const handleCancel = () => {
-        setIsVisible(false)
+        setIsVisible(false);
+
         setTimeout(() => {
-            onCancel()
+            closeAbortModal();
         }, 300)
     }
 

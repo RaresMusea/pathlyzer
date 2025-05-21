@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useExamination } from "@/context/ExaminationContext";
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
-import { QuizType } from "@prisma/client";
 import { motion } from "framer-motion";
 import { AlertTriangle, Brain, CheckCircle, Heart } from "lucide-react";
 
@@ -23,13 +23,9 @@ const itemVariants = {
     },
 };
 
-export const ExaminationLandingModal = ({
-    type,
-    onStart,
-}: {
-    type: QuizType;
-    onStart: () => void;
-}) => {
+export const ExaminationLandingModal = () => {
+    const { examinationType, toggleExaminationState } = useExamination();
+
     return (
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] flex flex-col font-nunito transition-colors">
             <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center justify-center">
@@ -41,7 +37,7 @@ export const ExaminationLandingModal = ({
                 >
                     <div className="bg-gradient-to-r from-[var(--pathlyzer-table-border)] to-[var(--pathlyzer)] py-5 px-6">
                         <h2 className="text-xl sm:text-2xl font-bold text-white">
-                            Before starting the {getFormattedType(type).toLowerCase()}
+                            Before starting the {getFormattedType(examinationType).toLowerCase()}
                         </h2>
                         <p className="text-white/80 mt-1 text-sm sm:text-base">
                             Review your knowledge and get ready to begin the assessment.
@@ -64,7 +60,7 @@ export const ExaminationLandingModal = ({
                             <div>
                                 <h3 className="text-base sm:text-lg font-semibold mb-1">Lives</h3>
                                 <p className="text-sm sm:text-base text-[hsl(var(--muted-foreground))]">
-                                    This platform uses a life system to keep learners engaged. Each incorrect answer costs you one life. If you lose all your lives, you&apos;ll fail the {getFormattedType(type).toLowerCase()}. You can regain lives by completing previous assessments.
+                                    This platform uses a life system to keep learners engaged. Each incorrect answer costs you one life. If you lose all your lives, you&apos;ll fail the {getFormattedType(examinationType).toLowerCase()}. You can regain lives by completing previous assessments.
                                 </p>
                             </div>
                         </motion.div>
@@ -130,11 +126,11 @@ export const ExaminationLandingModal = ({
                             transition={{ delay: 1, duration: 0.5 }}
                         >
                             <Button
-                                onClick={onStart}
+                                onClick={toggleExaminationState}
                                 size="lg"
                                 className="bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white px-6 py-4 text-base rounded-lg shadow-md transition-all duration-300 hover:shadow-xl"
                             >
-                                Take {getFormattedType(type).toLowerCase()}
+                                Take {getFormattedType(examinationType).toLowerCase()}
                             </Button>
                         </motion.div>
                     </motion.div>
