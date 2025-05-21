@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react"
-import { ArrowLeft, ChevronLeft, ChevronRight, CircleArrowLeft, Menu } from "lucide-react"
+import { ChevronLeft, ChevronRight, CircleArrowLeft, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { TableOfContents } from "./TableOfContents"

@@ -45,7 +45,7 @@ export const OutOfFocusWarningModal = () => {
                                 <AlertTriangle className="h-10 w-10 text-white mx-auto" />
                             </motion.div>
                             <h2 className="text-2xl font-bold text-white mt-2">Attention</h2>
-                            <p className="text-white/90 mt-1">We've noticed that you left the quiz.</p>
+                            <p className="text-white/90 mt-1">We&apos;ve noticed that you left the quiz.</p>
                         </div>
 
                         {/* Body */}
@@ -61,11 +61,11 @@ export const OutOfFocusWarningModal = () => {
                                 transition={{ delay: 0.5 }}
                             >
                                 <h3 className="text-xl font-semibold mb-4 text-foreground">
-                                    Looking up answers elsewhere won't help you!
+                                    Looking up answers elsewhere won&apos;t help you!
                                 </h3>
                                 <p className="text-muted-foreground mb-4">
-                                    Searching for answers in other tabs or windows doesn't contribute to real knowledge retention.
-                                    The quiz is designed to test what you've already learned.
+                                    Searching for answers in other tabs or windows doesn&apos;t contribute to real knowledge retention.
+                                    The quiz is designed to test what you&apos;ve already learned.
                                 </p>
                                 <p className="text-muted-foreground font-medium">
                                     Try to answer based on your current knowledge.<br/> It&apos;s much more beneficial for long-term learning!

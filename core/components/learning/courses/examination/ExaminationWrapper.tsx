@@ -1,6 +1,5 @@
 "use client";
 
-import { QuizType } from "@prisma/client";
 import { ExaminationLandingModal } from "./ExaminationLandingModal";
 import { ExaminationExitConfirmationDialog } from "./ExaminationExitConfirmationDialog";
 import { AnimatePresence } from "framer-motion";
@@ -10,12 +9,11 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { ExaminationComponent } from "./ExaminationComponent";
 import { ExaminationState, useExamination } from "@/context/ExaminationContext";
 
 export const ExaminationWrapper = () => {
-    const {examinationState, examinationType, abortDialogVisible, inferExaminationTitle, openAbortModal} = useExamination();
+    const {examinationState, abortDialogVisible, inferExaminationTitle, openAbortModal} = useExamination();
     const theme = useTheme().theme;
 
     return (

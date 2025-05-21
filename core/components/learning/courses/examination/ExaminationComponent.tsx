@@ -42,7 +42,7 @@ export const ExaminationComponent = () => {
             document.removeEventListener('visibilitychange', handleViewSwitch);
             document.removeEventListener('blur', handleBlur);
         }
-    }, [focusLossCount]);
+    }, [focusLossCount, handleFocusLoss]);
 
     return (
         <div>
