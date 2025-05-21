@@ -291,8 +291,15 @@ export interface CodeSectionDto {
   language?: string;
 }
 
+export interface AnswerChoiceDto {
+    id?: string;
+    questionId: string;
+    text: string;
+}
+
 export interface ExaminationClientViewDto extends BaseQuestionDto {
     codeSection?: CodeSectionDto;
+    answerChoices?: AnswerChoiceDto[];
 }
 
 // #endregion

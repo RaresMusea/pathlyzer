@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { getQuizIdByLessonId } from "../quiz/quizService";
 import { db } from "@/persistency/Db";
-import { BaseQuestionDto, ExaminationClientViewDto } from "@/types/types";
-import { getClientCodeSection } from "./quiz/questionService";
+import { AnswerChoiceDto, BaseQuestionDto, ExaminationClientViewDto } from "@/types/types";
+import { getClientAnswerChoices, getClientCodeSection } from "./quiz/questionService";
 import { shuffleArray } from "@/lib/Generics";
 
 export const getClientViewQuestions = cache(async (
@@ -41,6 +41,16 @@ export const getClientViewQuestions = cache(async (
                     return {
                         ...question,
                         codeSection: maskedCodeSection,
+                    };
+                }
+
+                if (question.type === QuestionType.SINGLE || question.type === QuestionType.MULTIPLE) {
+                    const answerChoices: AnswerChoiceDto[] = await getClientAnswerChoices(question.id as string);
+                    if (!answerChoices || answerChoices.length === 0) return null;
+
+                    return {
+                        ...question,
+                        answerChoices: shuffleArray(answerChoices)
                     };
                 }
 
