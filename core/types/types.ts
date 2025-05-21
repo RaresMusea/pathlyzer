@@ -285,4 +285,14 @@ export interface LessonContentDto {
     content: JsonValue;
 }
 
+export interface CodeSectionDto {
+  id?: string;
+  code: string;
+  language?: string;
+}
+
+export interface ExaminationClientViewDto extends BaseQuestionDto {
+    codeSection?: CodeSectionDto;
+}
+
 // #endregion
