@@ -64,7 +64,7 @@ export const ExaminationLandingModal = ({
                             <div>
                                 <h3 className="text-base sm:text-lg font-semibold mb-1">Lives</h3>
                                 <p className="text-sm sm:text-base text-[hsl(var(--muted-foreground))]">
-                                    This platform uses a life system to keep learners engaged. Each incorrect answer costs you one life. If you lose all your lives, you'll fail the {getFormattedType(type).toLowerCase()}. You can regain lives by completing previous assessments.
+                                    This platform uses a life system to keep learners engaged. Each incorrect answer costs you one life. If you lose all your lives, you&apos;ll fail the {getFormattedType(type).toLowerCase()}. You can regain lives by completing previous assessments.
                                 </p>
                             </div>
                         </motion.div>
