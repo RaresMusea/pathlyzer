@@ -7,6 +7,7 @@ import { getQuizIdByLessonId } from "../quiz/quizService";
 import { db } from "@/persistency/Db";
 import { BaseQuestionDto, ExaminationClientViewDto } from "@/types/types";
 import { getClientCodeSection } from "./quiz/questionService";
+import { shuffleArray } from "@/lib/Generics";
 
 export const getClientViewQuestions = cache(async (
     quizType: QuizType,
@@ -49,7 +50,8 @@ export const getClientViewQuestions = cache(async (
             })
         );
 
-        return mappedQuestions.filter((q): q is ExaminationClientViewDto => q !== null);
+        const filteredQuestions: ExaminationClientViewDto[] = mappedQuestions.filter((q): q is ExaminationClientViewDto => q !== null);
+        return shuffleArray(filteredQuestions);
     }
 
     return null;
