@@ -13,7 +13,7 @@ export const ExaminationExitConfirmationDialog = () => {
 
     const handleConfirm = () => {
         setIsVisible(false);
-        
+
         setTimeout(() => {
             abortExamination();
         }, 300)

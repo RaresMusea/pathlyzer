@@ -1,5 +1,6 @@
 "use client";
 
+import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { QuizType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState } from "react";
@@ -24,6 +25,7 @@ interface ExaminationContextProps {
     getSimplifiedExaminationType: () => string;
     openOutOfFocusModal: () => void;
     closeOutOfFocusModal: () => void;
+    inferExaminationTitle: () => string;
 }
 
 const ExaminationContext = createContext<ExaminationContextProps | undefined>(undefined);
@@ -61,6 +63,13 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, examinat
         setExaminationState(examinationState === ExaminationState.LANDING ? ExaminationState.EXAMINATION : ExaminationState.EXAMINATION);
     }
 
+    const inferExaminationTitle = (): string => {
+        if (examinationState === ExaminationState.LANDING) {
+            return `${getFormattedType(examinationType)} preparation`
+        }
+        return examinationTitle;
+    }
+
 
     const getSimplifiedExaminationType = (): string => {
         if (examinationType === QuizType.LESSON_QUIZ) {
@@ -90,7 +99,8 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, examinat
                 toggleExaminationState,
                 getSimplifiedExaminationType,
                 openOutOfFocusModal,
-                closeOutOfFocusModal
+                closeOutOfFocusModal,
+                inferExaminationTitle
             }}>
             {children}
         </ExaminationContext.Provider>

@@ -15,7 +15,7 @@ import { ExaminationComponent } from "./ExaminationComponent";
 import { ExaminationState, useExamination } from "@/context/ExaminationContext";
 
 export const ExaminationWrapper = () => {
-    const {examinationState, examinationType, abortDialogVisible, abortExamination, openAbortModal} = useExamination();
+    const {examinationState, examinationType, abortDialogVisible, inferExaminationTitle, openAbortModal} = useExamination();
     const theme = useTheme().theme;
 
     return (
@@ -39,7 +39,7 @@ export const ExaminationWrapper = () => {
                     </div>
 
                     <h1 className="text-lg sm:text-xl font-bold text-center w-full sm:w-auto">
-                        {getFormattedType(examinationType)} preparation
+                        {inferExaminationTitle()}
                     </h1>
 
                     <div className="hidden sm:flex items-center gap-2 min-w-[120px] justify-end">
