@@ -14,7 +14,7 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress }:
     const progressRef = useRef(0);
     const pathName = usePathname();
     const [scrollProgress, setScrollProgress] = useState(0);
-
+    
     useEffect(() => {
         const container = document.querySelector('.scrollContainer') as HTMLElement;
         if (!container) return;

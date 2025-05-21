@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react"
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react"
+import { ArrowLeft, ChevronLeft, ChevronRight, CircleArrowLeft, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { TableOfContents } from "./TableOfContents"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
+import { useRouter } from "next/navigation";
 
 type CollapsibleTocProps = {
     content: JSX.Element | null;
@@ -18,6 +19,7 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
     const [hasHeadings, setHasHeadings] = useState<boolean>(true);
     const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+    const router = useRouter();
 
     useEffect(() => {
         setIsCollapsed(isMobile);
@@ -63,6 +65,7 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
             )}
         >
             <div className="flex h-14 items-center justify-between border-b px-4">
+                <Button aria-label="Back to learning path" onClick= {() => router.push('..')} variant="ghost" size="icon" className={cn("transition-all duration-200 w-12 h-12 mr-4", isCollapsed && 'absolute top-16 left-0')}><CircleArrowLeft/></Button>
                 <h2
                     className={cn(
                         "text-xl font-bold transition-opacity duration-200",
@@ -80,6 +83,7 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
                 >
                     {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
                 </Button>
+
             </div>
 
             <div
@@ -97,9 +101,9 @@ export const CollapsibleToc = (props: CollapsibleTocProps) => {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute left-0 top-20 w-12 h-12 flex items-center justify-center"
+                    className="absolute left-0 top-28 w-12 h-12 flex items-center justify-center"
                     onClick={() => setIsCollapsed(false)}
-                    aria-label="Extinde cuprinsul"
+                    aria-label="Expand table of contents"
                 >
                     <Menu className="h-5 w-5" />
                 </Button>
