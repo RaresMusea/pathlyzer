@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
             data: { endedAt: new Date(), duration: Math.max(1, Math.floor(duration)) },
         });
 
+        //TODO: Change completed to true only if the quiz is completed and passed
         if (progressType === 0 && lessonId && progress) {
             console.warn("Saving progress", progress);
             await db.lessonProgress.upsert({

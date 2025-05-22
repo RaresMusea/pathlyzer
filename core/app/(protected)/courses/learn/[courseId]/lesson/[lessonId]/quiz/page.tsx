@@ -20,7 +20,7 @@ export default async function QuizPage({ params }: { params: Promise<{ courseId:
 
     return (
         <ExaminationProvider examinationType={QuizType.LESSON_QUIZ} examinationTitle={quizTitle}>
-            <ExaminationWrapper/>
+            <ExaminationWrapper lessonId={lessonId}/>
         </ExaminationProvider>
     )
 }

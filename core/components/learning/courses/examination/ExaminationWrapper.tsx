@@ -11,9 +11,11 @@ import { X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ExaminationComponent } from "./ExaminationComponent";
 import { ExaminationState, useExamination } from "@/context/ExaminationContext";
+import { ProgressType, useLearningSession } from "@/hooks/useLearningSession";
 
-export const ExaminationWrapper = () => {
+export const ExaminationWrapper = ({lessonId}: {lessonId: string}) => {
     const {examinationState, abortDialogVisible, inferExaminationTitle, openAbortModal} = useExamination();
+    useLearningSession(lessonId, ProgressType.EXAMINATION);
     const theme = useTheme().theme;
 
     return (
