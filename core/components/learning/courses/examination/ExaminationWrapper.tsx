@@ -67,7 +67,6 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                                 <span className="text-xs text-muted-foreground text-center sm:text-right sm:min-w-[48px] sm:order-first order-last mb-2 sm:mb-0">
                                     {questions.indexOf(currentQuestion as ExaminationClientViewDto) + 1} / {questions.length}
                                 </span>
-
                                 <Progress
                                     value={
                                         ((questions.indexOf(currentQuestion as ExaminationClientViewDto) + 1) / questions.length) * 100

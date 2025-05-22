@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
 import { useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
-import { SingleChoiceQuestion } from "./questions/Questions";
+import { MultiChoiceQuestion, SingleChoiceQuestion } from "./questions/Questions";
 import { getQuestionTypeIcon, getQuestionTypeLabel } from "@/lib/EvaluationUtils";
 import { useGamification } from "@/context/GamificationContext";
 
@@ -24,6 +24,7 @@ export const ExaminationComponent = () => {
     } = useExamination();
 
     const [focusLossCount, setFocusLossCount] = useState(0);
+
     const handleFocusLoss = () => {
         const newCount: number = focusLossCount + 1;
         setFocusLossCount(focusLossCount + 1);
@@ -85,6 +86,16 @@ export const ExaminationComponent = () => {
 
                         {currentQuestion?.type === QuestionType.SINGLE && (
                             <SingleChoiceQuestion
+                                question={currentQuestion}
+                                selectedChoices={selectedChoices}
+                                correctChoiceIds={correctChoiceIds}
+                                hasAnswered={hasAnswered}
+                                isChecked={isChecked}
+                                onSelect={handleAnaswerSelection} />
+                        )}
+
+                        {currentQuestion?.type === QuestionType.MULTIPLE && (
+                            <MultiChoiceQuestion
                                 question={currentQuestion}
                                 selectedChoices={selectedChoices}
                                 correctChoiceIds={correctChoiceIds}

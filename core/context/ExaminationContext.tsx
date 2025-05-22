@@ -103,9 +103,15 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         if (currentQuestion?.type === QuestionType.SINGLE) {
             setSelectedChoices([answer]);
         }
-        // if (!selectedChoices.some((choice) => choice.id === answer.id)) {
-        //     setSelectedChoices((prev) => [...prev, answer]);
-        // }
+        if (currentQuestion?.type === QuestionType.MULTIPLE) {
+            const isSelected: boolean = selectedChoices.some((c) => c.id === answer.id);
+
+            if (isSelected) {
+                setSelectedChoices(selectedChoices.filter((c) => c.id !== answer.id));
+            } else {
+                setSelectedChoices([...selectedChoices, answer]);
+            }
+        }
     }
 
 
