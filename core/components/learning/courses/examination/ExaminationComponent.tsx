@@ -5,22 +5,25 @@ import { useEffect, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
 import { useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
-import { MultiChoiceQuestion, SingleChoiceQuestion } from "./questions/Questions";
+import { CodeFillQuestion, MultiChoiceQuestion, SingleChoiceQuestion } from "./questions/Questions";
 import { getQuestionTypeIcon, getQuestionTypeLabel } from "@/lib/EvaluationUtils";
-import { useGamification } from "@/context/GamificationContext";
+import { cn } from "@/lib/utils";
 
 const MAX_FOCUS_LOSSES: number = 3;
 
 export const ExaminationComponent = () => {
     const {
         currentQuestion,
+        codeFillAnswers,
+        codeFillEvaluations,
         selectedChoices,
         hasAnswered,
         isChecked,
         correctChoiceIds,
         outOfFocusVisible,
         openOutOfFocusModal,
-        handleAnaswerSelection
+        handleAnswerSelection,
+        handleCodeFillAnswer
     } = useExamination();
 
     const [focusLossCount, setFocusLossCount] = useState(0);
@@ -66,7 +69,12 @@ export const ExaminationComponent = () => {
                     <OutOfFocusWarningModal />
                 }
 
-                <main className="flex-1 container mx-auto px-4 py-8 flex flex-col font-nunito">
+                <main
+                    className={cn(
+                        "flex-1 container mx-auto px-4 py-8 flex flex-col font-nunito transition-opacity duration-300",
+                        outOfFocusVisible ? "opacity-20 pointer-events-none blur-sm" : "opacity-100"
+                    )}
+                >
                     <motion.div
                         className="max-w-2xl mx-auto w-full flex-1 flex flex-col"
                         initial={{ y: 20, opacity: 0 }}
@@ -91,7 +99,7 @@ export const ExaminationComponent = () => {
                                 correctChoiceIds={correctChoiceIds}
                                 hasAnswered={hasAnswered}
                                 isChecked={isChecked}
-                                onSelect={handleAnaswerSelection} />
+                                onSelect={handleAnswerSelection} />
                         )}
 
                         {currentQuestion?.type === QuestionType.MULTIPLE && (
@@ -101,7 +109,11 @@ export const ExaminationComponent = () => {
                                 correctChoiceIds={correctChoiceIds}
                                 hasAnswered={hasAnswered}
                                 isChecked={isChecked}
-                                onSelect={handleAnaswerSelection} />
+                                onSelect={handleAnswerSelection} />
+                        )}
+
+                        {currentQuestion?.type === QuestionType.CODE_FILL && (
+                            <CodeFillQuestion question={currentQuestion} hasAnswered={hasAnswered} codeFillAnswers={codeFillAnswers} codeFillEvaluations={codeFillEvaluations} handleCodeFillAnswer={handleCodeFillAnswer} />
                         )}
                     </motion.div>
                 </main>

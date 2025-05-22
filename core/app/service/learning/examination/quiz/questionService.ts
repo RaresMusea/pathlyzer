@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react"
 
 const maskCodeForClient = (originalCode: string): string => {
-    return originalCode.replace(/~~.*?~~/g, '__');
+    return originalCode.replace(/~~.*?~~/g, '~~_~~');
 }
 
 export const getClientCodeSection = cache(async (questionId: string): Promise<CodeSectionDto | null> => {

@@ -302,4 +302,10 @@ export interface ExaminationClientViewDto extends BaseQuestionDto {
     answerChoices?: AnswerChoiceDto[];
 }
 
+export interface CodeFillEvaluationResult {
+  questionId: string;
+  isCorrect: boolean;
+  correctIndices: number[];
+};
+
 // #endregion

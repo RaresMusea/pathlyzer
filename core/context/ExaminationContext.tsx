@@ -1,7 +1,7 @@
 "use client";
 
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
-import { AnswerChoiceDto, ExaminationClientViewDto } from "@/types/types";
+import { AnswerChoiceDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState } from "react";
@@ -16,6 +16,8 @@ interface ExaminationContextProps {
     questions: ExaminationClientViewDto[];
     examinationType: QuizType;
     examinationTitle: string;
+    codeFillAnswers: Record<string, string[]>;
+    codeFillEvaluations: Record<string, CodeFillEvaluationResult>;
     abortDialogVisible: boolean;
     examinationState: ExaminationState;
     outOfFocusVisible: boolean;
@@ -35,7 +37,8 @@ interface ExaminationContextProps {
     openOutOfFocusModal: () => void;
     closeOutOfFocusModal: () => void;
     inferExaminationTitle: () => string;
-    handleAnaswerSelection: (answer: AnswerChoiceDto) => void;
+    handleAnswerSelection: (answer: AnswerChoiceDto) => void;
+    handleCodeFillAnswer: (questionId: string, answer: string[]) => void;
 }
 
 const ExaminationContext = createContext<ExaminationContextProps | undefined>(undefined);
@@ -51,6 +54,8 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
     const [wasCorrect, setWasCorrect] = useState(false);
     const [hasAnswered, setHasAnswered] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
+    const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
+    const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
 
     const abortExamination = () => {
         if (examinationType === QuizType.LESSON_QUIZ) {
@@ -99,7 +104,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         return '';
     }
 
-    const handleAnaswerSelection = (answer: AnswerChoiceDto): void => {
+    const handleAnswerSelection = (answer: AnswerChoiceDto): void => {
         if (currentQuestion?.type === QuestionType.SINGLE) {
             setSelectedChoices([answer]);
         }
@@ -114,13 +119,20 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         }
     }
 
-
+    const handleCodeFillAnswer = (questionId: string, answer: string[]): void => {
+        setCodeFillAnswers((prev) => ({
+            ...prev,
+            [questionId]: answer
+        }));
+    }
 
     return (
         <ExaminationContext.Provider
             value={{
                 questions,
                 examinationType,
+                codeFillAnswers,
+                codeFillEvaluations,
                 selectedChoices,
                 wasCorrect,
                 currentQuestion,
@@ -139,7 +151,8 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
                 openOutOfFocusModal,
                 closeOutOfFocusModal,
                 inferExaminationTitle,
-                handleAnaswerSelection
+                handleAnswerSelection,
+                handleCodeFillAnswer
             }}>
             {children}
         </ExaminationContext.Provider>

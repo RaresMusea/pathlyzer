@@ -22,7 +22,7 @@ export const OutOfFocusWarningModal = () => {
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 font-nunito"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/60 font-nunito"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -35,7 +35,6 @@ export const OutOfFocusWarningModal = () => {
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
-                        {/* Header */}
                         <div className="bg-gradient-to-r from-amber-500 to-orange-600 py-6 px-8 text-center">
                             <motion.div
                                 initial={{ rotate: -5, scale: 0.8 }}
@@ -48,7 +47,6 @@ export const OutOfFocusWarningModal = () => {
                             <p className="text-white/90 mt-1">We&apos;ve noticed that you left the quiz.</p>
                         </div>
 
-                        {/* Body */}
                         <div className="p-8">
                             <div className="flex justify-center mb-6">
                                 <BrowserSwitchingAnimation examinationMode={getSimplifiedExaminationType()} examinationTitle={examinationTitle} />
