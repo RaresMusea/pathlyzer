@@ -27,7 +27,7 @@ const handleApiError = (error: unknown): NextResponse => {
 const validateChoiceBasedQuestion = (question: QuestionCheckDto, userAnswersIds: string[]): CheckResult => {
     const correctIds: string[] = question.choices.filter(choice => choice.isCorrect).map(choice => choice.id);
 
-    return { isCorrect: correctIds.length === userAnswersIds.length && correctIds.every(id => userAnswersIds.includes(id)) };
+    return { isCorrect: correctIds.length === userAnswersIds.length && correctIds.every(id => userAnswersIds.includes(id)), correctChoiceIds: correctIds };
 }
 
 const validateCodeFillQuestion = (question: QuestionCheckDto, userAnswer: string[]): CheckResult => {
