@@ -8,6 +8,9 @@ import { QuestionType } from "@prisma/client";
 import { CodeFillQuestion, MultiChoiceQuestion, SingleChoiceQuestion } from "./questions/Questions";
 import { getQuestionTypeIcon, getQuestionTypeLabel } from "@/lib/EvaluationUtils";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CircleCheck, CircleX, ListCheck } from "lucide-react";
+import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 
 const MAX_FOCUS_LOSSES: number = 3;
 
@@ -21,7 +24,10 @@ export const ExaminationComponent = () => {
         isChecked,
         correctChoiceIds,
         outOfFocusVisible,
+        isPending,
+        wasCorrect,
         openOutOfFocusModal,
+        isCheckingDisabled,
         handleAnswerSelection,
         handleCodeFillAnswer
     } = useExamination();
@@ -66,10 +72,10 @@ export const ExaminationComponent = () => {
             <AnimatePresence>
                 {
                     outOfFocusVisible &&
-                    <OutOfFocusWarningModal />
+                    <OutOfFocusWarningModal key="outOfFocusWarning" />
                 }
 
-                <main
+                <main key="examinationMain"
                     className={cn(
                         "flex-1 container mx-auto px-4 py-8 flex flex-col font-nunito transition-opacity duration-300",
                         outOfFocusVisible ? "opacity-20 pointer-events-none blur-sm" : "opacity-100"
@@ -117,6 +123,34 @@ export const ExaminationComponent = () => {
                         )}
                     </motion.div>
                 </main>
+
+                <footer key="examinationFooter" className={cn("border-t py-4 px-6 shadow-md w-full absolute bottom-0 font-nunito", isChecked ? (wasCorrect ? 'bg-green-400' : 'bg-red-400') : 'bg-primary-foreground')}>
+                    <div className="container mx-auto flex justify-center">
+                        <motion.div
+                            whileTap={{ scale: isCheckingDisabled() ? 1 : 0.95 }}
+                            className="text-center w-full"
+                        >
+                            {isPending ?
+                                <LoadingButton type="button" disabled={true}>Checking answer...</LoadingButton>
+                                :
+                                <Button type="button"
+                                    disabled={isCheckingDisabled()}
+                                    size="lg"
+                                    className="text-white font-semibold transition-color w-80 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]"
+                                    variant={isChecked ? (wasCorrect ? 'default' : 'destructive') : 'default'}>
+                                    {isChecked
+                                        ? (
+                                            wasCorrect
+                                                ? <span className="flex items-center gap-2"><CircleCheck className="w-4 h-4 mr-2" /> Corect! Well done!</span>
+                                                : <span className="flex items-center gap-2"><CircleX className="w-4 h-4 mr-2" /> Wrong! Please try again</span>
+                                        )
+                                        : <span className="flex items-center gap-2"><ListCheck className="w-4 h-4 mr-2" /> Check answer</span>
+                                    }
+                                </Button>
+                            }
+                        </motion.div>
+                    </div>
+                </footer>
             </AnimatePresence>
         </div>
     )

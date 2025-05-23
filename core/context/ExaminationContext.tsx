@@ -4,7 +4,7 @@ import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { AnswerChoiceDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useTransition } from "react";
 import { useGamification } from "./GamificationContext";
 
 export enum ExaminationState {
@@ -27,9 +27,11 @@ interface ExaminationContextProps {
     correctChoiceIds: string[];
     wasCorrect: boolean;
     hasAnswered: boolean;
+    isPending: boolean;
 
 
     abortExamination: () => void;
+    isCheckingDisabled: () => boolean;
     openAbortModal: () => void;
     closeAbortModal: () => void;
     toggleExaminationState: () => void;
@@ -56,6 +58,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
     const [isChecked, setIsChecked] = useState(false);
     const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
     const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
+    const [isPending, startTransition] = useTransition();
 
     const abortExamination = () => {
         if (examinationType === QuizType.LESSON_QUIZ) {
@@ -126,10 +129,30 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         }));
     }
 
+    const isCheckingDisabled = (): boolean => {
+        if (!currentQuestion) return true;
+
+        switch (currentQuestion.type) {
+            case QuestionType.SINGLE:
+            case QuestionType.MULTIPLE:
+                return selectedChoices.length === 0;
+
+            case QuestionType.CODE_FILL: {
+                const answers = codeFillAnswers[currentQuestion.id as string];
+                const hasAnyFilled = Array.isArray(answers) && answers.some((val) => val.trim() !== "");
+                return !hasAnyFilled;
+            }
+
+            default:
+                return true;
+        }
+    };
+
     return (
         <ExaminationContext.Provider
             value={{
                 questions,
+                isPending,
                 examinationType,
                 codeFillAnswers,
                 codeFillEvaluations,
@@ -145,6 +168,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
                 outOfFocusVisible,
                 abortExamination,
                 openAbortModal,
+                isCheckingDisabled,
                 closeAbortModal,
                 toggleExaminationState,
                 getSimplifiedExaminationType,

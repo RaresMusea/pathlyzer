@@ -181,32 +181,29 @@ export const CodeFillQuestion = (props: CodeFillQuestionProps) => {
                         const isCorrect = correctIndices.includes(current);
                         const showCorrect = hasAnswered && isCorrect;
                         const showIncorrect = hasAnswered && isSelected && !isCorrect;
+                        console.log("ID", question.id);
 
                         return (
-                            <>
-                                <span key={idx} className="inline-block min-w-[100px] align-baseline mx-1 my-1">
-                                    <Input
-                                        type="text"
-                                        disabled={hasAnswered}
-                                        value={userAnswers[current] ?? ""}
-                                        onChange={(e) => handleChange(current, e.target.value)}
-                                        placeholder="..."
-                                        className={cn(
-                                            "h-7 px-2 py-1 text-xs font-mono transition-colors",
-                                            isSelected && !hasAnswered &&
-                                            "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
-                                            showCorrect &&
-                                            "border-green-500 bg-green-100 dark:bg-green-900/20",
-                                            showIncorrect &&
-                                            "border-red-500 bg-red-100 dark:bg-red-900/20",
-                                            "border-gray-200 dark:border-gray-700"
-                                        )}
-                                    />
-                                </span>
-                            </>
+                            <span key={`blank-${question.id}-${current}`} className="inline-block min-w-[100px] align-baseline mx-1 my-1">
+                                <Input
+                                    type="text"
+                                    disabled={hasAnswered}
+                                    value={userAnswers[current] ?? ""}
+                                    onChange={(e) => handleChange(current, e.target.value)}
+                                    placeholder="..."
+                                    className={cn(
+                                        "h-7 px-2 py-1 text-xs font-mono transition-colors",
+                                        isSelected && !hasAnswered && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
+                                        showCorrect && "border-green-500 bg-green-100 dark:bg-green-900/20",
+                                        showIncorrect && "border-red-500 bg-red-100 dark:bg-red-900/20",
+                                        "border-gray-200 dark:border-gray-700"
+                                    )}
+                                />
+                            </span>
                         );
                     }
-                    return <span key={idx}>{part}</span>;
+
+                    return <span key={`text-${question.id}-${idx}`}>{part}</span>;
                 })}
             </div>
         </div>

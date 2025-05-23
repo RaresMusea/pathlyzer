@@ -58,7 +58,7 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                     </div>
 
                     <div className="flex flex-col items-center sm:items-start text-center sm:text-left w-full sm:w-auto max-w-md">
-                        <h1 className="text-xl font-bold leading-tight">
+                        <h1 className="text-xl font-bold leading-tight ml-5">
                             {inferExaminationTitle()}
                         </h1>
 
