@@ -3,7 +3,7 @@ import { getQuestionById } from "@/app/service/learning/examination/quiz/questio
 import { lessonExists } from "@/app/service/learning/lessons/lessonService";
 import { loseLife } from "@/app/service/user/userStatsService";
 import { ExaminationCheckSchema } from "@/schemas/ExaminationCheckSchema";
-import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute, isValidSession } from "@/security/Security";
+import { getCurrentlyLoggedInUserIdApiRoute, isValidSession } from "@/security/Security";
 import { CheckResult, QuestionCheckDto } from "@/types/types";
 import { QuestionType, UserStats } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";

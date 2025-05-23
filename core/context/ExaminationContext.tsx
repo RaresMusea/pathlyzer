@@ -148,6 +148,12 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         }
     };
 
+    const submitAnswer = async() => {
+        startTransition(() => {
+
+        });
+    }
+
     return (
         <ExaminationContext.Provider
             value={{
