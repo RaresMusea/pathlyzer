@@ -3,9 +3,9 @@
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { AnswerChoiceDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useTransition } from "react";
-import { useGamification } from "./GamificationContext";
 
 export enum ExaminationState {
     LANDING,
@@ -41,11 +41,22 @@ interface ExaminationContextProps {
     inferExaminationTitle: () => string;
     handleAnswerSelection: (answer: AnswerChoiceDto) => void;
     handleCodeFillAnswer: (questionId: string, answer: string[]) => void;
+    submitAnswer: () => Promise<void>;
 }
+
+interface ExaminationProviderArgs {
+    questions: ExaminationClientViewDto[];
+    courseId: string;
+    entityId: string;
+    examinationType: QuizType;
+    examinationTitle: string;
+} 
 
 const ExaminationContext = createContext<ExaminationContextProps | undefined>(undefined);
 
-export const ExaminationProvider: React.FC<{ children: React.ReactNode, questions: ExaminationClientViewDto[], examinationType: QuizType, examinationTitle: string }> = ({ children, examinationType, examinationTitle, questions }) => {
+export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: ExaminationProviderArgs }> = ({ children, args }) => {
+    const {questions, examinationType, examinationTitle} = args;
+    
     const router = useRouter();
     const [abortDialogVisible, setAbortDialogVisible] = useState(false);
     const [examinationState, setExaminationState] = useState<ExaminationState>(ExaminationState.LANDING);
@@ -129,6 +140,22 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         }));
     }
 
+    const getAnswerPayload = (): string[] => {
+        if (!currentQuestion) return [];
+
+        switch (currentQuestion.type) {
+            case QuestionType.SINGLE:
+            case QuestionType.MULTIPLE:
+                return selectedChoices.map((c) => c.id as string);
+
+            case QuestionType.CODE_FILL:
+                return codeFillAnswers[currentQuestion.id as string] ?? [];
+
+            default:
+                return [];
+        }
+    };
+
     const isCheckingDisabled = (): boolean => {
         if (!currentQuestion) return true;
 
@@ -148,9 +175,9 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
         }
     };
 
-    const submitAnswer = async() => {
-        startTransition(() => {
-
+    const submitAnswer = async () => {
+        startTransition(async () => {
+            const response =  await axios.post(`/api/courses/`) 
         });
     }
 
@@ -182,7 +209,8 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, question
                 closeOutOfFocusModal,
                 inferExaminationTitle,
                 handleAnswerSelection,
-                handleCodeFillAnswer
+                handleCodeFillAnswer,
+                submitAnswer
             }}>
             {children}
         </ExaminationContext.Provider>

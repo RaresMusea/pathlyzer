@@ -20,7 +20,13 @@ export default async function QuizPage({ params }: { params: Promise<{ courseId:
 
     return (
         <GamificationProvider initialUserStats={userStats}>
-            <ExaminationProvider questions={questions} examinationType={QuizType.LESSON_QUIZ} examinationTitle={quizTitle}>
+            <ExaminationProvider args={{
+                questions,
+                examinationType: QuizType.LESSON_QUIZ,
+                examinationTitle: quizTitle,
+                courseId,
+                entityId: lessonId
+            }}>
                 <ExaminationWrapper lessonId={lessonId} />
             </ExaminationProvider>
         </GamificationProvider>

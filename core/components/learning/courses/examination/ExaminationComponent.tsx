@@ -29,7 +29,8 @@ export const ExaminationComponent = () => {
         openOutOfFocusModal,
         isCheckingDisabled,
         handleAnswerSelection,
-        handleCodeFillAnswer
+        handleCodeFillAnswer,
+        submitAnswer
     } = useExamination();
 
     const [focusLossCount, setFocusLossCount] = useState(0);
@@ -135,6 +136,7 @@ export const ExaminationComponent = () => {
                                 :
                                 <Button type="button"
                                     disabled={isCheckingDisabled()}
+                                    onClick={submitAnswer}
                                     size="lg"
                                     className="text-white font-semibold transition-color w-80 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]"
                                     variant={isChecked ? (wasCorrect ? 'default' : 'destructive') : 'default'}>
