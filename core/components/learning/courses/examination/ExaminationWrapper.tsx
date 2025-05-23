@@ -2,7 +2,7 @@
 
 import { ExaminationLandingModal } from "./ExaminationLandingModal";
 import { ExaminationExitConfirmationDialog } from "./ExaminationExitConfirmationDialog";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { getAppNavLogo } from "@/exporters/LogoExporter";
 import { useTheme } from "next-themes";
@@ -17,7 +17,7 @@ import { ExaminationClientViewDto } from "@/types/types";
 import { useGamification } from "@/context/GamificationContext";
 
 export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
-    const { examinationState, abortDialogVisible, inferExaminationTitle, openAbortModal, questions, currentQuestion } = useExamination();
+    const { examinationState, abortDialogVisible, inferExaminationTitle, livesAnimationVisible, openAbortModal, questions, currentQuestion } = useExamination();
     const { lives } = useGamification();
     useLearningSession(lessonId, ProgressType.EXAMINATION);
     const theme = useTheme().theme;
@@ -51,8 +51,59 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                             </Button>
                             <ThemeToggle />
                             <div className="flex items-center" title="Lives remaining">
-                                <Heart className="fill-red-500 text-red-500 h-5 w-5 mr-2" />
-                                <span className="text-sm font-medium text-foreground">{lives}</span>
+                                <motion.div
+                                    className="flex items-center"
+                                    animate={
+                                        livesAnimationVisible
+                                            ? {
+                                                x: [-2, 2, -2, 2, 0],
+                                                scale: [1, 1.2, 1, 1.2, 1],
+                                            }
+                                            : {}
+                                    }
+                                    transition={{
+                                        duration: 0.6,
+                                        times: [0, 0.2, 0.4, 0.6, 1],
+                                        ease: "easeInOut",
+                                    }}
+                                >
+                                    <motion.div
+                                        animate={
+                                            livesAnimationVisible
+                                                ? {
+                                                    color: ["#EF4444", "#DC2626", "#B91C1C", "#EF4444"],
+                                                }
+                                                : {}
+                                        }
+                                        transition={{
+                                            duration: 0.8,
+                                            times: [0, 0.3, 0.7, 1],
+                                        }}
+                                    >
+                                        <Heart
+                                            className={`h-5 w-5 mr-1 transition-colors duration-200 ${livesAnimationVisible ? "text-red-600" : "text-red-500"
+                                                }`}
+                                            fill="currentColor"
+                                        />
+                                    </motion.div>
+                                    <motion.span
+                                        className="font-medium"
+                                        animate={
+                                            livesAnimationVisible
+                                                ? {
+                                                    scale: [1, 1.3, 1],
+                                                    color: ["#374151", "#DC2626", "#374151"],
+                                                }
+                                                : {}
+                                        }
+                                        transition={{
+                                            duration: 0.6,
+                                            times: [0, 0.5, 1],
+                                        }}
+                                    >
+                                        {lives}
+                                    </motion.span>
+                                </motion.div>
                             </div>
                         </div>
                     </div>
@@ -88,8 +139,59 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                         </Button>
                         <ThemeToggle />
                         <div className="flex items-center" title="Lives remaining">
-                            <Heart className="fill-red-500 text-red-500 h-5 w-5 mr-2" />
-                            <span className="text-sm font-medium text-foreground">{lives}</span>
+                            <motion.div
+                                className="flex items-center"
+                                animate={
+                                    livesAnimationVisible
+                                        ? {
+                                            x: [-2, 2, -2, 2, 0],
+                                            scale: [1, 1.2, 1, 1.2, 1],
+                                        }
+                                        : {}
+                                }
+                                transition={{
+                                    duration: 0.6,
+                                    times: [0, 0.2, 0.4, 0.6, 1],
+                                    ease: "easeInOut",
+                                }}
+                            >
+                                <motion.div
+                                    animate={
+                                        livesAnimationVisible
+                                            ? {
+                                                color: ["#EF4444", "#DC2626", "#B91C1C", "#EF4444"],
+                                            }
+                                            : {}
+                                    }
+                                    transition={{
+                                        duration: 0.8,
+                                        times: [0, 0.3, 0.7, 1],
+                                    }}
+                                >
+                                    <Heart
+                                        className={`h-5 w-5 mr-1 transition-colors duration-200 ${livesAnimationVisible ? "text-red-600" : "text-red-500"
+                                            }`}
+                                        fill="currentColor"
+                                    />
+                                </motion.div>
+                                <motion.span
+                                    className="font-medium"
+                                    animate={
+                                        livesAnimationVisible
+                                            ? {
+                                                scale: [1, 1.3, 1],
+                                                color: ["#374151", "#DC2626", "#374151"],
+                                            }
+                                            : {}
+                                    }
+                                    transition={{
+                                        duration: 0.6,
+                                        times: [0, 0.5, 1],
+                                    }}
+                                >
+                                    {lives}
+                                </motion.span>
+                            </motion.div>
                         </div>
                     </div>
                 </div>

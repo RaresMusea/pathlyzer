@@ -1,11 +1,14 @@
 "use client";
 
+import { CORRECT_ANSWER_AUDIO } from "@/exporters/AudioExporter";
+import { playSound } from "@/lib/AudioUtils";
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { AnswerChoiceDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 export enum ExaminationState {
     LANDING,
@@ -20,6 +23,7 @@ interface ExaminationContextProps {
     codeFillEvaluations: Record<string, CodeFillEvaluationResult>;
     abortDialogVisible: boolean;
     examinationState: ExaminationState;
+    livesAnimationVisible: boolean;
     outOfFocusVisible: boolean;
     currentQuestion: ExaminationClientViewDto | null;
     selectedChoices: AnswerChoiceDto[] | [];
@@ -50,13 +54,13 @@ interface ExaminationProviderArgs {
     entityId: string;
     examinationType: QuizType;
     examinationTitle: string;
-} 
+}
 
 const ExaminationContext = createContext<ExaminationContextProps | undefined>(undefined);
 
 export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: ExaminationProviderArgs }> = ({ children, args }) => {
-    const {questions, examinationType, examinationTitle} = args;
-    
+    const { courseId, entityId, questions, examinationType, examinationTitle } = args;
+
     const router = useRouter();
     const [abortDialogVisible, setAbortDialogVisible] = useState(false);
     const [examinationState, setExaminationState] = useState<ExaminationState>(ExaminationState.LANDING);
@@ -66,6 +70,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     const [correctChoiceIds, setCorrectChoiceIds] = useState<string[]>([]);
     const [wasCorrect, setWasCorrect] = useState(false);
     const [hasAnswered, setHasAnswered] = useState(false);
+    const [livesAnimationVisible, setLivesAnimationVisible] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
     const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
     const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
@@ -177,7 +182,43 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
     const submitAnswer = async () => {
         startTransition(async () => {
-            const response =  await axios.post(`/api/courses/`) 
+            const response = await axios.post(`/api/courses/${courseId}/lessons/${entityId}/quiz/check`, {
+                quizType: examinationType,
+                questionId: currentQuestion?.id,
+                answer: getAnswerPayload()
+            });
+
+            if (response.status === 200) {
+                const data = response.data;
+
+                console.log(`Response data`, data);
+
+                if (data.result.isCorrect) {
+                    setHasAnswered(true);
+                    setIsChecked(true);
+                    setWasCorrect(data.result.isCorrect);
+                    playSound(CORRECT_ANSWER_AUDIO);
+                }
+
+                if (currentQuestion?.type === QuestionType.SINGLE || currentQuestion?.type === QuestionType.MULTIPLE && data.result.correctChoiceIds) {
+                    setCorrectChoiceIds(data.result.correctChoiceIds);
+                }
+
+                if (currentQuestion?.type === QuestionType.CODE_FILL && data.result.correctIndices) {
+                    setCodeFillEvaluations((prev) => ({
+                        ...prev,
+                        [currentQuestion.id as string]: {
+                            questionId: currentQuestion.id as string,
+                            isCorrect: data.result.isCorrect,
+                            correctIndices: data.result.correctIndices
+                        }
+                    }));
+                }
+            }
+            else {
+                toast.error(response.data.message);
+                router.push(`courses/learn/${courseId}`);
+            }
         });
     }
 
@@ -186,6 +227,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             value={{
                 questions,
                 isPending,
+                livesAnimationVisible,
                 examinationType,
                 codeFillAnswers,
                 codeFillEvaluations,
