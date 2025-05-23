@@ -1,7 +1,7 @@
 import { fromUserStatsToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE } from "@/routes";
-import { getCurrentlyLoggedInUserId } from "@/security/Security";
+import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
 import { SummarizedUserStats, UserStatsDto } from "@/types/types";
 import { UserStats } from "@prisma/client";
 import { redirect } from "next/navigation";
@@ -54,3 +54,30 @@ export const getSummarizedUserStats = cache(async (): Promise<SummarizedUserStat
 
     return userStats ?? null;
 });
+
+export const loseLife = async (userId: string): Promise<UserStats> => {
+    const sessionUserId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (sessionUserId !== userId) {
+        throw new Error("Unauthorized");
+    }
+
+    const updated = await db.userStats.updateMany({
+        where: { userId, lives: { gt: 0 } },
+        data: { lives: { decrement: 1 } },
+    });
+
+    if (updated.count === 0) {
+        throw new Error("No lives left to lose");
+    }
+
+    const stats = await db.userStats.findUnique({
+        where: { userId },
+    });
+
+    if (!stats) {
+        throw new Error("User stats missing after update");
+    }
+
+    return stats;
+}

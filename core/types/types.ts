@@ -286,9 +286,9 @@ export interface LessonContentDto {
 }
 
 export interface CodeSectionDto {
-  id?: string;
-  code: string;
-  language?: string;
+    id?: string;
+    code: string;
+    language?: string;
 }
 
 export interface AnswerChoiceDto {
@@ -303,9 +303,27 @@ export interface ExaminationClientViewDto extends BaseQuestionDto {
 }
 
 export interface CodeFillEvaluationResult {
-  questionId: string;
-  isCorrect: boolean;
-  correctIndices: number[];
+    questionId: string;
+    isCorrect: boolean;
+    correctIndices: number[];
 };
+
+export interface QuestionCheckDto {
+    id: string;
+    type: QuestionType;
+    rewardXp: number;
+    choices: {
+        id: string;
+        isCorrect: boolean;
+    }[];
+    codeSection: {
+        correct: string[];
+    };
+};
+
+export interface CheckResult {
+    isCorrect: boolean;
+    correctIndices?: number[];
+}
 
 // #endregion

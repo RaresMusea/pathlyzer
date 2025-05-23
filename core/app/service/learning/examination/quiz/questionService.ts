@@ -1,7 +1,8 @@
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { isValidSession } from "@/security/Security";
-import { AnswerChoiceDto, CodeSectionDto } from "@/types/types";
+import { AnswerChoiceDto, CodeSectionDto, QuestionCheckDto } from "@/types/types";
+import { Question } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
 
@@ -39,4 +40,48 @@ export const getClientAnswerChoices = cache(async (
         where: { questionId: questionId.trim() },
         select: { id: true, questionId: true, text: true },
     });
+});
+
+export const getQuestionById = cache(async (questionId: string): Promise<QuestionCheckDto | null> => {
+    if (!await isValidSession()) {
+        throw new Error("Unauthorized");
+    }
+
+    const dbResult = await db.question.findUnique({
+        where: {
+            id: questionId,
+        },
+        select: {
+            id: true,
+            type: true,
+            rewardXp: true,
+            choices: {
+                select: {
+                    id: true,
+                    isCorrect: true,
+                }
+            },
+            CodeSection: {
+                select: {
+                    correct: true,
+                }
+            }
+        },
+    });
+
+    if (!dbResult) {
+        return null;
+    }
+
+    const question: QuestionCheckDto = {
+        id: dbResult.id,
+        type: dbResult.type,
+        rewardXp: dbResult.rewardXp,
+        choices: dbResult.choices,
+        codeSection: {
+            correct: dbResult.CodeSection?.[0]?.correct ?? []
+        }
+    };
+
+    return question;
 });
