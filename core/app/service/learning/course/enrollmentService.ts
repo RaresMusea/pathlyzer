@@ -5,6 +5,8 @@ import { LOGIN_PAGE } from "@/routes";
 import { Enrollment } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { getCompletedUnitsCount, getUnitsCount } from "../units/unitService";
+import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
 
 const validateEnrollmentTransaction = async (): Promise<string> => {
     const session = await auth();
@@ -40,6 +42,18 @@ export const getUserEnrollments = cache(async () => {
     return fromEnrollmentsToRetrievalDtoArray(enrollments);
 });
 
+export const getUserEnrollment = cache(async (courseId: string, userId: string): Promise<Enrollment | null> => {
+    const currentlyLoggedInUser = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!currentlyLoggedInUser || !(userId === currentlyLoggedInUser)) {
+        throw new Error('Unauthorized!');
+    }
+
+    const result: Enrollment | null = await db.enrollment.findFirst({ where: { courseId, userId } });
+
+    return result ?? null;
+});
+
 export const enrollToCourse = cache(async (courseId: string): Promise<Enrollment | null> => {
     const userId: string = await validateEnrollmentTransaction();
 
@@ -52,4 +66,34 @@ export const enrollToCourse = cache(async (courseId: string): Promise<Enrollment
     });
 
     return result;
-})
+});
+
+export const updateEnrollmentProgress = async (courseId: string, userId: string): Promise<Enrollment | null> => {
+    const loggedInUserId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!loggedInUserId || !(loggedInUserId === userId)) {
+        throw new Error('Unauthorized');
+    }
+
+    const unitsAmount: number = await getUnitsCount(courseId);
+    const completedUnitsAmount: number = await getCompletedUnitsCount(loggedInUserId);
+
+    if (unitsAmount === 0) {
+        throw new Error('The specified course does not contain any unit!');
+    }
+
+    const enrollment = await getUserEnrollment(courseId, userId);
+
+    if (!enrollment) {
+        throw new Error('The specified user enrollment does not exist!');
+    }
+
+    const actualEnrollmentProgress = Math.min(100, Math.round((completedUnitsAmount * 100) / unitsAmount));
+
+    const result: Enrollment | null = await db.enrollment.update({
+        where: { userId_courseId: { userId, courseId } },
+        data: { progress: actualEnrollmentProgress, completed: actualEnrollmentProgress === 100 }
+    });
+
+    return result ?? null;
+}

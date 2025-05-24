@@ -53,7 +53,7 @@ model UserStats {
   xp               Int      @default(0)
   level            Int      @default(1)
   lives            Int      @default(5)
-  completedQuizzed Int      @default(0) @map("completed_quizzes")
+  completedQuizzes Int      @default(0) @map("completed_quizzes")
   completedExams   Int      @default(0) @map("completed_exams")
   updatedAt        DateTime @updatedAt @map("updated_at")
 

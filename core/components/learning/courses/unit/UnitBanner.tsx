@@ -43,7 +43,7 @@ export const UnitBanner = ({ title, description, isCompleted, isCurrent, current
 
                 <>
                     {
-                        isCurrent &&
+                        isCurrent && !isCompleted &&
                         <Link href={`${pathname}/lesson/${currentLessonId}`}>
                             <Button className={buttonClass}>
                                 <NotebookText className="mr-2" />
