@@ -78,11 +78,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             return NextResponse.json({ message: `Cannot find user stats for this user!` }, { status: 404 });
         }
 
-        let level: number = userStats.level;
-        const newXp: number = userStats.xp + gainedXp;
-        const xpThresholdCurrentLevel = getXpThreshold(userStats.level);
+        let level = userStats.level;
+        const newXp = userStats.xp + gainedXp;
 
-        if (xpThresholdCurrentLevel <= newXp) {
+        while (newXp >= getXpThreshold(level + 1)) {
             level++;
         }
 

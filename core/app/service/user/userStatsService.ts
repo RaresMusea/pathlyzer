@@ -1,7 +1,7 @@
 import { fromUserStatsToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE } from "@/routes";
-import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute, isValidSession } from "@/security/Security";
+import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
 import { SummarizedUserStats, UserStatsDto, UserStatsMutationDto } from "@/types/types";
 import { UserStats } from "@prisma/client";
 import { redirect } from "next/navigation";
@@ -113,6 +113,10 @@ export const updateUserStats = async (data: UserStatsMutationDto): Promise<UserS
 
     if (data.xp !== undefined && data.xp !== existing.xp) {
         updateData.xp = data.xp;
+    }
+
+    if (data.level !== undefined && data.level !== existing.level) {
+        updateData.level = data.level;
     }
 
     if (data.completedExams !== undefined && data.completedExams !== existing.completedExams) {

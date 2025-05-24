@@ -336,7 +336,7 @@ export interface CheckResult {
 export interface CheckResponseDto {
     status: "correct" | "incorrect";
     result: CheckResult;
-    rewardXp?: number;
+    xpReward?: number;
     penalty?: { newLives: number };
 }
 
@@ -353,8 +353,8 @@ export interface ExaminationCompletionPayload {
 };
 
 export interface ExaminationFinishedResponse {
-    gainedXp: number;
-    level: number;
+    currentXp: number;
+    currentLevel: number;
 }
 
 // #endregion
