@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
 import { useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
@@ -37,7 +37,7 @@ export const ExaminationComponent = () => {
 
     const [focusLossCount, setFocusLossCount] = useState(0);
 
-    const handleFocusLoss = () => {
+    const handleFocusLoss = useCallback(() => {
         const newCount: number = focusLossCount + 1;
         setFocusLossCount(focusLossCount + 1);
 
@@ -48,7 +48,7 @@ export const ExaminationComponent = () => {
         else {
             openOutOfFocusModal();
         }
-    }
+    }, [setFocusLossCount, focusLossCount, openOutOfFocusModal]);
 
     useEffect(() => {
         const handleViewSwitch = () => {

@@ -37,7 +37,7 @@ export const OutOfLivesModal = () => {
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
                         <div className="bg-gradient-to-r from-red-500 to-red-600 py-6 px-8 text-center">
-                            <h2 className="text-2xl font-bold text-white">You're out of lives!</h2>
+                            <h2 className="text-2xl font-bold text-white">You&apos;re out of lives!</h2>
                             <p className="text-red-100 mt-1">You need to retake the course to continue.</p>
                         </div>
 
@@ -56,7 +56,7 @@ export const OutOfLivesModal = () => {
                                     All lives lost
                                 </h3>
                                 <p className="text-muted-foreground">
-                                    To gain another life and resume the quiz, you'll need to complete the course again.
+                                    To gain another life and resume the quiz, you&apos;ll need to complete the course again.
                                 </p>
                             </motion.div>
 

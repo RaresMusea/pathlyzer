@@ -2,7 +2,6 @@ import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { isValidSession } from "@/security/Security";
 import { AnswerChoiceDto, CodeSectionDto, QuestionCheckDto } from "@/types/types";
-import { Question } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
 
