@@ -1,4 +1,4 @@
-import { CourseDifficulty, CourseTag, QuestionType } from "@prisma/client";
+import { CourseDifficulty, CourseTag, QuestionType, QuizType } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
@@ -325,6 +325,19 @@ export interface CheckResult {
     isCorrect: boolean;
     correctIndices?: number[];
     correctChoiceIds?: string[];
+}
+
+export interface CheckResponseDto {
+    status: "correct" | "incorrect";
+    result: CheckResult;
+    rewardXp?: number;
+    penalty?: { newLives: number };
+}
+
+export interface QuestionCheckPayload {
+    quizType: QuizType;
+    questionId: string;
+    answer: string[];
 }
 
 // #endregion

@@ -17,7 +17,7 @@ import { ExaminationClientViewDto } from "@/types/types";
 import { useGamification } from "@/context/GamificationContext";
 
 export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
-    const { examinationState, abortDialogVisible, inferExaminationTitle, livesAnimationVisible, openAbortModal, questions, currentQuestion } = useExamination();
+    const { examinationState, modals, inferExaminationTitle, livesAnimationVisible, openAbortModal, questions, currentQuestion } = useExamination();
     const { lives } = useGamification();
     useLearningSession(lessonId, ProgressType.EXAMINATION);
     const theme = useTheme().theme;
@@ -25,7 +25,7 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
     return (
         <>
             <AnimatePresence>
-                {abortDialogVisible && (
+                {modals.abort && (
                     <ExaminationExitConfirmationDialog />
                 )}
 

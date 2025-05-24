@@ -21,13 +21,10 @@ export const ExaminationComponent = () => {
         codeFillAnswers,
         codeFillEvaluations,
         selectedChoices,
-        hasAnswered,
-        isChecked,
+        answerStatus,
         correctChoiceIds,
-        outOfFocusVisible,
-        outOfLivesModalVisible,
+        modals,
         isPending,
-        wasCorrect,
         openOutOfFocusModal,
         isCheckingDisabled,
         handleAnswerSelection,
@@ -74,19 +71,19 @@ export const ExaminationComponent = () => {
         <div>
             <AnimatePresence>
                 {
-                    outOfFocusVisible &&
+                    modals.outOfFocus &&
                     <OutOfFocusWarningModal key="outOfFocusWarning" />
                 }
 
                 {
-                    outOfLivesModalVisible &&
+                    modals.outOfLives &&
                     <OutOfLivesModal key="outOfLivesModal" />
                 }
 
                 <main key="examinationMain"
                     className={cn(
                         "flex-1 container mx-auto px-4 py-8 flex flex-col font-nunito transition-opacity duration-300",
-                        outOfFocusVisible ? "opacity-20 pointer-events-none blur-sm" : "opacity-100"
+                        modals.outOfFocus ? "opacity-20 pointer-events-none blur-sm" : "opacity-100"
                     )}
                 >
                     <motion.div
@@ -111,8 +108,7 @@ export const ExaminationComponent = () => {
                                 question={currentQuestion}
                                 selectedChoices={selectedChoices}
                                 correctChoiceIds={correctChoiceIds}
-                                hasAnswered={hasAnswered}
-                                isChecked={isChecked}
+                                answerStatus={answerStatus}
                                 onSelect={handleAnswerSelection} />
                         )}
 
@@ -121,13 +117,12 @@ export const ExaminationComponent = () => {
                                 question={currentQuestion}
                                 selectedChoices={selectedChoices}
                                 correctChoiceIds={correctChoiceIds}
-                                hasAnswered={hasAnswered}
-                                isChecked={isChecked}
+                                answerStatus={answerStatus}
                                 onSelect={handleAnswerSelection} />
                         )}
 
                         {currentQuestion?.type === QuestionType.CODE_FILL && (
-                            <CodeFillQuestion question={currentQuestion} hasAnswered={hasAnswered} codeFillAnswers={codeFillAnswers} codeFillEvaluations={codeFillEvaluations} handleCodeFillAnswer={handleCodeFillAnswer} />
+                            <CodeFillQuestion question={currentQuestion} answerStatus={answerStatus} codeFillAnswers={codeFillAnswers} codeFillEvaluations={codeFillEvaluations} handleCodeFillAnswer={handleCodeFillAnswer} />
                         )}
                     </motion.div>
                 </main>
@@ -145,11 +140,11 @@ export const ExaminationComponent = () => {
                                     disabled={isCheckingDisabled()}
                                     onClick={submitAnswer}
                                     size="lg"
-                                    className={cn("text-white font-semibold transition-color w-80", isChecked ? (wasCorrect ? 'bg-green-600 dark:bg-green-900' : 'bg-red-400 dark:bg-red-800') : 'bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]')}
-                                    variant={isChecked ? (wasCorrect ? 'default' : 'destructive') : 'default'}>
-                                    {isChecked
+                                    className={cn("text-white font-semibold transition-color w-80", answerStatus.isChecked ? (answerStatus.wasCorrect ? 'bg-green-600 dark:bg-green-900' : 'bg-red-400 dark:bg-red-800') : 'bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]')}
+                                    variant={answerStatus.isChecked ? (answerStatus.wasCorrect ? 'default' : 'destructive') : 'default'}>
+                                    {answerStatus.isChecked
                                         ? (
-                                            wasCorrect
+                                            answerStatus.wasCorrect
                                                 ? <span className="flex items-center gap-2"><CircleCheck className="w-4 h-4 mr-2" /> Corect! Well done!</span>
                                                 : <span className="flex items-center gap-2"><CircleX className="w-4 h-4 mr-2" /> Wrong! Please try again</span>
                                         )

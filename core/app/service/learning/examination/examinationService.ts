@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { getQuizIdByLessonId } from "../quiz/quizService";
 import { db } from "@/persistency/Db";
-import { AnswerChoiceDto, BaseQuestionDto, ExaminationClientViewDto } from "@/types/types";
+import { AnswerChoiceDto, BaseQuestionDto, ExaminationClientViewDto, QuestionCheckPayload } from "@/types/types";
 import { getClientAnswerChoices, getClientCodeSection } from "./quiz/questionService";
 import { shuffleArray } from "@/lib/Generics";
+import axios, { AxiosResponse } from "axios";
 
 export const getClientViewQuestions = cache(async (
     quizType: QuizType,
@@ -85,3 +86,7 @@ export const getExaminationTitle = cache(async (entityId: string, evaluationType
             return null;
     }
 });
+
+export const submitExaminationAnswer = async (courseId: string, entityId: string, payload: QuestionCheckPayload): Promise<AxiosResponse> => {
+    return await axios.post(`/api/courses/${courseId}/lessons/${entityId}/quiz/check`, payload);
+}

@@ -12,7 +12,7 @@ import Image from "next/image";
 
 interface BaseQuestionProps {
     question: ExaminationClientViewDto;
-    hasAnswered: boolean;
+    answerStatus: {isChecked: boolean, wasCorrect: boolean, hasAnswered: boolean}
 
 }
 
@@ -20,7 +20,6 @@ interface ChoiceBasedQuestionProps extends BaseQuestionProps {
     selectedChoices: AnswerChoiceDto[];
     correctChoiceIds: string[];
     onSelect: (choice: AnswerChoiceDto) => void;
-    isChecked: boolean;
 }
 
 interface CodeFillQuestionProps extends BaseQuestionProps {
@@ -30,7 +29,7 @@ interface CodeFillQuestionProps extends BaseQuestionProps {
 }
 
 export const SingleChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
-    const { question, selectedChoices, isChecked, correctChoiceIds, hasAnswered, onSelect } = props;
+    const { question, selectedChoices, correctChoiceIds, answerStatus, onSelect } = props;
     if (!question || !question.answerChoices) return null;
 
     return (
@@ -39,15 +38,15 @@ export const SingleChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
                 const isSelected: boolean = selectedChoices.some((c) => c.id === choice.id);
                 const isCorrect: boolean = correctChoiceIds.length > 0 && correctChoiceIds.includes(choice.id as string);
 
-                const showCorrectHighlight: boolean = hasAnswered && isCorrect;
-                const showIncorrectHighlight: boolean = hasAnswered && isSelected && !isCorrect;
+                const showCorrectHighlight: boolean = answerStatus.hasAnswered && isCorrect;
+                const showIncorrectHighlight: boolean = answerStatus.hasAnswered && isSelected && !isCorrect;
 
                 return (
                     <motion.div
                         key={index}
                         className={cn(
                             "relative p-4 rounded-lg border cursor-pointer transition-colors duration-200",
-                            isSelected && !isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
+                            isSelected && !answerStatus.isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
                             showCorrectHighlight && "border-green-500 bg-green-100 dark:bg-green-900/20",
                             showIncorrectHighlight && "border-red-500 bg-red-100 dark:bg-red-900/20",
                             !isSelected &&
@@ -56,7 +55,7 @@ export const SingleChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
                             "border-gray-200 dark:border-gray-700"
                         )}
                         onClick={() => onSelect(choice)}
-                        whileTap={{ scale: isChecked ? 1 : 0.98 }}
+                        whileTap={{ scale: answerStatus.isChecked ? 1 : 0.98 }}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-base text-foreground">{choice.text}</span>
@@ -81,7 +80,7 @@ export const SingleChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
 }
 
 export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
-    const { question, selectedChoices, correctChoiceIds, isChecked, hasAnswered, onSelect } = props;
+    const { question, selectedChoices, correctChoiceIds, answerStatus, onSelect } = props;
 
     if (!question || !question.answerChoices) return null;
 
@@ -96,8 +95,8 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
                 const isSelected: boolean = selectedChoices.some((c) => c.id === choice.id);
                 const isCorrect: boolean = correctChoiceIds.length > 0 && correctChoiceIds.includes(choice.id as string);
                 
-                const showCorrectHighlight: boolean = hasAnswered && isChecked && isAnswerFullyCorrect && isSelected && isCorrect;
-                const showIncorrectHighlight: boolean = hasAnswered && isChecked && !isAnswerFullyCorrect && isSelected;
+                const showCorrectHighlight: boolean = answerStatus.hasAnswered && answerStatus.isChecked && isAnswerFullyCorrect && isSelected && isCorrect;
+                const showIncorrectHighlight: boolean = answerStatus.hasAnswered && answerStatus.isChecked && !isAnswerFullyCorrect && isSelected;
 
                 return (
                     <motion.div
@@ -106,19 +105,19 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
                             "relative p-4 rounded-lg border cursor-pointer transition-colors duration-200",
                             showCorrectHighlight && "border-green-500 bg-green-100 dark:bg-green-900/20",
                             showIncorrectHighlight && "border-red-500 bg-red-100 dark:bg-red-900/20",
-                            isSelected && !isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
+                            isSelected && !answerStatus.isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
                             !isSelected &&
                             !showCorrectHighlight &&
                             "hover:border-gray-300 dark:hover:border-gray-600",
                             "border-gray-200 dark:border-gray-700"
                         )}
                         onClick={() => onSelect(choice)}
-                        whileTap={{ scale: isChecked ? 1 : 0.98 }}
+                        whileTap={{ scale: answerStatus.isChecked ? 1 : 0.98 }}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-base">{choice.text}</span>
 
-                            {isSelected && !isChecked && (
+                            {isSelected && !answerStatus.isChecked && (
                                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--pathlyzer-table-border)] text-white">
                                     <Check className="w-4 h-4" />
                                 </div>
@@ -144,7 +143,7 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
 }
 
 export const CodeFillQuestion = (props: CodeFillQuestionProps) => {
-    const { question, codeFillAnswers, codeFillEvaluations, hasAnswered, handleCodeFillAnswer } = props;
+    const { question, codeFillAnswers, codeFillEvaluations, answerStatus, handleCodeFillAnswer } = props;
     const theme = useTheme().theme;
 
     if (!question || !question.id || !question.codeSection) return null;
@@ -182,21 +181,21 @@ export const CodeFillQuestion = (props: CodeFillQuestionProps) => {
                         const current = blankIndex++;
                         const isSelected = !!userAnswers[current];
                         const isCorrect = correctIndices.includes(current);
-                        const showCorrect = hasAnswered && isCorrect;
-                        const showIncorrect = hasAnswered && isSelected && !isCorrect;
+                        const showCorrect = answerStatus.hasAnswered && isCorrect;
+                        const showIncorrect = answerStatus.hasAnswered && isSelected && !isCorrect;
                         console.log("ID", question.id);
 
                         return (
                             <span key={`blank-${question.id}-${current}`} className="inline-block min-w-[100px] align-baseline mx-1 my-1">
                                 <Input
                                     type="text"
-                                    disabled={hasAnswered}
+                                    disabled={answerStatus.hasAnswered}
                                     value={userAnswers[current] ?? ""}
                                     onChange={(e) => handleChange(current, e.target.value)}
                                     placeholder="..."
                                     className={cn(
                                         "h-7 px-2 py-1 text-xs font-mono transition-colors",
-                                        isSelected && !hasAnswered && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
+                                        isSelected && !answerStatus.hasAnswered && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
                                         showCorrect && "border-green-500 bg-green-300 dark:bg-green-800",
                                         showIncorrect && "border-red-500 bg-red-300 dark:bg-red-900",
                                         "border-gray-200 dark:border-gray-700"

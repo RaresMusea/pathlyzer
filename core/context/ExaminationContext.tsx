@@ -3,14 +3,13 @@
 import { CORRECT_ANSWER_AUDIO, INCORRECT_ANSWER_AUDIO, OUT_OF_HEARTS_AUDIO } from "@/exporters/AudioExporter";
 import { playSound } from "@/lib/AudioUtils";
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
-import { AnswerChoiceDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
+import { AnswerChoiceDto, CheckResponseDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useState, useTransition } from "react";
+import { createContext, useCallback, useContext, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useGamification } from "./GamificationContext";
-import { set } from "lodash";
+import { submitExaminationAnswer } from "@/app/service/learning/examination/examinationService";
 
 export enum ExaminationState {
     LANDING,
@@ -21,20 +20,16 @@ interface ExaminationContextProps {
     questions: ExaminationClientViewDto[];
     examinationType: QuizType;
     examinationTitle: string;
+    modals: { abort: boolean, outOfFocus: boolean, outOfLives: boolean, complete: boolean };
+    answerStatus: { wasCorrect: boolean; hasAnswered: boolean; isChecked: boolean; };
     codeFillAnswers: Record<string, string[]>;
     codeFillEvaluations: Record<string, CodeFillEvaluationResult>;
-    abortDialogVisible: boolean;
     examinationState: ExaminationState;
-    livesAnimationVisible: boolean;
-    outOfFocusVisible: boolean;
-    outOfLivesModalVisible: boolean;
+    livesAnimationVisible: boolean
     currentQuestion: ExaminationClientViewDto | null;
     selectedChoices: AnswerChoiceDto[] | [];
-    isChecked: boolean;
     gainedXp: number;
     correctChoiceIds: string[];
-    wasCorrect: boolean;
-    hasAnswered: boolean;
     isPending: boolean;
 
 
@@ -68,85 +63,92 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
     const router = useRouter();
     const { lives, setLives } = useGamification();
-    const [abortDialogVisible, setAbortDialogVisible] = useState(false);
+    const [modals, setModals] = useState({
+        abort: false,
+        outOfFocus: false,
+        outOfLives: false,
+        complete: false
+    });
+
+    const openModal = (key: keyof typeof modals) => setModals((prev) => ({ ...prev, [key]: true }));
+    const closeModal = (key: keyof typeof modals) => setModals((prev) => ({ ...prev, [key]: false }));
+    const [answerStatus, setAnswerStatus] = useState({
+        wasCorrect: false,
+        hasAnswered: false,
+        isChecked: false,
+    });
     const [examinationState, setExaminationState] = useState<ExaminationState>(ExaminationState.LANDING);
-    const [outOfFocusVisible, setOutOfFocusVisible] = useState(false);
-    const [outOfLivesModalVisible, setOutOfLivesModalVisible] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState<ExaminationClientViewDto | null>(questions[0] || null);
     const [selectedChoices, setSelectedChoices] = useState<AnswerChoiceDto[] | []>([]);
     const [correctChoiceIds, setCorrectChoiceIds] = useState<string[]>([]);
-    const [wasCorrect, setWasCorrect] = useState(false);
-    const [hasAnswered, setHasAnswered] = useState(false);
     const [gainedXp, setGainedXp] = useState(0);
     const [livesAnimationVisible, setLivesAnimationVisible] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
     const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
     const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
     const [isPending, startTransition] = useTransition();
+    const currentIndex = useMemo(() => {
+        return questions.findIndex(q => q.id === currentQuestion?.id);
+    }, [questions, currentQuestion]);
 
-    const abortExamination = () => {
+    const abortExamination = useCallback(() => {
         if (examinationType === QuizType.LESSON_QUIZ) {
-            setAbortDialogVisible(false);
+            closeModal('abort');
             router.push('../..');
         }
-    }
+    }, [examinationType, router, closeModal]);
 
-    const openAbortModal = () => {
-        setAbortDialogVisible(true);
-    }
+    const openAbortModal = useCallback(() => {
+        openModal('abort');
+    }, [openModal])
 
-    const openOutOfFocusModal = () => {
-        setOutOfFocusVisible(true);
-    }
+    const openOutOfFocusModal = useCallback(() => {
+        openModal('outOfFocus');
+    }, [openModal]);
 
-    const closeOutOfFocusModal = () => {
-        setOutOfFocusVisible(false);
-    }
+    const closeOutOfFocusModal = useCallback(() => {
+        closeModal('outOfFocus');
+    }, [closeModal]);
 
-    const closeOutOfLivesModal = () => {
-        setOutOfLivesModalVisible(false);
+    const closeOutOfLivesModal = useCallback(() => {
+        closeModal('outOfLives');
         //todo: Go to another page
-    }
+    }, [closeModal])
 
-    const navigateToNextQuestion = () => {
+    const closeAbortModal = useCallback(() => {
+        closeModal('abort');
+    }, [closeModal]);
+
+    const navigateToNextQuestion = useCallback(() => {
         setTimeout(() => {
-            const currentQuestionIndex = questions.indexOf(currentQuestion as ExaminationClientViewDto);
             const totalQuestions: number = questions.length;
 
-            if (currentQuestionIndex < totalQuestions - 1) {
-                setCurrentQuestion(questions[currentQuestionIndex + 1]);
-                setWasCorrect(false);
+            if (currentIndex < totalQuestions - 1) {
+                setCurrentQuestion(questions[currentIndex + 1]);
+                setAnswerStatus({ wasCorrect: false, hasAnswered: false, isChecked: false });
                 setSelectedChoices([]);
-                setHasAnswered(false);
-                setIsChecked(false);
                 setCorrectChoiceIds([]);
                 setCodeFillAnswers((prev) => ({
                     ...prev,
                     [currentQuestion?.id as string]: []
                 }));
             } else {
-                //TODO
-                // Quiz completed - show completion modal
+                openModal('complete');
             }
         }, 1500)
-    }
+    }, [setCurrentQuestion, setAnswerStatus, setSelectedChoices, setCorrectChoiceIds, setCodeFillAnswers, currentIndex, questions, currentQuestion, openModal]);
 
-    const closeAbortModal = () => {
-        setAbortDialogVisible(false);
-    }
-
-    const toggleExaminationState = () => {
+    const toggleExaminationState = useCallback(() => {
         setExaminationState(examinationState === ExaminationState.LANDING ? ExaminationState.EXAMINATION : ExaminationState.EXAMINATION);
-    }
+    }, [examinationState])
 
     const inferExaminationTitle = (): string => {
         if (examinationState === ExaminationState.LANDING) {
             return `${getFormattedType(examinationType)} preparation`
         }
         return examinationTitle;
-    }
+    };
 
-    const handleLifeLoss = () => {
+    const handleLifeLoss = useCallback(() => {
         const prevLives = lives;
         if ((prevLives - 1) > 0) {
             setLivesAnimationVisible(true);
@@ -158,24 +160,20 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             setLives(prevLives - 1);
         } else {
             setTimeout(() => playSound(OUT_OF_HEARTS_AUDIO), 1000);
-            setOutOfLivesModalVisible(true);
+            openModal('outOfLives');
             setLives(0);
         }
-    };
+    }, [lives, setLives, openModal, setLivesAnimationVisible]);
 
-    const resetStates = () => {
-        setTimeout(() => {
-            setWasCorrect(false);
-            setSelectedChoices([]);
-            setHasAnswered(false);
-            setIsChecked(false);
-            setCorrectChoiceIds([]);
-            setCodeFillAnswers((prev) => ({
-                ...prev,
-                [currentQuestion?.id as string]: []
-            }));
-        }, 1500);
-    }
+    const resetQuestionState = useCallback(() => {
+        setAnswerStatus({ wasCorrect: false, hasAnswered: false, isChecked: false });
+        setSelectedChoices([]);
+        setCorrectChoiceIds([]);
+
+        if (currentQuestion?.id) {
+            setCodeFillAnswers((prev) => ({ ...prev, [currentQuestion.id as string]: [] }));
+        }
+    }, [currentQuestion, setSelectedChoices, setAnswerStatus, setCorrectChoiceIds, setCodeFillAnswers]);
 
 
     const getSimplifiedExaminationType = (): string => {
@@ -188,9 +186,9 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
         }
 
         return '';
-    }
+    };
 
-    const handleAnswerSelection = (answer: AnswerChoiceDto): void => {
+    const handleAnswerSelection = useCallback((answer: AnswerChoiceDto): void => {
         if (currentQuestion?.type === QuestionType.SINGLE) {
             setSelectedChoices([answer]);
         }
@@ -203,16 +201,16 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                 setSelectedChoices([...selectedChoices, answer]);
             }
         }
-    }
+    }, [setSelectedChoices, selectedChoices, currentQuestion]);
 
-    const handleCodeFillAnswer = (questionId: string, answer: string[]): void => {
+    const handleCodeFillAnswer = useCallback((questionId: string, answer: string[]): void => {
         setCodeFillAnswers((prev) => ({
             ...prev,
             [questionId]: answer
         }));
-    }
+    }, [setCodeFillAnswers]);
 
-    const getAnswerPayload = (): string[] => {
+    const getAnswerPayload = useCallback((): string[] => {
         if (!currentQuestion) return [];
 
         switch (currentQuestion.type) {
@@ -226,9 +224,9 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             default:
                 return [];
         }
-    };
+    }, [currentQuestion, selectedChoices, codeFillAnswers]);
 
-    const isCheckingDisabled = (): boolean => {
+    const isCheckingDisabled = useCallback((): boolean => {
         if (!currentQuestion) return true;
 
         switch (currentQuestion.type) {
@@ -245,39 +243,31 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             default:
                 return true;
         }
-    };
+    }, [currentQuestion, selectedChoices, codeFillAnswers]);
 
-    const submitAnswer = async () => {
+    const submitAnswer = useCallback(async () => {
         startTransition(async () => {
-            const response = await axios.post(`/api/courses/${courseId}/lessons/${entityId}/quiz/check`, {
-                quizType: examinationType,
-                questionId: currentQuestion?.id,
-                answer: getAnswerPayload()
-            });
+            const response = await submitExaminationAnswer(courseId, entityId, { quizType: examinationType, questionId: currentQuestion?.id as string, answer: getAnswerPayload() });
 
             if (response.status === 200) {
-                const data = response.data;
+                const data = response.data as CheckResponseDto;
 
                 if (data.result.isCorrect) {
-                    setHasAnswered(true);
-                    setIsChecked(true);
+                    setAnswerStatus({ wasCorrect: data.result.isCorrect, hasAnswered: true, isChecked: true });
                     playSound(CORRECT_ANSWER_AUDIO);
-                    setGainedXp((prev) => prev + data.result.gainedXp);
+                    data.rewardXp && setGainedXp((prev) => prev + (data.rewardXp || 0));
                     navigateToNextQuestion();
                 }
                 else {
                     handleLifeLoss();
-                    setHasAnswered(true);
-                    setIsChecked(true);
+                    setAnswerStatus({ wasCorrect: data.result.isCorrect, hasAnswered: true, isChecked: true });
                     playSound(INCORRECT_ANSWER_AUDIO);
                     setLivesAnimationVisible(true);
-                    resetStates();
+                    resetQuestionState();
                 }
 
-                setWasCorrect(data.result.isCorrect);
-
-                if (currentQuestion?.type === QuestionType.SINGLE || currentQuestion?.type === QuestionType.MULTIPLE && data.result.correctChoiceIds) {
-                    setCorrectChoiceIds(data.result.correctChoiceIds);
+                if ((currentQuestion?.type === QuestionType.SINGLE || currentQuestion?.type === QuestionType.MULTIPLE) && data.result.correctChoiceIds) {
+                    setCorrectChoiceIds(data.result.correctChoiceIds as string[]);
                 }
 
                 if (currentQuestion?.type === QuestionType.CODE_FILL && data.result.correctIndices) {
@@ -286,7 +276,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                         [currentQuestion.id as string]: {
                             questionId: currentQuestion.id as string,
                             isCorrect: data.result.isCorrect,
-                            correctIndices: data.result.correctIndices
+                            correctIndices: data.result.correctIndices as number[]
                         }
                     }));
                 }
@@ -296,29 +286,25 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                 router.push(`courses/learn/${courseId}`);
             }
         });
-    }
+    }, [courseId, entityId, examinationType, currentQuestion, getAnswerPayload, startTransition, navigateToNextQuestion, handleLifeLoss, resetQuestionState, router]);
 
     return (
         <ExaminationContext.Provider
             value={{
                 questions,
                 isPending,
+                modals,
+                answerStatus,
                 livesAnimationVisible,
                 examinationType,
                 codeFillAnswers,
                 codeFillEvaluations,
                 gainedXp,
                 selectedChoices,
-                wasCorrect,
                 currentQuestion,
-                hasAnswered,
                 examinationTitle,
                 correctChoiceIds,
                 examinationState,
-                isChecked,
-                abortDialogVisible,
-                outOfFocusVisible,
-                outOfLivesModalVisible,
                 abortExamination,
                 openAbortModal,
                 isCheckingDisabled,
@@ -346,4 +332,4 @@ export const useExamination = () => {
     }
 
     return context;
-};
+}
