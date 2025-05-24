@@ -80,3 +80,5 @@ jobs:
         run: pwd
       - name: Debug - List files
         run: ls
+      - name: Check dist content
+        run: ls -la dist/
