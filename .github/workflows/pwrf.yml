@@ -74,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pathlyzer-cloud-code-editor-prwf-build
-          path: /services/.dist
+          path: dist/
