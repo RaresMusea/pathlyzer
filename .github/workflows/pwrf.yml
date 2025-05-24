@@ -46,6 +46,9 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
+      - name: Run tests
+        run: npm test
+
   pathlyzer-cloud-editor-microservice:
     runs-on: ubuntu-latest
     defaults:

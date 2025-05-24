@@ -38,3 +38,6 @@ jobs:
       - name: Build Next.js application
         working-directory: ./core
         run: npm run build
+
+      - name: Run tests
+        run: npm test
