@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pathlyzer-prwf-build
-          path: .next/
+          path: core/.next/
 
   pathlyzer-cloud-editor-microservice:
     runs-on: ubuntu-latest
@@ -75,10 +75,3 @@ jobs:
         with:
           name: pathlyzer-cloud-code-editor-prwf-build
           path: services/dist/
-
-      - name: print working dir
-        run: pwd
-      - name: Debug - List files
-        run: ls
-      - name: Check dist content
-        run: ls -la dist/
