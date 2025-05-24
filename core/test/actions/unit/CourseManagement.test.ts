@@ -2,9 +2,6 @@ import { saveCourse, updateCourse, deleteCourse } from '@/actions/CoursesManagem
 import { isValidAdminSession } from '@/security/Security';
 import { courseAlreadyExists, courseWithIdAlreadyExists } from '@/app/service/learning/course/courseService';
 import { db } from '@/persistency/Db';
-import { redirect } from 'next/navigation';
-import { UNAUTHORIZED_REDIRECT } from '@/routes';
-import { validate } from 'uuid';
 
 jest.mock('next/navigation', () => ({
     redirect: jest.fn((url) => {
