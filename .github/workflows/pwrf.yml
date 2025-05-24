@@ -36,6 +36,12 @@ jobs:
       - name: Build core app
         run: npm run build
 
+      - name: Print working dir
+        run: pwd
+      - name: List files
+        run: ls
+      - name: List /.next files
+        run: ls -a /.next
       - name: Upload Pull Request Workflow artifacts
         uses: actions/upload-artifact@v4
         with:
