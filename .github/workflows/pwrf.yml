@@ -75,3 +75,6 @@ jobs:
         with:
           name: pathlyzer-cloud-code-editor-prwf-build
           path: dist/
+
+      - name: Debug - List files
+        run: ls -R
