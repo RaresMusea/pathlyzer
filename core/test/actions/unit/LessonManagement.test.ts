@@ -25,7 +25,7 @@ jest.mock('@/actions/globals/Generics', () => ({
     handleSuccess: jest.fn((msg) => ({ success: msg }))
 }));
 
-describe('saveFullLesson', () => {
+describe('SaveFullLesson server action unit tests', () => {
     const unitId = 'unit-123';
 
     const makeValidLesson = () => ({
@@ -70,7 +70,7 @@ describe('saveFullLesson', () => {
         (isValidAdminSession as jest.Mock).mockResolvedValue(true);
     });
 
-    it('should return error if validation fails', async () => {
+    it('Should return error if validation fails', async () => {
         const badInput = makeValidLesson();
         badInput.details.title = ''; // trigger validation error
 
@@ -78,12 +78,12 @@ describe('saveFullLesson', () => {
         expect(result).toEqual(expect.objectContaining({ error: expect.any(String) }));
     });
 
-    it('should return error if unitId is undefined', async () => {
+    it('Should return error if unitId is undefined', async () => {
         const result = await saveFullLesson(makeValidLesson(), undefined);
         expect(result).toEqual(expect.objectContaining({ error: 'The unit ID cannot be empty!' }));
     });
 
-    it('should return error if lesson already exists in unit', async () => {
+    it('Should return error if lesson already exists in unit', async () => {
         (lessonContainedByUnit as jest.Mock).mockResolvedValue(true);
 
         const result = await saveFullLesson(makeValidLesson(), unitId);
@@ -92,7 +92,7 @@ describe('saveFullLesson', () => {
         expect(result).toEqual(expect.objectContaining({ error: expect.stringContaining('same name') }));
     });
 
-    it('should call db.$transaction and succeed', async () => {
+    it('Should call db.$transaction and succeed', async () => {
         (lessonContainedByUnit as jest.Mock).mockResolvedValue(false);
         (getHighestOrderLesson as jest.Mock).mockResolvedValue(1);
 
@@ -118,7 +118,7 @@ describe('saveFullLesson', () => {
         expect(result).toEqual(expect.objectContaining({ success: expect.any(String) }));
     });
 
-    it('should return handleError if transaction fails', async () => {
+    it('Should return handleError if transaction fails', async () => {
         (lessonContainedByUnit as jest.Mock).mockResolvedValue(false);
         (getHighestOrderLesson as jest.Mock).mockResolvedValue(1);
         (db.$transaction as jest.Mock).mockRejectedValue(new Error('DB error'));
