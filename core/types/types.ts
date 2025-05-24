@@ -19,11 +19,17 @@ export enum AnimationDirection {
 
 // #region UserStats-related types
 
-export type UserStatsDto = {
+export interface UserStatsDto {
     id: string;
     lives: number;
     xp: number;
     level: number;
+}
+
+export interface UserStatsMutationDto extends UserStatsDto {
+    userId: string;
+    completedExams?: number;
+    completedQuizzes?: number;
 }
 
 // #endregion

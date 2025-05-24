@@ -6,7 +6,7 @@ import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { AnswerChoiceDto, CheckResponseDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { createContext, useCallback, useContext, useMemo, useState, useTransition } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useGamification } from "./GamificationContext";
 import { submitExaminationAnswer } from "@/app/service/learning/examination/examinationService";
@@ -20,6 +20,7 @@ interface ExaminationContextProps {
     questions: ExaminationClientViewDto[];
     examinationType: QuizType;
     examinationTitle: string;
+    examinationSucceeded: boolean
     modals: { abort: boolean, outOfFocus: boolean, outOfLives: boolean, complete: boolean };
     answerStatus: { wasCorrect: boolean; hasAnswered: boolean; isChecked: boolean; };
     codeFillAnswers: Record<string, string[]>;
@@ -82,6 +83,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     const [selectedChoices, setSelectedChoices] = useState<AnswerChoiceDto[] | []>([]);
     const [correctChoiceIds, setCorrectChoiceIds] = useState<string[]>([]);
     const [gainedXp, setGainedXp] = useState(0);
+    const [examinationSucceeded, setExaminationSucceeded] = useState(false);
     const [livesAnimationVisible, setLivesAnimationVisible] = useState(false);
     const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
     const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
@@ -89,6 +91,16 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     const currentIndex = useMemo(() => {
         return questions.findIndex(q => q.id === currentQuestion?.id);
     }, [questions, currentQuestion]);
+
+    const hasMarkedCompletion = useRef(false);
+
+    useEffect(() => {
+        if (!examinationSucceeded || hasMarkedCompletion.current) return;
+
+        hasMarkedCompletion.current = true;
+
+
+    }, [examinationSucceeded]);
 
     const abortExamination = useCallback(() => {
         if (examinationType === QuizType.LESSON_QUIZ) {
@@ -130,7 +142,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                     openModal("complete");
                 }
             } else {
-                openModal('complete');
+                setExaminationSucceeded(true);
             }
         }, 1500)
     }, [setCurrentQuestion, setAnswerStatus, setSelectedChoices, setCorrectChoiceIds, setCodeFillAnswers, currentIndex, questions, currentQuestion, openModal]);
@@ -290,6 +302,12 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
         });
     }, [courseId, entityId, examinationType, currentQuestion, getAnswerPayload, startTransition, navigateToNextQuestion, handleLifeLoss, resetQuestionState, router]);
 
+    const finishExamination = async () => {
+        if (examinationType === QuizType.LESSON_QUIZ) {
+            
+        }
+    }
+
     return (
         <ExaminationContext.Provider
             value={{
@@ -299,6 +317,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                 answerStatus,
                 livesAnimationVisible,
                 examinationType,
+                examinationSucceeded,
                 codeFillAnswers,
                 codeFillEvaluations,
                 gainedXp,

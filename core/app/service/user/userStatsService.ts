@@ -1,8 +1,8 @@
 import { fromUserStatsToDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE } from "@/routes";
-import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
-import { SummarizedUserStats, UserStatsDto } from "@/types/types";
+import { getCurrentlyLoggedInUserId, getCurrentlyLoggedInUserIdApiRoute, isValidSession } from "@/security/Security";
+import { SummarizedUserStats, UserStatsDto, UserStatsMutationDto } from "@/types/types";
 import { UserStats } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -18,6 +18,21 @@ export const getUserStats = cache(async (): Promise<UserStatsDto | null> => {
         where: { userId },
         select: { userId: false, updatedAt: false, id: true, lives: true, xp: true, level: true }
     });
+
+    return stats ?? null;
+});
+
+export const getCompleteUserStats = cache(async (): Promise<UserStatsMutationDto | null> => {
+    const userId: string | null = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!userId) {
+        throw new Error('Unauthorized!');
+    }
+
+    const stats: UserStatsMutationDto | null = await db.userStats.findUnique({
+        where: { userId },
+        select: { id: true, level: true, userId: true, xp: true, lives: true, completedExams: true, completedQuizzes: true }
+    })
 
     return stats ?? null;
 });
@@ -81,3 +96,37 @@ export const loseLife = async (userId: string): Promise<UserStats> => {
 
     return stats;
 }
+
+export const updateUserStats = async (data: UserStatsMutationDto): Promise<UserStats> => {
+    const userId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!userId || userId !== data.userId) {
+        throw new Error('Unauthorized!');
+    }
+
+    const existing = await db.userStats.findUnique({ where: { userId } });
+    if (!existing) {
+        throw new Error('Unable to find user stats for this user!');
+    }
+
+    const updateData: Partial<UserStats> = {};
+
+    if (data.xp !== undefined && data.xp !== existing.xp) {
+        updateData.xp = data.xp;
+    }
+
+    if (data.completedExams !== undefined && data.completedExams !== existing.completedExams) {
+        updateData.completedExams = data.completedExams;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+        return existing;
+    }
+
+    const updated = await db.userStats.update({
+        where: { userId },
+        data: updateData,
+    });
+
+    return updated;
+};

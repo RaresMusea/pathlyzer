@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
-import { useExamination } from "@/context/ExaminationContext";
+import { ExaminationState, useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
 import { CodeFillQuestion, MultiChoiceQuestion, SingleChoiceQuestion } from "./questions/Questions";
 import { getQuestionTypeIcon, getQuestionTypeLabel } from "@/lib/EvaluationUtils";
@@ -19,6 +19,7 @@ export const ExaminationComponent = () => {
     const {
         currentQuestion,
         codeFillAnswers,
+        examinationSucceeded,
         codeFillEvaluations,
         selectedChoices,
         answerStatus,
@@ -26,6 +27,7 @@ export const ExaminationComponent = () => {
         modals,
         isPending,
         openOutOfFocusModal,
+        openAbortModal,
         isCheckingDisabled,
         handleAnswerSelection,
         handleCodeFillAnswer,
@@ -134,7 +136,7 @@ export const ExaminationComponent = () => {
                             className="text-center w-full"
                         >
                             {isPending ?
-                                <LoadingButton type="button" disabled={true}>Checking answer...</LoadingButton>
+                                <LoadingButton type="button" disabled={true}>{examinationSucceeded ? 'Checking answer...' : 'Aquiring results'}</LoadingButton>
                                 :
                                 <Button type="button"
                                     disabled={isCheckingDisabled()}
