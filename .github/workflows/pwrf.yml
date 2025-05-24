@@ -41,7 +41,7 @@ jobs:
       - name: List files
         run: ls -la
       - name: List /.next files
-        run: ls -a /.next
+        run: ls -la .next
       - name: Upload Pull Request Workflow artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -74,7 +74,7 @@ jobs:
           echo "CLIENT_TOKEN=${{ secrets.CLIENT_TOKEN }}" >> .env
 
       - name: Run microservice in dry mode (no port listening)
-        run: CI=true npx tsc || echo "Server skipped due to CI job"
+        run: CI=true npx ts-node src/index.ts || echo "Server skipped due to CI job"
 
       - name: Upload Pull Request Workflow artifacts
         uses: actions/upload-artifact@v4
