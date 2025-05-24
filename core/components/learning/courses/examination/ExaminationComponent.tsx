@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
-import { ExaminationState, useExamination } from "@/context/ExaminationContext";
+import { useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
 import { CodeFillQuestion, MultiChoiceQuestion, SingleChoiceQuestion } from "./questions/Questions";
 import { getQuestionTypeIcon, getQuestionTypeLabel } from "@/lib/EvaluationUtils";
@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { CircleCheck, CircleX, ListCheck } from "lucide-react";
 import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 import { OutOfLivesModal } from "./OutOfLivesModal";
+import { ExaminationCompleteModal } from "./ExaminationCompleteModal";
+import { useGamification } from "@/context/GamificationContext";
 
 const MAX_FOCUS_LOSSES: number = 3;
 
@@ -20,14 +22,16 @@ export const ExaminationComponent = () => {
         currentQuestion,
         codeFillAnswers,
         examinationSucceeded,
+        examinationType,
         codeFillEvaluations,
         selectedChoices,
         answerStatus,
         correctChoiceIds,
+        prevStats,
         modals,
         isPending,
         openOutOfFocusModal,
-        openAbortModal,
+        closeCompletionModal,
         isCheckingDisabled,
         handleAnswerSelection,
         handleCodeFillAnswer,
@@ -35,6 +39,7 @@ export const ExaminationComponent = () => {
     } = useExamination();
 
     const [focusLossCount, setFocusLossCount] = useState(0);
+    const {xp, level} = useGamification();
 
     const handleFocusLoss = useCallback(() => {
         const newCount: number = focusLossCount + 1;
@@ -80,6 +85,11 @@ export const ExaminationComponent = () => {
                 {
                     modals.outOfLives &&
                     <OutOfLivesModal key="outOfLivesModal" />
+                }
+
+                {
+                    modals.complete &&
+                    <ExaminationCompleteModal examinationType={examinationType} currentXp={xp} currentLevel={level} onClose={closeCompletionModal} prevStats={prevStats} />
                 }
 
                 <main key="examinationMain"
@@ -136,7 +146,7 @@ export const ExaminationComponent = () => {
                             className="text-center w-full"
                         >
                             {isPending ?
-                                <LoadingButton type="button" disabled={true}>{examinationSucceeded ? 'Checking answer...' : 'Aquiring results'}</LoadingButton>
+                                <LoadingButton type="button" disabled={true}>{!examinationSucceeded ? 'Checking answer...' : 'Aquiring results'}</LoadingButton>
                                 :
                                 <Button type="button"
                                     disabled={isCheckingDisabled()}

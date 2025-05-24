@@ -20,7 +20,8 @@ interface ExaminationContextProps {
     questions: ExaminationClientViewDto[];
     examinationType: QuizType;
     examinationTitle: string;
-    examinationSucceeded: boolean
+    examinationSucceeded: boolean;
+    prevStats: { xp: number, level: number };
     modals: { abort: boolean, outOfFocus: boolean, outOfLives: boolean, complete: boolean };
     answerStatus: { wasCorrect: boolean; hasAnswered: boolean; isChecked: boolean; };
     codeFillAnswers: Record<string, string[]>;
@@ -43,6 +44,7 @@ interface ExaminationContextProps {
     openOutOfFocusModal: () => void;
     closeOutOfFocusModal: () => void;
     closeOutOfLivesModal: () => void;
+    closeCompletionModal: () => void;
     inferExaminationTitle: () => string;
     handleAnswerSelection: (answer: AnswerChoiceDto) => void;
     handleCodeFillAnswer: (questionId: string, answer: string[]) => void;
@@ -90,7 +92,11 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
     const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
     const [isPending, startTransition] = useTransition();
-    const [prevXp, setPrevXp] = useState(0);
+    const [prevStats, setPrevStats] = useState({
+        xp: xp,
+        level: level
+    });
+
     const currentIndex = useMemo(() => {
         return questions.findIndex(q => q.id === currentQuestion?.id);
     }, [questions, currentQuestion]);
@@ -100,9 +106,12 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     useEffect(() => {
         if (!examinationSucceeded || hasMarkedCompletion.current) return;
 
-        hasMarkedCompletion.current = true;
+        const markCompletion = async () => {
+            hasMarkedCompletion.current = true;
+            await finishExamination();
+        };
 
-
+        markCompletion();
     }, [examinationSucceeded]);
 
     const abortExamination = useCallback(() => {
@@ -128,6 +137,11 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
         closeModal('outOfFocus');
     }, [closeModal]);
 
+    const closeCompletionModal = useCallback(() => {
+        closeModal('complete');
+        router.push(`/courses/learn/${courseId}`);
+    }, [closeModal]);
+
     const closeOutOfLivesModal = useCallback(() => {
         closeModal('outOfLives');
         //todo: Go to another page
@@ -137,22 +151,30 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
         closeModal('abort');
     }, [closeModal]);
 
+    const resetQuestionState = useCallback(() => {
+        setAnswerStatus({ wasCorrect: false, hasAnswered: false, isChecked: false });
+        setSelectedChoices([]);
+        setCorrectChoiceIds([]);
+
+        if (currentQuestion?.id) {
+            setCodeFillAnswers((prev) => ({ ...prev, [currentQuestion.id as string]: [] }));
+        }
+    }, [currentQuestion, setSelectedChoices, setAnswerStatus, setCorrectChoiceIds, setCodeFillAnswers]);
+
     const navigateToNextQuestion = useCallback(() => {
         setTimeout(() => {
-            const totalQuestions: number = questions.length;
+            const totalQuestions = questions.length;
 
-            if (currentIndex < totalQuestions - 1) {
+            const isLastQuestion = currentIndex === totalQuestions - 1;
+
+            if (!isLastQuestion) {
                 setCurrentQuestion(questions[currentIndex + 1]);
-                if (currentIndex < totalQuestions - 1) {
-                    resetQuestionState();
-                } else {
-                    openModal("complete");
-                }
+                resetQuestionState();
             } else {
                 setExaminationSucceeded(true);
             }
-        }, 1500)
-    }, [setCurrentQuestion, setAnswerStatus, setSelectedChoices, setCorrectChoiceIds, setCodeFillAnswers, currentIndex, questions, currentQuestion, openModal]);
+        }, 1500);
+    }, [currentIndex, questions, resetQuestionState, setCurrentQuestion, openModal]);
 
     const toggleExaminationState = useCallback(() => {
         setExaminationState(examinationState === ExaminationState.LANDING ? ExaminationState.EXAMINATION : ExaminationState.EXAMINATION);
@@ -181,17 +203,6 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             setLives(0);
         }
     }, [lives, setLives, openModal, setLivesAnimationVisible]);
-
-    const resetQuestionState = useCallback(() => {
-        setAnswerStatus({ wasCorrect: false, hasAnswered: false, isChecked: false });
-        setSelectedChoices([]);
-        setCorrectChoiceIds([]);
-
-        if (currentQuestion?.id) {
-            setCodeFillAnswers((prev) => ({ ...prev, [currentQuestion.id as string]: [] }));
-        }
-    }, [currentQuestion, setSelectedChoices, setAnswerStatus, setCorrectChoiceIds, setCodeFillAnswers]);
-
 
     const getSimplifiedExaminationType = (): string => {
         if (examinationType === QuizType.LESSON_QUIZ) {
@@ -275,7 +286,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
                 if (data.result.isCorrect) {
                     playSound(CORRECT_ANSWER_AUDIO);
-                    data.rewardXp && setGainedXp((prev) => prev + (data.rewardXp || 0));
+                    data.xpReward && setGainedXp((prev) => prev + (data.xpReward || 0));
                     navigateToNextQuestion();
                 }
                 else {
@@ -283,12 +294,10 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                     playSound(INCORRECT_ANSWER_AUDIO);
                     setLivesAnimationVisible(true);
                     setTimeout(() => resetQuestionState(), 2500);
-
                 }
 
                 if ((currentQuestion?.type === QuestionType.SINGLE || currentQuestion?.type === QuestionType.MULTIPLE) && data.result.correctChoiceIds) {
                     setCorrectChoiceIds(data.result.correctChoiceIds as string[]);
-                    console.log("Correct choice ids", data.result.correctChoiceIds);
                 }
 
                 if (currentQuestion?.type === QuestionType.CODE_FILL && data.result.correctIndices) {
@@ -317,9 +326,9 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
                     if (response.status === 200) {
                         const data = response.data as ExaminationFinishedResponse;
-                        setPrevXp(xp);
-                        setXp(data.gainedXp);
-                        setLevel(data.level);
+                        setPrevStats({ xp, level });
+                        setXp(data.currentXp);
+                        setLevel(data.currentLevel);
                         openCompletionModal();
                     }
                     else {
@@ -344,6 +353,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                 examinationType,
                 examinationSucceeded,
                 codeFillAnswers,
+                prevStats,
                 codeFillEvaluations,
                 gainedXp,
                 selectedChoices,
@@ -359,6 +369,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                 getSimplifiedExaminationType,
                 openOutOfFocusModal,
                 closeOutOfFocusModal,
+                closeCompletionModal,
                 closeOutOfLivesModal,
                 inferExaminationTitle,
                 handleAnswerSelection,
