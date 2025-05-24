@@ -47,6 +47,7 @@ jobs:
         with:
           name: pathlyzer-prwf-build
           path: .next
+          include-hidden-files: true
 
   pathlyzer-cloud-editor-microservice:
     runs-on: ubuntu-latest
@@ -74,7 +75,7 @@ jobs:
           echo "CLIENT_TOKEN=${{ secrets.CLIENT_TOKEN }}" >> .env
 
       - name: Run microservice in dry mode (no port listening)
-        run: CI=true npx tsc || echo "Server skipped due to CI job"
+        run: CI=true npx tsc
 
       - name: Upload Pull Request Workflow artifacts
         uses: actions/upload-artifact@v4
