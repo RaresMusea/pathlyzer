@@ -1,0 +1,83 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  pathlyzer-core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./core
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install Node dependencis
+        run: npm ci
+
+      - name: Create .env file from secrets
+        run: |
+          echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+          echo "AUTH_TRUST_HOST=${{ secrets.AUTH_TRUST_HOST }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "EXPRESS_API_SECRET_KEY=${{ secrets.EXPRESS_API_SECRET_KEY }}" >> .env
+          echo "GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}" >> .env
+          echo "GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" >> .env
+
+      - name: Build core app
+        run: npm run build
+      - name: Compress artifacts
+        run: tar -czf pathlyzer-next-build.tar.gz .next
+
+      - name: Upload Pull Request Workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pathlyzer-next-build.tar.gz
+          path: core/.next/
+          include-hidden-files: true
+          retention-days: 1
+
+  pathlyzer-cloud-editor-microservice:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./services
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Create .env file from secrets
+        working-directory: ./services
+        run: |
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+          echo "S3_BUCKET=${{ secrets.S3_BUCKET }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "S3_ENDPOINT=${{ secrets.S3_ENDPOINT }}" >> .env
+          echo "CLIENT_TOKEN=${{ secrets.CLIENT_TOKEN }}" >> .env
+
+      - name: Compile microservice in dry mode (no port listening)
+        run: CI=true npx tsc
+      - name: Run microservice in dry mode (no port listening)
+        run: npx ts-node src/index.ts
+
+      - name: Upload Pull Request Workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pathlyzer-cloud-code-editor-prwf-build
+          path: services/dist/

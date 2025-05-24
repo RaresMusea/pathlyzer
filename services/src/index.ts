@@ -30,8 +30,10 @@ try {
 initHttp(app);
 
 const port = process.env.PORT || 3001;
-httpServer.listen(port, () => {
-  console.log(`Listening on *:${port}`);
-}).on("error", (err) => {
-  logger.error(`Unable to start server!\n${err}`);
-});
+if (process.env.CI !== "true") {
+  httpServer.listen(port, () => {
+    console.log(`Listening on *:${port}`);
+  }).on("error", (err) => {
+    logger.error(`Unable to start server!\n${err}`);
+  });
+}
