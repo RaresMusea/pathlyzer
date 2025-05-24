@@ -7,6 +7,10 @@ interface GamificationContextProps {
     lives: number;
     level: number;
     xp: number;
+
+    setLives: (lives: number) => void;
+    setLevel: (level: number) => void;
+    setXp: (xp: number) => void;
 }
 
 const GamificationContext = createContext<GamificationContextProps | undefined>(undefined);
@@ -19,7 +23,7 @@ export const GamificationProvider: React.FC<{ children: React.ReactNode, initial
 
 
     return (
-        <GamificationContext.Provider value={{lives, level, xp}}>
+        <GamificationContext.Provider value={{lives, level, xp, setLives, setLevel, setXp}}>
             {children}
         </GamificationContext.Provider>
     );

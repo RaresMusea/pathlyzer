@@ -50,7 +50,7 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                                 <X className="h-5 w-5 text-destructive" />
                             </Button>
                             <ThemeToggle />
-                            <div className="flex items-center" title="Lives remaining">
+                            <div className="flex items-center font-nunito" title="Lives remaining">
                                 <motion.div
                                     className="flex items-center"
                                     animate={
@@ -87,7 +87,7 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                                         />
                                     </motion.div>
                                     <motion.span
-                                        className="font-medium"
+                                        className="font-medium dark:text-white"
                                         animate={
                                             livesAnimationVisible
                                                 ? {
@@ -175,7 +175,7 @@ export const ExaminationWrapper = ({ lessonId }: { lessonId: string }) => {
                                     />
                                 </motion.div>
                                 <motion.span
-                                    className="font-medium"
+                                    className="font-medium dark:text-white"
                                     animate={
                                         livesAnimationVisible
                                             ? {

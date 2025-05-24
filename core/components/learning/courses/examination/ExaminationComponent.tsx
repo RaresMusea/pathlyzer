@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CircleCheck, CircleX, ListCheck } from "lucide-react";
 import { LoadingButton } from "@/components/misc/loading/LoadingButton";
+import { OutOfLivesModal } from "./OutOfLivesModal";
 
 const MAX_FOCUS_LOSSES: number = 3;
 
@@ -24,6 +25,7 @@ export const ExaminationComponent = () => {
         isChecked,
         correctChoiceIds,
         outOfFocusVisible,
+        outOfLivesModalVisible,
         isPending,
         wasCorrect,
         openOutOfFocusModal,
@@ -76,6 +78,11 @@ export const ExaminationComponent = () => {
                     <OutOfFocusWarningModal key="outOfFocusWarning" />
                 }
 
+                {
+                    outOfLivesModalVisible &&
+                    <OutOfLivesModal key="outOfLivesModal" />
+                }
+
                 <main key="examinationMain"
                     className={cn(
                         "flex-1 container mx-auto px-4 py-8 flex flex-col font-nunito transition-opacity duration-300",
@@ -125,7 +132,7 @@ export const ExaminationComponent = () => {
                     </motion.div>
                 </main>
 
-                <footer key="examinationFooter" className={cn("border-t py-4 px-6 shadow-md w-full absolute bottom-0 font-nunito", isChecked ? (wasCorrect ? 'bg-green-400' : 'bg-red-400') : 'bg-primary-foreground')}>
+                <footer key="examinationFooter" className={cn("border-t py-4 px-6 shadow-md w-full absolute bottom-0 font-nunito bg-primary-foreground")}>
                     <div className="container mx-auto flex justify-center">
                         <motion.div
                             whileTap={{ scale: isCheckingDisabled() ? 1 : 0.95 }}
@@ -138,7 +145,7 @@ export const ExaminationComponent = () => {
                                     disabled={isCheckingDisabled()}
                                     onClick={submitAnswer}
                                     size="lg"
-                                    className="text-white font-semibold transition-color w-80 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]"
+                                    className={cn("text-white font-semibold transition-color w-80", isChecked ? (wasCorrect ? 'bg-green-600 dark:bg-green-900' : 'bg-red-400 dark:bg-red-800') : 'bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]')}
                                     variant={isChecked ? (wasCorrect ? 'default' : 'destructive') : 'default'}>
                                     {isChecked
                                         ? (
