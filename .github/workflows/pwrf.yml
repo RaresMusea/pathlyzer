@@ -77,4 +77,4 @@ jobs:
           path: dist/
 
       - name: Debug - List files
-        run: ls -R
+        run: ls
