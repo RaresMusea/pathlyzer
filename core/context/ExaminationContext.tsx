@@ -124,13 +124,11 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
             if (currentIndex < totalQuestions - 1) {
                 setCurrentQuestion(questions[currentIndex + 1]);
-                setAnswerStatus({ wasCorrect: false, hasAnswered: false, isChecked: false });
-                setSelectedChoices([]);
-                setCorrectChoiceIds([]);
-                setCodeFillAnswers((prev) => ({
-                    ...prev,
-                    [currentQuestion?.id as string]: []
-                }));
+                if (currentIndex < totalQuestions - 1) {
+                    resetQuestionState();
+                } else {
+                    openModal("complete");
+                }
             } else {
                 openModal('complete');
             }
@@ -229,6 +227,8 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     const isCheckingDisabled = useCallback((): boolean => {
         if (!currentQuestion) return true;
 
+        if (answerStatus.isChecked) return true;
+
         switch (currentQuestion.type) {
             case QuestionType.SINGLE:
             case QuestionType.MULTIPLE:
@@ -243,7 +243,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             default:
                 return true;
         }
-    }, [currentQuestion, selectedChoices, codeFillAnswers]);
+    }, [currentQuestion, selectedChoices, codeFillAnswers, answerStatus]);
 
     const submitAnswer = useCallback(async () => {
         startTransition(async () => {
@@ -252,22 +252,24 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
             if (response.status === 200) {
                 const data = response.data as CheckResponseDto;
 
+                setAnswerStatus({ wasCorrect: data.result.isCorrect, hasAnswered: true, isChecked: true });
+
                 if (data.result.isCorrect) {
-                    setAnswerStatus({ wasCorrect: data.result.isCorrect, hasAnswered: true, isChecked: true });
                     playSound(CORRECT_ANSWER_AUDIO);
                     data.rewardXp && setGainedXp((prev) => prev + (data.rewardXp || 0));
                     navigateToNextQuestion();
                 }
                 else {
                     handleLifeLoss();
-                    setAnswerStatus({ wasCorrect: data.result.isCorrect, hasAnswered: true, isChecked: true });
                     playSound(INCORRECT_ANSWER_AUDIO);
                     setLivesAnimationVisible(true);
-                    resetQuestionState();
+                    setTimeout(() => resetQuestionState(), 2500);
+
                 }
 
                 if ((currentQuestion?.type === QuestionType.SINGLE || currentQuestion?.type === QuestionType.MULTIPLE) && data.result.correctChoiceIds) {
                     setCorrectChoiceIds(data.result.correctChoiceIds as string[]);
+                    console.log("Correct choice ids", data.result.correctChoiceIds);
                 }
 
                 if (currentQuestion?.type === QuestionType.CODE_FILL && data.result.correctIndices) {

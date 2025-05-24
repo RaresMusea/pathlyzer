@@ -12,8 +12,7 @@ import Image from "next/image";
 
 interface BaseQuestionProps {
     question: ExaminationClientViewDto;
-    answerStatus: {isChecked: boolean, wasCorrect: boolean, hasAnswered: boolean}
-
+    answerStatus: { isChecked: boolean, wasCorrect: boolean, hasAnswered: boolean };
 }
 
 interface ChoiceBasedQuestionProps extends BaseQuestionProps {
@@ -84,31 +83,29 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
 
     if (!question || !question.answerChoices) return null;
 
-    const isAnswerFullyCorrect = correctChoiceIds.length === selectedChoices.length &&
+        const isFullyCorrect = correctChoiceIds.length === selectedChoices.length &&
         correctChoiceIds.every((id) => selectedChoices.some((c) => c.id === id));
 
     return (
         <div className="space-y-3">
-            <p className="text-sm text-gray-500 mb-2">Select all correct anwers.</p>
+            <p className="text-sm text-gray-500 mb-2">Select all correct answers.</p>
 
             {question.answerChoices.map((choice, index) => {
-                const isSelected: boolean = selectedChoices.some((c) => c.id === choice.id);
-                const isCorrect: boolean = correctChoiceIds.length > 0 && correctChoiceIds.includes(choice.id as string);
-                
-                const showCorrectHighlight: boolean = answerStatus.hasAnswered && answerStatus.isChecked && isAnswerFullyCorrect && isSelected && isCorrect;
-                const showIncorrectHighlight: boolean = answerStatus.hasAnswered && answerStatus.isChecked && !isAnswerFullyCorrect && isSelected;
+                const isSelected = selectedChoices.some((c) => c.id === choice.id);
+                const isCorrect = answerStatus.wasCorrect && correctChoiceIds.includes(choice.id as string);
 
+                const showCorrect = answerStatus.isChecked && isFullyCorrect && isSelected && isCorrect;
+                const showIncorrect = answerStatus.isChecked && !isCorrect && isSelected;
+                
                 return (
                     <motion.div
                         key={index}
                         className={cn(
                             "relative p-4 rounded-lg border cursor-pointer transition-colors duration-200",
-                            showCorrectHighlight && "border-green-500 bg-green-100 dark:bg-green-900/20",
-                            showIncorrectHighlight && "border-red-500 bg-red-100 dark:bg-red-900/20",
+                            showCorrect && "border-green-500 bg-green-100 dark:bg-green-900/20",
+                            showIncorrect && "border-red-500 bg-red-100 dark:bg-red-900/20",
                             isSelected && !answerStatus.isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
-                            !isSelected &&
-                            !showCorrectHighlight &&
-                            "hover:border-gray-300 dark:hover:border-gray-600",
+                            !isSelected && "hover:border-gray-300 dark:hover:border-gray-600",
                             "border-gray-200 dark:border-gray-700"
                         )}
                         onClick={() => onSelect(choice)}
@@ -123,24 +120,25 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
                                 </div>
                             )}
 
-                            {showCorrectHighlight && (
+                            {showCorrect && (
                                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white">
                                     <Check className="w-4 h-4" />
                                 </div>
                             )}
 
-                            {showIncorrectHighlight && (
+                            {showIncorrect && (
                                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white">
                                     <X className="w-4 h-4" />
                                 </div>
                             )}
                         </div>
                     </motion.div>
-                )
+                );
             })}
         </div>
-    )
+    );
 }
+
 
 export const CodeFillQuestion = (props: CodeFillQuestionProps) => {
     const { question, codeFillAnswers, codeFillEvaluations, answerStatus, handleCodeFillAnswer } = props;
