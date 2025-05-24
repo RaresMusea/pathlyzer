@@ -35,19 +35,16 @@ jobs:
 
       - name: Build core app
         run: npm run build
+      - name: Compress artifacts
+        run: tar -czf pathlyzer-next-build.tar.gz .next
 
-      - name: Print working dir
-        run: pwd
-      - name: List files
-        run: ls -la
-      - name: List /.next files
-        run: ls -la .next
       - name: Upload Pull Request Workflow artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: pathlyzer-prwf-build
+          name: pathlyzer-next-build.tar.gz
           path: core/.next/
           include-hidden-files: true
+          retention-days: 1
 
   pathlyzer-cloud-editor-microservice:
     runs-on: ubuntu-latest
