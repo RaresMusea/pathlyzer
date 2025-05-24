@@ -74,8 +74,10 @@ jobs:
           echo "S3_ENDPOINT=${{ secrets.S3_ENDPOINT }}" >> .env
           echo "CLIENT_TOKEN=${{ secrets.CLIENT_TOKEN }}" >> .env
 
-      - name: Run microservice in dry mode (no port listening)
+      - name: Compile microservice in dry mode (no port listening)
         run: CI=true npx tsc
+      - name: Run microservice in dry mode (no port listening)
+        run: npx ts-node src/index.ts
 
       - name: Upload Pull Request Workflow artifacts
         uses: actions/upload-artifact@v4
