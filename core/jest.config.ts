@@ -23,7 +23,8 @@ const config: Config = {
     'ts-jest': {
       tsconfig: './tsconfig.json' // Point to your tsconfig
     }
-  }
+  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };
 
 export default createJestConfig(config);
