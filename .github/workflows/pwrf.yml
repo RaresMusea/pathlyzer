@@ -39,7 +39,7 @@ jobs:
       - name: Print working dir
         run: pwd
       - name: List files
-        run: ls
+        run: ls -la
       - name: List /.next files
         run: ls -a /.next
       - name: Upload Pull Request Workflow artifacts
