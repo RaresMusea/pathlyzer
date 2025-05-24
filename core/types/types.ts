@@ -346,4 +346,15 @@ export interface QuestionCheckPayload {
     answer: string[];
 }
 
+export interface ExaminationCompletionPayload {
+    quizId: string;
+    gainedXp: number;
+    isLastLesson: boolean;
+};
+
+export interface ExaminationFinishedResponse {
+    gainedXp: number;
+    level: number;
+}
+
 // #endregion

@@ -2,7 +2,7 @@ import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
 import { LessonContentDto } from "@/types/types";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 
 export const getLowerstOrderLessonId = cache(async (unitId: string): Promise<string | null> => {
@@ -67,3 +67,17 @@ export const lessonExists = cache(async (lessonId: string): Promise<boolean | nu
 
     return lessonExists;
 });
+
+export const getLessonOrder = cache(async (lessonId: string): Promise<number> => {
+    if (!await isValidSession()) {
+        redirect(DEFAULT_LOGIN_REDIRECT);
+    }
+
+    const result: { order: number } | null = await db.lesson.findUnique({ where: { id: lessonId }, select: { order: true } })
+
+    if (!result) {
+        return notFound();
+    }
+
+    return result.order;
+})

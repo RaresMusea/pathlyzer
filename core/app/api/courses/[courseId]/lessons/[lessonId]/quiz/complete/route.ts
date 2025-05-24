@@ -127,7 +127,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             }
         }
 
-        return NextResponse.json({}, { status: 200 });
+        return NextResponse.json({ currentXp: newXp, currentLevel: level }, { status: 200 });
 
     } catch (error) {
         console.error(error);

@@ -3,13 +3,13 @@
 import { CORRECT_ANSWER_AUDIO, INCORRECT_ANSWER_AUDIO, OUT_OF_HEARTS_AUDIO } from "@/exporters/AudioExporter";
 import { playSound } from "@/lib/AudioUtils";
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
-import { AnswerChoiceDto, CheckResponseDto, CodeFillEvaluationResult, ExaminationClientViewDto } from "@/types/types";
+import { AnswerChoiceDto, CheckResponseDto, CodeFillEvaluationResult, ExaminationClientViewDto, ExaminationFinishedResponse } from "@/types/types";
 import { QuestionType, QuizType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useGamification } from "./GamificationContext";
-import { submitExaminationAnswer } from "@/app/service/learning/examination/examinationService";
+import { finishQuiz, submitExaminationAnswer } from "@/app/service/learning/examination/examinationService";
 
 export enum ExaminationState {
     LANDING,
@@ -51,19 +51,21 @@ interface ExaminationContextProps {
 
 interface ExaminationProviderArgs {
     questions: ExaminationClientViewDto[];
+    isLastFromUnit: boolean;
     courseId: string;
     entityId: string;
     examinationType: QuizType;
     examinationTitle: string;
+    examinationElementId: string;
 }
 
 const ExaminationContext = createContext<ExaminationContextProps | undefined>(undefined);
 
 export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: ExaminationProviderArgs }> = ({ children, args }) => {
-    const { courseId, entityId, questions, examinationType, examinationTitle } = args;
+    const { courseId, entityId, questions, examinationType, examinationTitle, examinationElementId, isLastFromUnit } = args;
 
     const router = useRouter();
-    const { lives, setLives } = useGamification();
+    const { lives, setLives, level, setLevel, xp, setXp } = useGamification();
     const [modals, setModals] = useState({
         abort: false,
         outOfFocus: false,
@@ -88,6 +90,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     const [codeFillAnswers, setCodeFillAnswers] = useState<Record<string, string[]>>({});
     const [codeFillEvaluations, setCodeFillEvaluations] = useState<Record<string, CodeFillEvaluationResult>>({});
     const [isPending, startTransition] = useTransition();
+    const [prevXp, setPrevXp] = useState(0);
     const currentIndex = useMemo(() => {
         return questions.findIndex(q => q.id === currentQuestion?.id);
     }, [questions, currentQuestion]);
@@ -111,7 +114,11 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
     const openAbortModal = useCallback(() => {
         openModal('abort');
-    }, [openModal])
+    }, [openModal]);
+
+    const openCompletionModal = useCallback(() => {
+        openModal('complete');
+    }, [openModal]);
 
     const openOutOfFocusModal = useCallback(() => {
         openModal('outOfFocus');
@@ -303,9 +310,27 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
     }, [courseId, entityId, examinationType, currentQuestion, getAnswerPayload, startTransition, navigateToNextQuestion, handleLifeLoss, resetQuestionState, router]);
 
     const finishExamination = async () => {
-        if (examinationType === QuizType.LESSON_QUIZ) {
-            
-        }
+        startTransition(async () => {
+            if (examinationType === QuizType.LESSON_QUIZ) {
+                try {
+                    const response = await finishQuiz(courseId, entityId, { quizId: examinationElementId, gainedXp, isLastLesson: isLastFromUnit });
+
+                    if (response.status === 200) {
+                        const data = response.data as ExaminationFinishedResponse;
+                        setPrevXp(xp);
+                        setXp(data.gainedXp);
+                        setLevel(data.level);
+                        openCompletionModal();
+                    }
+                    else {
+                        toast.error(response.data.message);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    toast.error(error.message);
+                }
+            }
+        });
     }
 
     return (

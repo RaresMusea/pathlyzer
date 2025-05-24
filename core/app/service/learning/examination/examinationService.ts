@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { getQuizIdByLessonId } from "../quiz/quizService";
 import { db } from "@/persistency/Db";
-import { AnswerChoiceDto, BaseQuestionDto, ExaminationClientViewDto, QuestionCheckPayload } from "@/types/types";
+import { AnswerChoiceDto, BaseQuestionDto, ExaminationClientViewDto, ExaminationCompletionPayload, QuestionCheckPayload } from "@/types/types";
 import { getClientAnswerChoices, getClientCodeSection } from "./quiz/questionService";
 import { shuffleArray } from "@/lib/Generics";
 import axios, { AxiosResponse } from "axios";
@@ -89,4 +89,8 @@ export const getExaminationTitle = cache(async (entityId: string, evaluationType
 
 export const submitExaminationAnswer = async (courseId: string, entityId: string, payload: QuestionCheckPayload): Promise<AxiosResponse> => {
     return await axios.post(`/api/courses/${courseId}/lessons/${entityId}/quiz/check`, payload);
+}
+
+export const finishQuiz = async (courseId: string, lessonId: string, payload: ExaminationCompletionPayload): Promise<AxiosResponse> => {
+    return await axios.post(`/api/courses/${courseId}/lessons/${lessonId}/quiz/complete`, payload);
 }
