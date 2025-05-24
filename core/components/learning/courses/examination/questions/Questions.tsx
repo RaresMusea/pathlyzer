@@ -85,6 +85,9 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
 
     if (!question || !question.answerChoices) return null;
 
+    const isAnswerFullyCorrect = correctChoiceIds.length === selectedChoices.length &&
+        correctChoiceIds.every((id) => selectedChoices.some((c) => c.id === id));
+
     return (
         <div className="space-y-3">
             <p className="text-sm text-gray-500 mb-2">Select all correct anwers.</p>
@@ -92,18 +95,18 @@ export const MultiChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
             {question.answerChoices.map((choice, index) => {
                 const isSelected: boolean = selectedChoices.some((c) => c.id === choice.id);
                 const isCorrect: boolean = correctChoiceIds.length > 0 && correctChoiceIds.includes(choice.id as string);
-
-                const showCorrectHighlight: boolean = hasAnswered && isCorrect;
-                const showIncorrectHighlight: boolean = hasAnswered && isSelected && !isCorrect;
+                
+                const showCorrectHighlight: boolean = hasAnswered && isChecked && isAnswerFullyCorrect && isSelected && isCorrect;
+                const showIncorrectHighlight: boolean = hasAnswered && isChecked && !isAnswerFullyCorrect && isSelected;
 
                 return (
                     <motion.div
                         key={index}
                         className={cn(
                             "relative p-4 rounded-lg border cursor-pointer transition-colors duration-200",
-                            isSelected && !isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
                             showCorrectHighlight && "border-green-500 bg-green-100 dark:bg-green-900/20",
                             showIncorrectHighlight && "border-red-500 bg-red-100 dark:bg-red-900/20",
+                            isSelected && !isChecked && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
                             !isSelected &&
                             !showCorrectHighlight &&
                             "hover:border-gray-300 dark:hover:border-gray-600",
@@ -194,8 +197,8 @@ export const CodeFillQuestion = (props: CodeFillQuestionProps) => {
                                     className={cn(
                                         "h-7 px-2 py-1 text-xs font-mono transition-colors",
                                         isSelected && !hasAnswered && "border-[var(--pathlyzer)] bg-blue-50 dark:bg-blue-900/20",
-                                        showCorrect && "border-green-500 bg-green-100 dark:bg-green-900/20",
-                                        showIncorrect && "border-red-500 bg-red-100 dark:bg-red-900/20",
+                                        showCorrect && "border-green-500 bg-green-300 dark:bg-green-800",
+                                        showIncorrect && "border-red-500 bg-red-300 dark:bg-red-900",
                                         "border-gray-200 dark:border-gray-700"
                                     )}
                                 />

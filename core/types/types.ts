@@ -324,6 +324,7 @@ export interface QuestionCheckDto {
 export interface CheckResult {
     isCorrect: boolean;
     correctIndices?: number[];
+    correctChoiceIds?: string[];
 }
 
 // #endregion
