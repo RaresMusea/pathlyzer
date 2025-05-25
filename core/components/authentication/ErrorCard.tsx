@@ -11,7 +11,7 @@ import {
 
 export const ErrorCard = () => {
     return (
-        <Card className="w-[700px] shadow-md ">
+        <Card className="w-[700px] shadow-md" data-testid="error-card">
             <CardHeader>
                 <Header headerTitle="Something went wrong while trying to sign you in!"></Header>
                 <div className="flex items-center justify-center gap-5">

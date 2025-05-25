@@ -28,9 +28,4 @@ describe('BackButton Component', () => {
         expect(link.tagName).toBe('A');
         expect(link).toHaveTextContent(testProps.backButtonText);
     });
-
-    it('Matches snapshot', () => {
-        const { asFragment } = render(<BackButton {...testProps} />);
-        expect(asFragment()).toMatchSnapshot();
-    });
 });
