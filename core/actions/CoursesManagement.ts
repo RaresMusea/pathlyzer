@@ -10,7 +10,6 @@ import { redirect } from "next/navigation";
 import * as z from "zod";
 import { handleError, handleSuccess, ServerActionResult } from "./globals/Generics";
 
-
 const getOrCreateExistingTags = async (tags: CourseTag[]): Promise<CourseTag[]> => {
     const existingTags = await Promise.all(
         tags.map(async (t) => {
@@ -26,7 +25,7 @@ const getOrCreateExistingTags = async (tags: CourseTag[]): Promise<CourseTag[]> 
     return existingTags;
 }
 
-const validate = async (values: z.infer<typeof CourseMutationSchema>) => {
+const validate = async (values: z.infer<typeof CourseMutationSchema>): Promise<ServerActionResult> => {
     if (await !isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
     }
@@ -34,29 +33,35 @@ const validate = async (values: z.infer<typeof CourseMutationSchema>) => {
     const validatedFields = CourseMutationSchema.safeParse(values);
 
     if (!validatedFields.success) {
-        handleError(validatedFields.error.message);
+        return handleError(validatedFields.error.message);
     }
+
+    return handleSuccess('Validation successful');
 }
 
-const validateUpdate = async (values: z.infer<typeof CourseMutationSchema>, courseId: string | undefined) => {
+const validateUpdate = async (values: z.infer<typeof CourseMutationSchema>, courseId: string | undefined): Promise<ServerActionResult> => {
     try {
         await validate(values);
 
         if (!courseId) {
-            handleError('Cannot update course due to unknown identifier!');
+            return handleError('Cannot update course due to unknown identifier!');
         }
 
         if (!await courseWithIdAlreadyExists(courseId as string)) {
-            handleError('The course ID cannot be modified!');
+            return handleError('The course ID cannot be modified!');
         }
     } catch (error) {
         console.error(error);
         throw new Error('An unexpected error occurred while attempting to update the course. Please try again later.');
     }
+
+    return handleSuccess('Validation successful');
 }
 
 export const saveCourse = async (values: z.infer<typeof CourseMutationSchema>): Promise<ServerActionResult> => {
-    await validate(values);
+    const validationResult = await validate(values);
+
+    if (validationResult && 'error' in validationResult) return validationResult;
 
     const { name, description, image, difficulty, availability, tags } = values;
 
@@ -93,7 +98,10 @@ export const saveCourse = async (values: z.infer<typeof CourseMutationSchema>): 
 }
 
 export const updateCourse = async (courseId: string | undefined, values: z.infer<typeof CourseMutationSchema>): Promise<ServerActionResult> => {
-    await validateUpdate(values, courseId)
+    const validationResult = await validateUpdate(values, courseId)
+    
+    if (validationResult && 'error' in validationResult) return validationResult;
+
     const { name, description, image, difficulty, availability, tags } = values;
     const existingTags: CourseTag[] = await getOrCreateExistingTags(tags);
 
