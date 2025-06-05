@@ -1,3 +1,5 @@
+import { QuizType } from "@prisma/client";
+
 export const xpRewards: number[] = [5, 10, 20, 25, 50, 75, 100];
 
 type CodeFillProgrammingLanguage = {
@@ -54,4 +56,8 @@ export const availableCodeFillProgrammingLanguages: CodeFillProgrammingLanguage[
 
 export const getCodeFillLangLabelBasedOnValue = (value: string): string => {
     return availableCodeFillProgrammingLanguages.find(p => p.value === value)?.label || '';
+}
+
+export const getFormattedType = (quizType: QuizType): string => {
+    return (quizType === QuizType.LESSON_QUIZ) ? 'Lesson quiz' : 'Exam';
 }

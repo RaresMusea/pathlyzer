@@ -19,6 +19,7 @@ export const EmailVerificationForm = () => {
 
         if (!token) {
             setError("The token is missing!");
+            return; // Be aware of this
         }
 
         verifiyEmail(token)

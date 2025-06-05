@@ -2,7 +2,7 @@
 
 import { CourseDto, EnrollmentRetrievalDto } from "@/types/types";
 import { CourseCard } from "./course-card/CourseCard";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { EnrollmentModal } from "../enrollment/EnrollmentModal";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,10 @@ export const CoursesWrapper = ({ courses, userEnrollments }: CoursesWrapperProps
     const closeEnrollmentModal = () => {
         setSelectedCourse(null);
     }
+
+    useEffect(() => {
+        router.refresh();
+    }, []);
 
     const submitEnrollment = async () => {
         if (selectedCourse && selectedCourse.id) {

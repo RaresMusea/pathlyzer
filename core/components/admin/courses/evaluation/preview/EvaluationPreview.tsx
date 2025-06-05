@@ -60,7 +60,7 @@ export const EvaluationPreview = ({ goBack }: { goBack: () => void }) => {
             ...answers,
             [questionId]: [optionId]
         });
-    }, [setAnswers]);
+    }, [setAnswers, answers]);
 
     const handleMultiChoiceAnswer = useCallback(
         (questionId: string, choiceId: string, checked: boolean) => {

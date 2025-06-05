@@ -8,6 +8,8 @@ import { Lesson } from "../lesson/Lesson";
 export const Unit = ({ item }: { item: LearningPathItem }) => {
     const unitRef = useRef<HTMLDivElement | null>(null);
 
+    console.log("ITEM", item);
+
     useEffect(() => {
         if (item.isCurrent && unitRef.current) {
             unitRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -19,7 +21,7 @@ export const Unit = ({ item }: { item: LearningPathItem }) => {
     return (
         <div ref={unitRef} className="unitContainer">
             <UnitBanner
-                currentLessonId={item.unit.lessons.find(l => l.isCompleted)?.lessonInfo.id as string}
+                currentLessonId={item.unit.lessons.find(l => l.isCurrent)?.lessonInfo.id as string}
                 title={unit.name}
                 description={unit.description}
                 isCurrent={item.isCurrent}

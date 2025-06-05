@@ -17,7 +17,7 @@ export default async function ReadLesson({ params }: { params: Promise<{ courseI
     return (
         <PageTransition>
             <div className="container mx-auto px-4 space-y-8">
-                 <LessonContent lessonId={lessonId} lessonContent={lessonContent} userLearningProgress={userLearningProgress} />
+                <LessonContent lessonId={lessonId} lessonContent={lessonContent} userLearningProgress={userLearningProgress} />
             </div>
         </PageTransition>
     )
