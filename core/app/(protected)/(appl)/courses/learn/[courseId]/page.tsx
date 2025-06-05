@@ -15,6 +15,10 @@ export default async function CoursePathPage({ params }: { params: Promise<{ cou
     const courseProgress = getCurrentProgress(learningPath);
     const userStats = await getSummarizedUserStats();
 
+    if (!userStats) {
+        throw new Error('User stats cannot be undefined at this point!');
+    }
+
     return (
         <PageTransition>
             <div className="container mx-auto px-4 space-y-8 sticky">
@@ -36,7 +40,7 @@ export default async function CoursePathPage({ params }: { params: Promise<{ cou
 
                     {learningPath.map((item) => (
                         <div key={item.unit.id} className="mb-10">
-                            <Unit item={item} />
+                            <Unit lives={userStats?.lives} item={item} />
                         </div>
                     ))}
                 </div>

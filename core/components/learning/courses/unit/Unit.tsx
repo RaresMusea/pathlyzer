@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 import { LearningPathItem } from "@/types/types";
 import { UnitBanner } from "./UnitBanner";
 import { Lesson } from "../lesson/Lesson";
+import { GamificationProvider } from "@/context/GamificationContext";
 
-export const Unit = ({ item }: { item: LearningPathItem }) => {
+export const Unit = ({ item, lives }: { item: LearningPathItem, lives: number }) => {
     const unitRef = useRef<HTMLDivElement | null>(null);
 
     console.log("ITEM", item);
@@ -21,6 +22,7 @@ export const Unit = ({ item }: { item: LearningPathItem }) => {
     return (
         <div ref={unitRef} className="unitContainer">
             <UnitBanner
+                lives={lives}
                 currentLessonId={item.unit.lessons.find(l => l.isCurrent)?.lessonInfo.id as string}
                 title={unit.name}
                 description={unit.description}
