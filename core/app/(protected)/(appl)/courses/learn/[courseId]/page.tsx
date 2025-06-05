@@ -29,8 +29,8 @@ export default async function CoursePathPage({ params }: { params: Promise<{ cou
                             <span>{Math.round((courseProgress.completedLessons / courseProgress.totalLessons) * 100)}%</span>
                         </div>
                         <Progress
-                            value={courseProgress.completedLessons}
-                            max={courseProgress.totalLessons}
+                             value={(courseProgress.completedLessons / courseProgress.totalLessons) * 100}
+                             max={100}
                         />
                     </div>
 
