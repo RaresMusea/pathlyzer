@@ -1,4 +1,4 @@
-import { CourseDifficulty, CourseTag, QuestionType } from "@prisma/client";
+import { CourseDifficulty, CourseTag, QuestionType, QuizType } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { LucideIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
@@ -19,11 +19,17 @@ export enum AnimationDirection {
 
 // #region UserStats-related types
 
-export type UserStatsDto = {
+export interface UserStatsDto {
     id: string;
     lives: number;
     xp: number;
     level: number;
+}
+
+export interface UserStatsMutationDto extends UserStatsDto {
+    userId: string;
+    completedExams?: number;
+    completedQuizzes?: number;
 }
 
 // #endregion
@@ -283,6 +289,72 @@ export type QuestionMutationDto = SingleChoiceQuestionDto | MultipleChoiceQuesti
 export interface LessonContentDto {
     title: string;
     content: JsonValue;
+}
+
+export interface CodeSectionDto {
+    id?: string;
+    code: string;
+    language?: string;
+}
+
+export interface AnswerChoiceDto {
+    id?: string;
+    questionId: string;
+    text: string;
+}
+
+export interface ExaminationClientViewDto extends BaseQuestionDto {
+    codeSection?: CodeSectionDto;
+    answerChoices?: AnswerChoiceDto[];
+}
+
+export interface CodeFillEvaluationResult {
+    questionId: string;
+    isCorrect: boolean;
+    correctIndices: number[];
+};
+
+export interface QuestionCheckDto {
+    id: string;
+    type: QuestionType;
+    rewardXp: number;
+    choices: {
+        id: string;
+        isCorrect: boolean;
+    }[];
+    codeSection: {
+        correct: string[];
+    };
+};
+
+export interface CheckResult {
+    isCorrect: boolean;
+    correctIndices?: number[];
+    correctChoiceIds?: string[];
+}
+
+export interface CheckResponseDto {
+    status: "correct" | "incorrect";
+    result: CheckResult;
+    xpReward?: number;
+    penalty?: { newLives: number };
+}
+
+export interface QuestionCheckPayload {
+    quizType: QuizType;
+    questionId: string;
+    answer: string[];
+}
+
+export interface ExaminationCompletionPayload {
+    quizId: string;
+    gainedXp: number;
+    isLastLesson: boolean;
+};
+
+export interface ExaminationFinishedResponse {
+    currentXp: number;
+    currentLevel: number;
 }
 
 // #endregion

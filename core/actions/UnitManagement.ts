@@ -8,8 +8,9 @@ import { redirect } from "next/navigation";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
 import { addUnit, unitWithIdAlreadyExists } from "@/app/service/learning/units/unitService";
 import { db } from "@/persistency/Db";
+import { error } from "console";
 
-async function validate(values: z.infer<typeof UnitMutationValidator>) {
+async function validate(values: z.infer<typeof UnitMutationValidator>): Promise<ServerActionResult> {
     if (!await isValidAdminSession()) {
         redirect(UNAUTHORIZED_REDIRECT);
     }
@@ -17,29 +18,40 @@ async function validate(values: z.infer<typeof UnitMutationValidator>) {
     const validatedFields = UnitMutationValidator.safeParse(values);
 
     if (!validatedFields.success) {
-        handleError(validatedFields.error.message);
+        return handleError(validatedFields.error.message);
     }
+
+    return handleSuccess('Validation successful!');
 }
 
-async function validateUpdate(values: z.infer<typeof UnitMutationValidator>, unitId: string) {
+async function validateUpdate(values: z.infer<typeof UnitMutationValidator>, unitId: string): Promise<ServerActionResult> {
     try {
-        await validate(values);
+        const validationResult = await validate(values);
+        if (validationResult && 'error' in validationResult) {
+            return validationResult;
+        }
 
         if (!unitId) {
-            handleError('The unit ID cannot be empty!');
+            return handleError('The unit ID cannot be empty!');
         }
 
         if (!unitWithIdAlreadyExists(unitId)) {
-            handleError('The unit ID cannot be modified!');
+            return handleError('The unit ID cannot be modified!');
         }
     } catch (error) {
         console.error(error);
         throw new Error('An unexpected error occurred while attempting to update the unit. Please try again later.');
     }
+
+    return handleSuccess('Validation successful!');
 }
 
 export async function saveUnit(values: z.infer<typeof UnitMutationValidator>, courseId: string): Promise<ServerActionResult> {
-    await validate(values);
+    const validationResult = await validate(values);
+
+    if (validationResult && 'error' in validationResult) {
+        return validationResult;
+    }
 
     if (!courseId) {
         return handleError('The course ID cannot be empty!');
@@ -60,7 +72,12 @@ export async function saveUnit(values: z.infer<typeof UnitMutationValidator>, co
 }
 
 export async function updateUnit(values: z.infer<typeof UnitMutationValidator>, unitId: string): Promise<ServerActionResult> {
-    await validateUpdate(values, unitId);
+    const validationResult = await validateUpdate(values, unitId);
+
+    if (validationResult && 'error' in validationResult) {
+        return validationResult;
+    }
+
     const { name, description } = values;
 
     try {

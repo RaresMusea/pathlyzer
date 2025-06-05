@@ -1,7 +1,7 @@
 import { fromUnitToDto, fromUnitToMutationDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
-import { isValidAdminSession, isValidSession } from "@/security/Security";
+import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
 import { CourseUnitDto, UnitMutationDto, UnitRearrangementDto } from "@/types/types";
 import { Unit } from "@prisma/client";
 import { redirect } from "next/navigation";
@@ -145,7 +145,7 @@ export const deleteUnit = async (unitId: string): Promise<boolean> => {
         redirect(UNAUTHORIZED_REDIRECT);
     }
 
-    const deletedUnit: Unit | null = await db.unit.delete({where: {id: unitId}});
+    const deletedUnit: Unit | null = await db.unit.delete({ where: { id: unitId } });
 
     if (deletedUnit) {
         return true;
@@ -159,7 +159,35 @@ export const getUnitOrderById = cache(async (unitId: string): Promise<number | n
         redirect(UNAUTHORIZED_REDIRECT);
     }
 
-    const unitOrder: {order: number} | null = await db.unit.findUnique({where: {id: unitId}, select:{order: true}});
+    const unitOrder: { order: number } | null = await db.unit.findUnique({ where: { id: unitId }, select: { order: true } });
 
     return unitOrder?.order ?? null;
+});
+
+export const getUnitIdByLessonId = cache(async (lessonId: string): Promise<string | null> => {
+    if (!await isValidSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    const result: { unitId: string } | null = await db.lesson.findUnique({ where: { id: lessonId }, select: { unitId: true } });
+
+    return result && (result.unitId ?? null);
+});
+
+export const getUnitsCount = cache(async (courseId: string): Promise<number> => {
+    if (!await isValidSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    return await db.unit.count({ where: { courseId } });
+});
+
+export const getCompletedUnitsCount = cache(async (userId: string): Promise<number> => {
+    const loggedInUser = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!loggedInUser || !(loggedInUser === userId)) {
+        throw new Error('Unauthorized!');
+    }
+
+    return db.unitProgress.count({ where: { userId, completed: true } });
 });

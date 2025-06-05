@@ -22,8 +22,8 @@ export const CourseCard = ({ course, setSelectedCourse, enrollment, includeFoote
                 {enrollment && enrollment.progress > 0.0 && (
                     <div className="absolute bottom-0 left-0 right-0 bg-background/90 dark:bg-background/50 backdrop-blur-sm p-2">
                         <div className="flex items-center gap-2">
-                            <Progress value={0} className="h-2" />
-                            <span className="text-xs font-medium">{0}%</span>
+                            <Progress value={enrollment.progress} className="h-2" />
+                            <span className="text-xs font-medium">{enrollment.progress}%</span>
                         </div>
                     </div>
                 )}

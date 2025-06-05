@@ -7,7 +7,7 @@ type ProgressProvider = () => number | null;
 
 export enum ProgressType {
     LESSON,
-    QUIZ,
+    EXAMINATION,
 }
 
 export const useLearningSession = (lessonId: string, progressType: ProgressType, getProgress?: ProgressProvider) => {
