@@ -33,7 +33,7 @@ export function AuthAlert({ message, hasCloseButton = false, type, inviewType=In
         <InViewWrapper type={inviewType}>
             <Alert variant={type === AlertType.ERROR? "destructive" : "success"}>
                 <div className="flex items-center">
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4" data-testid="alert-icon" />
                     <div className="flex flex-col ml-3">
                         <AlertTitle>{type === AlertType.ERROR ? "Error" : "Success"}</AlertTitle>
                         <AlertDescription>

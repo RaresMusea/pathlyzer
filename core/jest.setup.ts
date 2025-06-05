@@ -1,5 +1,8 @@
 import { TextEncoder, TextDecoder } from 'util';
 
+import '@testing-library/jest-dom';
+
+
 Object.assign(global, { TextDecoder, TextEncoder });
 
 global.IntersectionObserver = class IntersectionObserver {
@@ -12,3 +15,10 @@ global.IntersectionObserver = class IntersectionObserver {
     disconnect() { }
     takeRecords(): any[] { return []; }
 };
+
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+window.ResizeObserver = ResizeObserverMock;

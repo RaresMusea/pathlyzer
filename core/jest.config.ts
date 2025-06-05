@@ -25,6 +25,9 @@ const config: Config = {
     }
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(next-auth)/)',
+  ],
 };
 
 export default createJestConfig(config);
