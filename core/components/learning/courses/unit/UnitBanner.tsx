@@ -3,8 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Lock, NotebookText } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { OutOfLivesModal } from "../examination/OutOfLivesModal";
 
 type UnitBannerProps = {
     title: string;
@@ -12,11 +14,14 @@ type UnitBannerProps = {
     isCurrent: boolean;
     isCompleted: boolean;
     currentLessonId: string;
+    lives: number;
 }
 
 
-export const UnitBanner = ({ title, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
+export const UnitBanner = ({ title, lives, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
     const pathname = usePathname();
+    const [triggerModal, setTriggerModal] = useState(false);
+    const router = useRouter();
 
     const containerClass = cn(
         "w-full rounded-xl p-5 text-black dark:text-white flex items-center justify-between transition-colors",
@@ -32,6 +37,14 @@ export const UnitBanner = ({ title, description, isCompleted, isCurrent, current
             : "bg-muted text-muted-foreground cursor-not-allowed pointer-events-none"
     );
 
+    const handleContinuePress = () => {
+        if (lives <= 0) {
+            setTriggerModal(true);
+            return;
+        }
+
+        router.push(`${pathname}/lesson/${currentLessonId}`);   
+    }
 
     return (
         <div className="container mx-auto md:w-[80%]">
@@ -44,12 +57,10 @@ export const UnitBanner = ({ title, description, isCompleted, isCurrent, current
                 <>
                     {
                         isCurrent && !isCompleted &&
-                        <Link href={`${pathname}/lesson/${currentLessonId}`}>
-                            <Button className={buttonClass}>
+                            <Button className={buttonClass} onClick={handleContinuePress}>
                                 <NotebookText className="mr-2" />
                                 Continue
                             </Button>
-                        </Link>
                     }
                     {
                         isCompleted &&
@@ -67,6 +78,9 @@ export const UnitBanner = ({ title, description, isCompleted, isCurrent, current
                     }
                 </>
             </div>
+            {
+                triggerModal && <OutOfLivesModal />
+            }
         </div>
     );
 };
