@@ -357,4 +357,10 @@ export interface ExaminationFinishedResponse {
     currentLevel: number;
 }
 
+export interface LessonRearrangementDto {
+    id: string;
+    title: string;
+    order: string;
+}
+
 // #endregion

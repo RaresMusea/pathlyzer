@@ -1,8 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LessonDto } from "@/types/types";
+import { ContextMenuTrigger } from "@radix-ui/react-context-menu";
+import { DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { PopoverArrow } from "@radix-ui/react-popover";
 import { BookOpen } from "lucide-react";
 import { useState } from "react";
@@ -38,22 +41,30 @@ export const AdminLesson = ({ lesson, index, totalAmount }: { lesson: LessonDto,
                 marginTop: `${isFirst ? 60 : 24}px`,
             }}>
             <div className="h-[102px] w-[102px] relative">
+
                 <Popover onOpenChange={setPopoverOpen} open={popoverOpen}>
-                    <PopoverTrigger onMouseEnter={() => { if (popoverOpen) { setPopoverOpen(false); } setPopoverOpen(true) }} onMouseLeave={() => setPopoverOpen(false)} asChild>
-                        <Button size="rounded" variant="lockedLesson"
-                            className="h-[70px] w-[70px] border-b-8">
-                            <BookOpen className={"h-10 w-10  text-neutral-400 stroke-neutral-400"} />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                        onMouseEnter={() => setPopoverOpen(true)}
-                        onMouseLeave={() => setTimeout(() => setPopoverOpen(false), 150)}
-                        className="w-70 font-nunito"
-                    >
-                        <h4 className="text-lg font-bold">Lesson {index + 1}:  {lesson.title}</h4>
-                        <p className="text-sm">{lesson.description}</p>
-                        <PopoverArrow className="fill-gray-300 dark:fill-gray-900" />
-                    </PopoverContent>
+                    <DropdownMenu>
+                        <PopoverTrigger onMouseEnter={() => { if (popoverOpen) { setPopoverOpen(false); } setPopoverOpen(true) }} onMouseLeave={() => setPopoverOpen(false)} asChild>
+                            <DropdownMenuTrigger>
+                            <Button size="rounded" variant="lockedLesson"
+                                className="h-[70px] w-[70px] border-b-8">
+                                <BookOpen className={"h-10 w-10  text-neutral-400 stroke-neutral-400"} />
+                            </Button>
+                            </DropdownMenuTrigger>
+                        </PopoverTrigger>
+                        <PopoverContent
+                            onMouseEnter={() => setPopoverOpen(true)}
+                            onMouseLeave={() => setTimeout(() => setPopoverOpen(false), 150)}
+                            className="w-70 font-nunito"
+                        >
+                            <h4 className="text-lg font-bold">Lesson {index + 1}:  {lesson.title}</h4>
+                            <p className="text-sm">{lesson.description}</p>
+                            <PopoverArrow className="fill-gray-300 dark:fill-gray-900" />
+                        </PopoverContent>
+                        <DropdownMenuContent>
+                        
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </Popover>
             </div >
         </div>
