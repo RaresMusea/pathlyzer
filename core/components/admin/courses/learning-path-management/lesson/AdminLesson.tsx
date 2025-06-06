@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LessonDto } from "@/types/types";
-import { ContextMenuTrigger } from "@radix-ui/react-context-menu";
 import { DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { PopoverArrow } from "@radix-ui/react-popover";
 import { BookOpen } from "lucide-react";
@@ -62,7 +61,7 @@ export const AdminLesson = ({ lesson, index, totalAmount }: { lesson: LessonDto,
                             <PopoverArrow className="fill-gray-300 dark:fill-gray-900" />
                         </PopoverContent>
                         <DropdownMenuContent>
-                        
+
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </Popover>
