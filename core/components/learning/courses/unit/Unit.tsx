@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { LearningPathItem } from "@/types/types";
 import { UnitBanner } from "./UnitBanner";
 import { Lesson } from "../lesson/Lesson";
-import { GamificationProvider } from "@/context/GamificationContext";
 
 export const Unit = ({ item, lives }: { item: LearningPathItem, lives: number }) => {
     const unitRef = useRef<HTMLDivElement | null>(null);

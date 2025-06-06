@@ -22,10 +22,8 @@ export const SocialAuthMethods = () => {
         <div className="w-full flex gap-x-2">
             <Button variant="secondary" size="lg" className="w-full" onClick={() => onClick("google")}>
                 <FcGoogle className="h-4 w-4" />
-                <FcGoogle className="h-4 w-4" />
             </Button>
             <Button variant="secondary" size="lg" className="w-full" onClick={() => onClick("github")}>
-                <FaGithub className="h-4 w-4" />
                 <FaGithub className="h-4 w-4" />
             </Button>
         </div>

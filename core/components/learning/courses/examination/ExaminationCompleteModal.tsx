@@ -39,22 +39,22 @@ export const ExaminationCompleteModal = ({
     const animationStarted = useRef(false);
 
     function calculateProgress(xp: number, level: number): number {
-        const currentLevelXp = getXpThreshold(level);
-        const nextLevelXp = getXpThreshold(level + 1);
-        const range = nextLevelXp - currentLevelXp;
-        const earnedThisLevel = xp - currentLevelXp;
-        return Math.max(0, Math.min(1, earnedThisLevel / range));
+        const current = getXpThreshold(level);
+        const next = getXpThreshold(level + 1);
+        return Math.max(0, Math.min(1, (xp - current) / (next - current)));
     }
 
     useEffect(() => {
         if (animationStarted.current) return;
         animationStarted.current = true;
+
         playSound(EXAMINATION_COMPLETE_AUDIO);
         setTriggerConfetti(true);
 
         setTimeout(() => {
             let xp = initialXp;
             let lvl = initialLevel;
+            const isLevelingUp = { current: false }; // folosește obiect ca să nu retrigger UI
 
             const interval = setInterval(() => {
                 if (xp >= currentXp) {
@@ -62,23 +62,45 @@ export const ExaminationCompleteModal = ({
                     return;
                 }
 
+                if (isLevelingUp.current) return;
+
                 xp += 5;
                 if (xp > currentXp) xp = currentXp;
 
+                const currentLevelXp = getXpThreshold(lvl);
                 const nextLevelXp = getXpThreshold(lvl + 1);
+
                 if (xp >= nextLevelXp) {
-                    lvl++;
-                    playSound(LEVEL_UP_AUDIO);
-                    setShowLevelUpEffect(true);
-                    setTimeout(() => setShowLevelUpEffect(false), 1200);
+                    isLevelingUp.current = true;
+
+                    setProgress(1);
+
+                    setTimeout(() => {
+                        lvl++;
+                        playSound(LEVEL_UP_AUDIO);
+                        setDisplayLevel(lvl);
+                        setShowLevelUpEffect(true);
+
+                        setProgress(0);
+
+                        setTimeout(() => {
+                            setShowLevelUpEffect(false);
+                            isLevelingUp.current = false;
+                        }, 1200);
+                    }, 400);
+
+                    return;
                 }
 
                 setDisplayXp(xp);
                 setDisplayLevel(lvl);
-                setProgress(calculateProgress(xp, lvl));
+
+                const newProgress = (xp - currentLevelXp) / (nextLevelXp - currentLevelXp);
+                setProgress(Math.max(0, Math.min(1, newProgress)));
             }, 20);
         }, 1000);
     }, []);
+
 
     return (
         <motion.div
@@ -158,11 +180,13 @@ export const ExaminationCompleteModal = ({
                             <motion.div
                                 className="h-full bg-gradient-to-r from-[var(--pathlyzer-table-border)] to-[var(--pathlyzer)]"
                                 style={{ width: `${progress * 100}%` }}
+                                animate={{ width: `${progress * 100}%` }}
+                                transition={{ duration: 0.6, ease: "easeInOut" }}
+
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <p className="text-xs font-medium text-white">
-                                    {displayXp - getXpThreshold(displayLevel)} /{" "}
-                                    {getXpThreshold(displayLevel + 1) - getXpThreshold(displayLevel)} XP
+                                    {Math.max(0, displayXp - getXpThreshold(displayLevel))} / {getXpThreshold(displayLevel + 1) - getXpThreshold(displayLevel)} XP
                                 </p>
                             </div>
                         </div>
