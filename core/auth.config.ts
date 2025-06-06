@@ -5,34 +5,44 @@ import { LoginSchema } from "./schemas/AuthValidation"
 import { getUserByEmail } from "./persistency/data/User";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
- 
-export default { providers: [
-    Google ({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    GitHub({
-        clientId: process.env.GH_CLIENT_ID,
-        clientSecret: process.env.GH_CLIENT_SECRET,
-    }),
-    Credentials({
-    async authorize(credentials) {
-        const validatedFields = LoginSchema.safeParse(credentials);
 
-        if (validatedFields.success) {
-            const {email, password} = validatedFields.data;
-            const user = await getUserByEmail(email);
-            
-            if (!user || !user.password) { 
-               return null; 
-            }
+export default {
+    providers: [
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        }),
+        GitHub({
+            clientId: process.env.GH_CLIENT_ID,
+            clientSecret: process.env.GH_CLIENT_SECRET,
+        }),
+        Credentials({
+            async authorize(credentials) {
+                const validatedFields = LoginSchema.safeParse(credentials);
 
-            const passwordsMatch: boolean = await bcrypt.compare(password, user.password);
-            
-            if (passwordsMatch) {
-                return user;
+                if (validatedFields.success) {
+                    const { email, password } = validatedFields.data;
+                    const user = await getUserByEmail(email);
+
+                    if (!user || !user.password) {
+                        return null;
+                    }
+
+                    const passwordsMatch: boolean = await bcrypt.compare(password, user.password);
+
+                    if (passwordsMatch) {
+                        return user;
+                    }
+                }
+                return null;
             }
-        }
-        return null;
+        })],
+    session: {
+        strategy: 'jwt',
+        maxAge: 60 * 40
+    },
+    jwt: {
+        maxAge: 60 * 40,
     }
-})] } satisfies NextAuthConfig
+
+} satisfies NextAuthConfig
