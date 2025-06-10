@@ -2,7 +2,7 @@ import { fromUnitToDto, fromUnitToMutationDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
-import { BasicLessonDto, CourseUnitDto, LessonDto, UnitMutationDto, UnitRearrangementDto } from "@/types/types";
+import { BasicLessonDto, CourseUnitDto, UnitMutationDto, UnitRearrangementDto } from "@/types/types";
 import { Unit } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
