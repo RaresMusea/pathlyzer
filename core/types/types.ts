@@ -357,10 +357,11 @@ export interface ExaminationFinishedResponse {
     currentLevel: number;
 }
 
-export interface LessonRearrangementDto {
+export interface BasicLessonDto {
     id: string;
     title: string;
-    order: string;
+    order: number;
+    description: string;
 }
 
 // #endregion

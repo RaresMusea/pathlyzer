@@ -2,7 +2,7 @@ import { fromUnitToDto, fromUnitToMutationDto } from "@/lib/Mapper";
 import { db } from "@/persistency/Db";
 import { LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
-import { CourseUnitDto, UnitMutationDto, UnitRearrangementDto } from "@/types/types";
+import { BasicLessonDto, CourseUnitDto, LessonDto, UnitMutationDto, UnitRearrangementDto } from "@/types/types";
 import { Unit } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { cache } from "react"
@@ -42,6 +42,21 @@ export const getUnits = cache(async (courseId: string): Promise<CourseUnitDto[]>
 
     return courseUnitDtos;
 });
+
+export const getLessonsByUnitId = cache(async (unitId: string): Promise<BasicLessonDto[] | null> => {
+    if (!isValidAdminSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    const lessons: BasicLessonDto[] = await db.lesson.findMany({
+        where: { unitId },
+        select: { id: true, title: true, order: true, description: true },
+        orderBy: { order: 'asc' }
+    });
+
+    return lessons;
+})
+
 
 export const getLowerstOrderUnitId = cache(async (courseId: string): Promise<string | null> => {
     if (!await isValidSession()) {

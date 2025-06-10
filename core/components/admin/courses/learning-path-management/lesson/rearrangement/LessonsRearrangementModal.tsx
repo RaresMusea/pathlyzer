@@ -8,6 +8,9 @@ import { ArrowUpDown, GripVertical } from "lucide-react";
 import { useState, useTransition } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { LessonDto } from "@/types/types";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type UnitsRearrangementModalProps = {
     open: boolean;
@@ -26,6 +29,7 @@ export const LessonsRearrangementModal = ({
 }: UnitsRearrangementModalProps) => {
     const [pending, startTransition] = useTransition();
     const [localLessons, setLocalLessons] = useState<LessonDto[]>(lessons);
+    const router = useRouter();
 
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return;
@@ -39,6 +43,28 @@ export const LessonsRearrangementModal = ({
     const handleRearrange = async () => {
         if (localLessons) {
             startTransition(async () => {
+                try {
+                    const response = await axios.patch(`/api/admin/units/${unitId}/rearrange-lessons`, {
+                        lessons: localLessons
+                    });
+
+                    if (response.status === 200) {
+                        toast.success(response.data.message);
+                        setOpen(false);
+                        setTimeout(() => router.refresh(), 100);
+                    }
+                    else {
+                        toast.error(response.data.message);
+                    }
+                } catch (error) {
+
+                    if (axios.isAxiosError(error)) {
+                        toast.error(error.response?.data?.message || "Unexpected error occurred during units rearrangement.");
+                    } else {
+                        toast.error("An unexpected error occurred. Please try again later.");
+                    }
+                    console.error(error);
+                }
             })
         }
     }
