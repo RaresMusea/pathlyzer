@@ -357,4 +357,11 @@ export interface ExaminationFinishedResponse {
     currentLevel: number;
 }
 
+export interface BasicLessonDto {
+    id: string;
+    title: string;
+    order: number;
+    description: string;
+}
+
 // #endregion
