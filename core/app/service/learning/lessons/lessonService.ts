@@ -1,7 +1,7 @@
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
-import { LessonContentDto } from "@/types/types";
+import { LessonContentDto, LessonDto } from "@/types/types";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 
@@ -80,4 +80,26 @@ export const getLessonOrder = cache(async (lessonId: string): Promise<number> =>
     }
 
     return result.order;
-})
+});
+
+export const rearrangeLessons = async (lessons: LessonDto[]): Promise<void> => {
+    if (!await isValidAdminSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    const tempUpdates = lessons.map((lesson, index) =>
+        db.lesson.update({
+            where: { id: lesson.id },
+            data: { order: -(index + 1) },
+        })
+    );
+
+    const finalUpdates = lessons.map((lesson, index) =>
+        db.lesson.update({
+            where: { id: lesson.id },
+            data: { order: index + 1 },
+        })
+    );
+
+    await db.$transaction([...tempUpdates, ...finalUpdates]);
+};
