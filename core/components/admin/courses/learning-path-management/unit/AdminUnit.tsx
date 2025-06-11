@@ -11,7 +11,7 @@ export const AdminUnit = ({ unit }: { unit: CourseUnitDto }) => {
             <div className="flex items-center flex-col relative">
                 {
                     unit.lessons.map((lesson, index) => (
-                        <AdminLesson key={lesson.id} lesson={lesson} index={index} totalAmount={unit.lessons.length - 1} />
+                        <AdminLesson key={lesson.id} lesson={lesson} index={index} />
                     ))
                 }
             </div>
