@@ -5,7 +5,6 @@ import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession
 import { LessonContentDto, LessonDto } from "@/types/types";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
-import { isValid } from "zod";
 
 export const getLowerstOrderLessonId = cache(async (unitId: string): Promise<string | null> => {
     if (!await isValidSession()) {
