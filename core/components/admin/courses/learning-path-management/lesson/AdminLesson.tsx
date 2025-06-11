@@ -16,11 +16,9 @@ import { LessonDeletionModal } from "./deletion/LessonDeletionModal";
 export const AdminLesson = ({
     lesson,
     index,
-    totalAmount,
 }: {
     lesson: LessonDto;
     index: number;
-    totalAmount: number;
 }) => {
     const [lessonDeletionModalOpen, setLessonDeletionModalOpen] = useState(false);
 
