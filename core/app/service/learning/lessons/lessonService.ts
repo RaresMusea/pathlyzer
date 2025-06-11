@@ -1,9 +1,11 @@
+import { Lesson } from ".prisma/client";
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT, LOGIN_PAGE, UNAUTHORIZED_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute, isValidAdminSession, isValidSession } from "@/security/Security";
 import { LessonContentDto, LessonDto } from "@/types/types";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
+import { isValid } from "zod";
 
 export const getLowerstOrderLessonId = cache(async (unitId: string): Promise<string | null> => {
     if (!await isValidSession()) {
@@ -103,3 +105,27 @@ export const rearrangeLessons = async (lessons: LessonDto[]): Promise<void> => {
 
     await db.$transaction([...tempUpdates, ...finalUpdates]);
 };
+
+export const getLessonById = cache(async (lessonId: string): Promise<LessonDto | null> => {
+    if (!await isValidAdminSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    const lesson: LessonDto | null = await db.lesson.findUnique({ where: { id: lessonId }, select: { id: true, title: true, description: true, order: true } });
+
+    return lesson ?? null;
+});
+
+export const deleteLesson = async (lessonId: string): Promise<boolean> => {
+    if (!await isValidAdminSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    const deletedLesson: Lesson | null = await db.lesson.delete({where: {id: lessonId}});
+
+    if (deletedLesson) {
+        return true;
+    }
+
+    return false;
+}
