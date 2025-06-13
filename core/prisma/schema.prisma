@@ -171,6 +171,7 @@ model Lesson {
   unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
   LessonProgress  LessonProgress[]
   Quiz            Quiz?
+  LessonPractice  LessonPractice[]
 
   @@unique([unitId, order])
 }
@@ -256,6 +257,25 @@ model UnitProgress {
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, unitId])
+}
+
+model LessonPractice {
+  id        String               @id @default(uuid())
+  lessonId  String               @unique @map("lesson_id")
+  items     LessonPracticeItem[]
+  createdAt DateTime             @default(now()) @map("created_at")
+  updatedAt DateTime             @updatedAt @map("updated_at")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model LessonPracticeItem {
+  id               String @id @default(uuid())
+  lessonPracticeId String @map("lesson_practice_id")
+  title            String
+  content          String
+
+  lessonPractice LessonPractice @relation(fields: [lessonPracticeId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
