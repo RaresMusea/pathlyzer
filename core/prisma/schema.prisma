@@ -1,30 +1,10 @@
-// prisma/schema.prisma
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-enum UserRole {
-  USER
-  ADMINISTRATOR
-}
-
-enum CourseDifficulty {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
-enum ProjectVisibility {
-  PUBLIC
-  PRIVATE
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -36,15 +16,15 @@ model User {
   image             String?
   password          String?
   role              UserRole               @default(USER)
-  accounts          Account[]
   is2FAEnabled      Boolean                @default(false)
-  TwoFAConfirmation TwoFactorConfirmation?
-  Project           Project[]
+  accounts          Account[]
   Enrollment        Enrollment[]
-  UserStats         UserStats?
-  LessonProgress    LessonProgress[]
   LearningSession   LearningSession[]
+  LessonProgress    LessonProgress[]
+  Project           Project[]
+  TwoFAConfirmation TwoFactorConfirmation?
   UnitProgress      UnitProgress[]
+  UserStats         UserStats?
 }
 
 model UserStats {
@@ -56,8 +36,7 @@ model UserStats {
   completedQuizzes Int      @default(0) @map("completed_quizzes")
   completedExams   Int      @default(0) @map("completed_exams")
   updatedAt        DateTime @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -66,15 +45,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -108,10 +86,8 @@ model TwoFactorToken {
 
 model TwoFactorConfirmation {
   id     String @id @default(cuid())
-  userId String
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId])
 }
 
 model Project {
@@ -138,9 +114,9 @@ model Course {
   available   Boolean          @default(false)
   createdAt   DateTime         @default(now()) @map("created_at")
   updatedAt   DateTime         @updatedAt @map("updated_at")
-  tags        CourseTag[]
   Enrollment  Enrollment[]
   units       Unit[]
+  tags        CourseTag[]      @relation("CourseToCourseTag")
 
   @@index([name])
 }
@@ -148,7 +124,7 @@ model Course {
 model CourseTag {
   id      String   @id @default(uuid())
   name    String   @unique
-  courses Course[]
+  courses Course[] @relation("CourseToCourseTag")
 }
 
 model Enrollment {
@@ -159,25 +135,23 @@ model Enrollment {
   progress             Float    @default(0.0)
   completed            Boolean  @default(false)
   lastAccessedLessonId String?  @map("last_accessed_lesson_id")
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course               Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
 
 model Unit {
-  id          String   @id @default(uuid())
-  courseId    String   @map("course_id")
-  examId      String?  @unique @map("exam_id")
-  name        String
-  description String
-  order       Int
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id           String         @id @default(uuid())
+  courseId     String         @map("course_id")
+  examId       String?        @unique @map("exam_id")
+  name         String
+  description  String
+  order        Int
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
   Lesson       Lesson[]
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   exam         Quiz?          @relation("UnitExam", fields: [examId], references: [id], onDelete: Cascade)
   UnitProgress UnitProgress[]
 
@@ -185,71 +159,56 @@ model Unit {
 }
 
 model Lesson {
-  id          String   @id @default(uuid())
-  unitId      String   @map("unit_id")
-  title       String
-  description String
-  content     Json
-  order       Int
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  Quiz            Quiz?
-  LessonProgress  LessonProgress[]
+  id              String            @id @default(uuid())
+  unitId          String            @map("unit_id")
+  title           String
+  description     String
+  content         Json
+  order           Int
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
   LearningSession LearningSession[]
+  unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  LessonProgress  LessonProgress[]
+  Quiz            Quiz?
 
   @@unique([unitId, order])
 }
 
-enum QuizType {
-  LESSON_QUIZ
-  UNIT_EXAM
-}
-
 model Quiz {
-  id        String   @id @default(uuid())
-  lessonId  String?  @unique @map("lesson_id")
+  id        String     @id @default(uuid())
+  lessonId  String?    @unique @map("lesson_id")
   type      QuizType
   title     String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  questions Question[]
   lesson    Lesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   unit      Unit?      @relation("UnitExam")
-  questions Question[]
-}
-
-enum QuestionType {
-  SINGLE
-  MULTIPLE
-  CODE_FILL
 }
 
 model Question {
-  id        String       @id @default(uuid())
-  quizId    String       @map("quiz_id")
-  type      QuestionType
-  order     Int
-  prompt    String
-  rewardXp  Int          @map("reward_xp")
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-
+  id          String         @id @default(uuid())
+  quizId      String         @map("quiz_id")
+  type        QuestionType
+  order       Int
+  prompt      String
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  rewardXp    Int            @map("reward_xp")
   choices     AnswerChoice[]
-  quiz        Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
   CodeSection CodeSection[]
+  quiz        Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
   @@unique([quizId, order])
 }
 
 model AnswerChoice {
-  id         String  @id @default(uuid())
-  questionId String  @map("question_id")
+  id         String   @id @default(uuid())
+  questionId String   @map("question_id")
   text       String
-  isCorrect  Boolean @map("is_correct")
-
-  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  isCorrect  Boolean  @map("is_correct")
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([questionId, text])
 }
@@ -260,8 +219,7 @@ model CodeSection {
   code       String
   language   String?
   correct    String[]
-
-  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 model LearningSession {
@@ -271,21 +229,20 @@ model LearningSession {
   startedAt DateTime  @map("started_at")
   endedAt   DateTime? @map("ended_at")
   duration  Int?      @map("duration_seconds")
-
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson    Lesson?   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LessonProgress {
-  id         String   @id @default(uuid())
-  userId     String   @map("user_id")
-  lessonId   String   @map("lesson_id")
-  completed  Boolean  @default(false)
-  progress   Float    @default(0)
-  accessedAt DateTime @default(now()) @map("accessed_at")
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  lessonId       String   @map("lesson_id")
+  completed      Boolean  @default(false)
+  progress       Float    @default(0)
+  accessedAt     DateTime @default(now()) @map("accessed_at")
+  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wasLifeGranted Boolean  @default(false) @map("was_life_granted")
 
   @@unique([userId, lessonId])
 }
@@ -295,9 +252,35 @@ model UnitProgress {
   userId    String  @map("user_id")
   unitId    String  @map("unit_id")
   completed Boolean @default(false)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  unit      Unit    @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, unitId])
+}
+
+enum UserRole {
+  USER
+  ADMINISTRATOR
+}
+
+enum CourseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum QuizType {
+  LESSON_QUIZ
+  UNIT_EXAM
+}
+
+enum QuestionType {
+  SINGLE
+  MULTIPLE
+  CODE_FILL
 }
