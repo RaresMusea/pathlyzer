@@ -274,6 +274,7 @@ model LessonPracticeItem {
   lessonPracticeId String @map("lesson_practice_id")
   title            String
   content          String
+  duration         Int @map("duration_seconds") @default(30)
 
   lessonPractice LessonPractice @relation(fields: [lessonPracticeId], references: [id], onDelete: Cascade)
 }
