@@ -364,4 +364,17 @@ export interface BasicLessonDto {
     description: string;
 }
 
+export interface LessonPracticeDto {
+    id: string;
+    lessonId: string;
+    items: LessonPracticeItemDto[];
+}
+
+export interface LessonPracticeItemDto {
+    id: string;
+    title: string;
+    duration: number;
+    content: string;
+}
+
 // #endregion
