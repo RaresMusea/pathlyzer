@@ -8,10 +8,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UnitDeletionModal } from "./UnitDeletionModal";
 import { LessonDto } from "@/types/types";
+import { LessonsRearrangementModal } from "../lesson/rearrangement/LessonsRearrangementModal";
 
 export const AdminUnitBanner = ({ title, description, unitId, lessons }: { title: string, description: string, unitId: string, lessons: LessonDto[] }) => {
     const [toggled, setToggled] = useState(false);
-    const [unitModalOpen, setUnitModalOpen] = useState(false);
+    const [lessonsRearrangementVisible, setLessonsRearragementVisible] = useState<boolean>(false);
+    const [unitModalOpen, setUnitModalOpen] = useState<boolean>(false);
     const router = useRouter();
 
     return (
@@ -47,8 +49,8 @@ export const AdminUnitBanner = ({ title, description, unitId, lessons }: { title
                             Add lesson
                         </DropdownMenuItem>
                         {
-                            lessons && lessons.length > 2 &&
-                            <DropdownMenuItem onSelect={() => router.push(``)}>
+                            lessons && lessons.length >= 2 &&
+                            <DropdownMenuItem onSelect={() => setLessonsRearragementVisible(true)}>
                                 <ArrowUpDown />
                                 Rearrange lessons
                             </DropdownMenuItem>
@@ -57,6 +59,7 @@ export const AdminUnitBanner = ({ title, description, unitId, lessons }: { title
                 </DropdownMenuContent>
             </DropdownMenu>
             <UnitDeletionModal open={unitModalOpen} unitId={unitId} setOpen={setUnitModalOpen} unitTitle={title} />
+            <LessonsRearrangementModal open={lessonsRearrangementVisible} unitId={unitId} setOpen={setLessonsRearragementVisible} unitName={title} lessons={lessons} />
         </div>
     )
 }

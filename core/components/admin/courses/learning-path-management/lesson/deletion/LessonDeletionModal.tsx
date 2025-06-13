@@ -10,14 +10,14 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-export const UnitDeletionModal = ({ open, unitId, setOpen, unitTitle }: { open: boolean, unitId: string, setOpen: (newState: boolean) => void, unitTitle: string }) => {
+export const LessonDeletionModal = ({ open, lessonId, setOpen, lessonTitle }: { open: boolean, lessonId: string, setOpen: (newState: boolean) => void, lessonTitle: string }) => {
     const [pending, startTransition] = useTransition();
     const router = useRouter();
 
     const handleDeletion = async () => {
         startTransition(async () => {
             try {
-                const response = await axios.delete(`/api/admin/units/${unitId}`);
+                const response = await axios.delete(`/api/admin/lessons/${lessonId}`);
 
                 if (response.status === 200) {
                     toast.success(response.data.message);
@@ -54,13 +54,13 @@ export const UnitDeletionModal = ({ open, unitId, setOpen, unitTitle }: { open: 
                             <DialogTitle>Confirm deletion</DialogTitle>
                             <DialogDescription>
                                 <div className="mt-3">
-                                    Are you absolutely sure that you want to completely remove course <strong>&quot;{unitTitle}&quot;</strong> ?<br /><br/> All the lessons linked to this unit, along with all of their associated elements (quizzes) will also get deleted!<br /> This acction is irreversible!
+                                    Are you absolutely sure that you want to completely remove lesson <strong>&quot;{lessonTitle}&quot;</strong> ?<br /><br/> All the evaluation items linked to this entity will also get deleted!<br /> This acction is irreversible!
                                 </div>
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
                             {pending ?
-                            <LoadingButton variant="destructive" className="bg-red-400 text-white">Deleting unit...</LoadingButton> : 
+                            <LoadingButton variant="destructive" className="bg-red-400 text-white">Deleting lesson...</LoadingButton> : 
                             <Button variant="destructive" onClick={handleDeletion}>
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete

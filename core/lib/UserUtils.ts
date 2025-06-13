@@ -46,5 +46,11 @@ export const getUserAppRoles = (userRole: UserRole | undefined): UserAppRole[] =
 }
 
 export const getXpThreshold = (level: number): number => {
-    return Math.floor(100 * Math.pow(1.5, level - 1));
-}
+    if (level === 0) return 0;
+
+    let xp = 0;
+    for (let i = 1; i <= level; i++) {
+        xp += Math.floor(100 * Math.pow(1.5, i - 1));
+    }
+    return xp;
+};

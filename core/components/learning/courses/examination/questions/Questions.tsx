@@ -37,7 +37,7 @@ export const SingleChoiceQuestion = (props: ChoiceBasedQuestionProps) => {
                 const isSelected: boolean = selectedChoices.some((c) => c.id === choice.id);
                 const isCorrect: boolean = correctChoiceIds.length > 0 && correctChoiceIds.includes(choice.id as string);
 
-                const showCorrectHighlight: boolean = answerStatus.hasAnswered && isCorrect;
+                const showCorrectHighlight: boolean = answerStatus.hasAnswered && isSelected && isCorrect;
                 const showIncorrectHighlight: boolean = answerStatus.hasAnswered && isSelected && !isCorrect;
 
                 return (
