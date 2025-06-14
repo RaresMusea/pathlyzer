@@ -7,3 +7,7 @@ export const PracticeSectionSchema = z.object({
 });
 
 export type PracticeSectionForm = z.infer<typeof PracticeSectionSchema>;
+
+export const PracticePayloadSchema = z.object({
+  items: z.array(PracticeSectionSchema),
+})
