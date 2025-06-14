@@ -1,15 +1,19 @@
 import { PracticeSectionForm, PracticeSectionSchema } from "@/schemas/PracticeSectionSchema";
 import { LessonPracticeDto, LessonPracticeItemDto } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios, { isAxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
+export const useLessonPractice = (lessonId: string, practiceDto?: LessonPracticeDto | null) => {
     const [practiceItems, setPracticeItems] = useState<LessonPracticeItemDto[]>(practiceDto?.items || []);
     const [currentEditableItem, setCurrentEditableItem] = useState<LessonPracticeItemDto | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState<string>("edit");
     const [isPending, startTransition] = useTransition();
+    const router = useRouter();
 
     const form = useForm<PracticeSectionForm>({
         resolver: zodResolver(PracticeSectionSchema),
@@ -18,7 +22,7 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
             content: currentEditableItem?.content || "Practice item content",
             duration: currentEditableItem?.duration || 10,
         },
-        reValidateMode:"onChange",
+        reValidateMode: "onChange",
     });
 
     const addItem = () => {
@@ -95,10 +99,33 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
 
     const handleValidation = async () => {
         const success: boolean = await form.trigger();
-        
+
         if (success) {
             cancelSelection();
         }
+    }
+
+    const saveChanges = async () => {
+        startTransition(async () => {
+            try {
+                const response = await axios.put(`/api/admin/lessons/${lessonId}/practice`, practiceItems);
+
+                if (response.status === 200) {
+                    toast.success(response.data.message);
+                    router.push('../../');
+                }
+                else {
+                    toast.error(response.data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                if (isAxiosError(error)) {
+                    toast.error(error.response?.data?.message || error.message);
+                    return;
+                }
+                toast.error(error.message);
+            }
+        });
     }
 
     return {
@@ -118,5 +145,6 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
         setActiveTab,
         addItem,
         deleteItem,
+        saveChanges,
     };
 }

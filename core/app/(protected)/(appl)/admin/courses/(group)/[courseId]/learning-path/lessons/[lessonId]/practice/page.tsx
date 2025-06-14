@@ -31,7 +31,7 @@ export default async function ManageLessonPracticePage({ params, }: { params: Pr
                         </Button>
                     </Link>
                 </div>
-                <LessonPracticeForm practiceDto={lessonPractice} lessonName={lesson.title} />
+                <LessonPracticeForm practiceDto={lessonPractice} lessonName={lesson.title} lessonId={lessonId} />
             </div>
         </PageTransition>
     )

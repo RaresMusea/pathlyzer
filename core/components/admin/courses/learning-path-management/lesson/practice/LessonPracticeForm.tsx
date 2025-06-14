@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -10,10 +11,13 @@ import { useLessonPractice } from "@/hooks/useLessonPractice";
 import { LessonPracticeDto } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Check, Clock, Edit, Eye, MoveDown, MoveUp, Plus, Save, Trash2 } from "lucide-react";
+import { useMemo } from "react";
+import deepEqual from 'fast-deep-equal';
 
 type LessonPracticeFormProps = {
     practiceDto?: LessonPracticeDto | null;
     lessonName: string;
+    lessonId: string;
 };
 
 export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
@@ -23,6 +27,7 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
         addItem,
         deleteItem,
         isPending,
+        saveChanges,
         isEditing,
         moveItemDown,
         moveItemUp,
@@ -33,10 +38,15 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
         startEditing,
         practiceItems,
         currentEditableItem,
-    } = useLessonPractice(props.practiceDto);
+    } = useLessonPractice(props.lessonId, props.practiceDto);
 
     const totalDuration = practiceItems.reduce((sum, section) => sum + section.duration, 0)
     const formattedTotalDuration = `${Math.floor(totalDuration / 60)}:${(totalDuration % 60).toString().padStart(2, "0")}`
+
+    const isUnchanged = useMemo(
+        () => deepEqual(practiceItems, props.practiceDto?.items ?? []),
+        [practiceItems, props.practiceDto?.items]
+    );
 
     return (
         <>
@@ -46,10 +56,12 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
                 </h1>
                 <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">Total duration: {formattedTotalDuration}</span>
-                    <Button onClick={() => { }} className="bg-[var(--pathlyzer)] hover:bg-[var(--pathlyzer-table-border)] text-semibold text-white">
-                        <Save className="h-4 w-4 mr-2" />
-                        Save
-                    </Button>
+                    {isPending ? <LoadingButton className="bg-[var(--pathlyzer)] hover:bg-[var(--pathlyzer-table-border)] text-semibold text-white">Applying changes...</LoadingButton> :
+                        <Button onClick={saveChanges} className="bg-[var(--pathlyzer)] hover:bg-[var(--pathlyzer-table-border)] text-semibold text-white" disabled={practiceItems.length === 0 || isUnchanged || isPending}>
+                            <Save className="h-4 w-4 mr-2" />
+                            Save
+                        </Button>
+                    }
                 </div>
             </div>
 

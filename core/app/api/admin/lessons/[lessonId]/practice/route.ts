@@ -11,14 +11,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const lessonId = (await params).lessonId;
-    const body = (await request.json()) as LessonPracticeItemDto[];
+    const body = await request.json() as LessonPracticeItemDto[];
     const validatedFields = PracticePayloadSchema.safeParse(body);
 
     if (!validatedFields.success) {
+        console.log("Sunt invalide bos");
         return NextResponse.json({ message: validatedFields.error.message }, { status: 400 });
     }
 
     const lesson: LessonDto | null = await getLessonById(lessonId);
+
+    console.log(lesson);
 
     if (!lesson) {
         return NextResponse.json({ message: 'The lesson could not be found or it is innaccessible!' }, { status: 404 });
@@ -30,7 +33,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         create: { lessonId },
     });
 
-    const incoming = body;
+    const incoming = validatedFields.data;
     const existing = await db.lessonPracticeItem.findMany({
         where: { lessonPracticeId: lessonPractice.id },
         select: { id: true }
@@ -39,7 +42,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const existingIds = new Set(existing.map(i => i.id));
     const incomingIds = new Set(incoming.filter(i => i.id).map(i => i.id!));
 
-    const toCreate = incoming.filter(i => !i.id);
+    const toCreate = incoming.filter(i => i.id?.startsWith('item'));
     const toUpdate = incoming.filter(i => i.id && existingIds.has(i.id));
     const toDeleteIds = [...existingIds].filter(id => !incomingIds.has(id));
 
@@ -76,7 +79,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 : []),
         ])
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return NextResponse.json({ message: 'An unexpected server error occurred while attempting to manage the lesson practice.' }, { status: 500 });
     }
 
