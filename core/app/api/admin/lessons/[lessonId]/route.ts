@@ -3,7 +3,6 @@ import { isValidAdminSession } from "@/security/Security";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ lessonId: string }> }): Promise<NextResponse> {
-    console.log(request);
     
     if (!await isValidAdminSession()) {
         return NextResponse.json({ message: "Unauthorized!" }, { status: 401 });
