@@ -34,7 +34,7 @@ export default async function ManageLearningPathPage({ params, }: { params: Prom
                 <LearningPathManagementHeader courseName={course.name} courseId={courseId} path={learningPath} />
                 {learningPath.length ? learningPath.map((item) => (
                     <div key={item.id} className="mb-10">
-                        <AdminUnit unit={item} />
+                        <AdminUnit unit={item} courseId={courseId} />
                     </div>
                 )) :
                     <EmptyPath />
