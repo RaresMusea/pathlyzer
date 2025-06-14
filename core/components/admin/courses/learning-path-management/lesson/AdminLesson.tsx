@@ -8,19 +8,23 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { BookOpen, Trash2 } from "lucide-react";
+import { BookOpen, Brain, Trash2 } from "lucide-react";
 import { LessonDto } from "@/types/types";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { LessonDeletionModal } from "./deletion/LessonDeletionModal";
+import { useRouter } from "next/navigation";
 
 export const AdminLesson = ({
+    courseId,
     lesson,
     index,
 }: {
+    courseId: string;
     lesson: LessonDto;
     index: number;
 }) => {
     const [lessonDeletionModalOpen, setLessonDeletionModalOpen] = useState(false);
+    const router = useRouter();
 
     const cycleLength = 8;
     const cycleIndex = index % cycleLength;
@@ -65,8 +69,9 @@ export const AdminLesson = ({
                         <div className="p-2">Lesson {index + 1}: {lesson.title}
                         </div>
                         <DropdownMenuSeparator className="border-b"/>
-                        <DropdownMenuItem onSelect={() => {}}>
-                            
+                        <DropdownMenuItem onSelect={() => {router.push(`/admin/courses/${courseId}/learning-path/lessons/${lesson.id}/practice`)}}>
+                            <Brain className="mr-2 h-4 w-4" />
+                            Manage learning practice
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-500" onSelect={() => setLessonDeletionModalOpen(true)}>
                             <Trash2 className="mr-2 h-4 w-4 " />
