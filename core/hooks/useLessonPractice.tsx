@@ -20,16 +20,85 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
         },
     });
 
+    const addItem = () => {
+        const blankItem: LessonPracticeItemDto = {
+            id: `item-${Date.now()}`,
+            title: 'Practice item title',
+            content: 'Practice item content',
+            duration: 10
+        }
+
+        setPracticeItems([...practiceItems, blankItem]);
+        setCurrentEditableItem(blankItem);
+        setIsEditing(true);
+    };
+
+    const deleteItem = (id: string) => {
+        setPracticeItems(practiceItems.filter((item) => item.id !== id))
+
+        if (currentEditableItem?.id === id) {
+            setCurrentEditableItem(null);
+            setIsEditing(false)
+        }
+    }
+
+    const updatePracticeItem = (id: string, data: Partial<LessonPracticeItemDto>) => {
+        setPracticeItems(items =>
+            items.map(it => (it.id === id ? { ...it, ...data } : it))
+        );
+    }
+
+    const moveItemUp = (index: number) => {
+        if (index === 0) return;
+
+        const newItems = [...practiceItems];
+        const temp = newItems[index];
+        newItems[index] = newItems[index - 1];
+        newItems[index - 1] = temp;
+        setPracticeItems(newItems);
+    }
+
+    const moveItemDown = (index: number) => {
+        if (index === (practiceItems.length - 1)) return;
+
+        const newItems = [...practiceItems];
+        const temp = practiceItems[index];
+        newItems[index] = newItems[index + 1];
+        newItems[index + 1] = temp;
+        setPracticeItems(newItems);
+    }
+
+    const startEditing = (item: LessonPracticeItemDto) => {
+        setCurrentEditableItem(item);
+        setIsEditing(true);
+
+        form.reset({
+            title: item.title,
+            content: item.content,
+            duration: item.duration,
+        });
+    }
+
+    const cancelSelection = () => {
+        setIsEditing(false);
+        setCurrentEditableItem(null);
+    }
 
     return {
-        setCurrentEditableItem,
+        form,
+        currentEditableItem,
         activeTab,
         isEditing,
         isPending,
         practiceItems,
-        currentEditableItem,
+        moveItemUp,
+        moveItemDown,
+        cancelSelection,
+        updatePracticeItem,
+        setCurrentEditableItem,
+        startEditing,
         setActiveTab,
-        form
+        addItem,
+        deleteItem,
     };
-
 }
