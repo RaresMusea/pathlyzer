@@ -18,6 +18,7 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
             content: currentEditableItem?.content || "Practice item content",
             duration: currentEditableItem?.duration || 10,
         },
+        reValidateMode:"onChange",
     });
 
     const addItem = () => {
@@ -38,8 +39,10 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
 
         if (currentEditableItem?.id === id) {
             setCurrentEditableItem(null);
-            setIsEditing(false)
+            setIsEditing(false);
         }
+
+        cancelSelection();
     }
 
     const updatePracticeItem = (id: string, data: Partial<LessonPracticeItemDto>) => {
@@ -82,6 +85,20 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
     const cancelSelection = () => {
         setIsEditing(false);
         setCurrentEditableItem(null);
+
+        form.reset({
+            title: "Practice item title",
+            content: "Practice item content",
+            duration: 10
+        });
+    }
+
+    const handleValidation = async () => {
+        const success: boolean = await form.trigger();
+        
+        if (success) {
+            cancelSelection();
+        }
     }
 
     return {
@@ -93,6 +110,7 @@ export const useLessonPractice = (practiceDto?: LessonPracticeDto | null) => {
         practiceItems,
         moveItemUp,
         moveItemDown,
+        handleValidation,
         cancelSelection,
         updatePracticeItem,
         setCurrentEditableItem,

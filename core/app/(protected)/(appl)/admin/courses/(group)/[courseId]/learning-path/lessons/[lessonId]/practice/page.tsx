@@ -16,7 +16,7 @@ export default async function ManageLessonPracticePage({ params, }: { params: Pr
     const lessonPractice: LessonPracticeDto | null = await getLessonPracticeByLessonId(lessonId);
     const lesson = await getLessonById(lessonId);
 
-    if (!courseId || !lessonId || ! await lessonExists(lessonId) || !lesson) {
+    if (!courseId || !course || !lessonId || ! await lessonExists(lessonId) || !lesson) {
         return notFound();
     }
 

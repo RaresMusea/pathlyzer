@@ -29,6 +29,7 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
         cancelSelection,
         setActiveTab,
         updatePracticeItem,
+        handleValidation,
         startEditing,
         practiceItems,
         currentEditableItem,
@@ -162,7 +163,8 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
                                                                         <Input
                                                                             {...field}
                                                                             onChange={(e) => {
-                                                                                field.onChange(e);
+                                                                                field.onChange(e.target.value);
+                                                                                form.trigger('title');
 
                                                                                 if (currentEditableItem) {
                                                                                     updatePracticeItem(currentEditableItem.id, { title: e.target.value });
@@ -187,7 +189,8 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
                                                                         <Textarea
                                                                             {...field}
                                                                             onChange={(e) => {
-                                                                                field.onChange(e);
+                                                                                field.onChange(e.target.value);
+                                                                                form.trigger('content');
 
                                                                                 if (currentEditableItem) {
                                                                                     updatePracticeItem(currentEditableItem.id, { content: e.target.value });
@@ -213,10 +216,11 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
                                                                             placeholder="Specify the duration of this element in seconds"
                                                                             type="number"
                                                                             onChange={(e) => {
-                                                                                field.onChange(e);
+                                                                                field.onChange(e.target.valueAsNumber);
+                                                                                form.trigger('duration');
 
                                                                                 if (currentEditableItem) {
-                                                                                    updatePracticeItem(currentEditableItem.id, { duration: parseInt(e.target.value) });
+                                                                                    updatePracticeItem(currentEditableItem.id, { duration: e.target.valueAsNumber });
                                                                                 }
                                                                             }}
                                                                             min={10}
@@ -235,7 +239,7 @@ export const LessonPracticeForm = (props: LessonPracticeFormProps) => {
                                                 <Button variant="outline" onClick={cancelSelection}>
                                                     Cancel
                                                 </Button>
-                                                <Button onClick={cancelSelection}>
+                                                <Button onClick={handleValidation}>
                                                     <Check className="h-4 w-4 mr-2" />
                                                     Save section
                                                 </Button>
