@@ -1,23 +1,25 @@
 import { getCurrentUserLessonProgress } from "@/app/service/learning/lessons/lessonProgressService";
 import { getLessonContent } from "@/app/service/learning/lessons/lessonService";
+import { getSummarizedUserStats } from "@/app/service/user/userStatsService";
 import { LessonContent } from "@/components/learning/courses/lesson/LessonContent";
 import { PageTransition } from "@/components/misc/animations/PageTransition";;
-import { LessonContentDto } from "@/types/types";
+import { LessonContentDto, SummarizedUserStats } from "@/types/types";
 import { notFound } from "next/navigation";
 
 export default async function ReadLesson({ params }: { params: Promise<{ courseId: string, lessonId: string }> }) {
     const { courseId, lessonId } = await params;
     const lessonContent: LessonContentDto | null = await getLessonContent(lessonId);
     const userLearningProgress = await getCurrentUserLessonProgress(lessonId);
+    const userStats: SummarizedUserStats | null = await getSummarizedUserStats();
 
-    if (!courseId || !lessonId || !lessonContent || userLearningProgress === null) {
+    if (!courseId || !lessonId || !lessonContent || userLearningProgress === null || !userStats) {
         notFound();
     }
 
     return (
         <PageTransition>
             <div className="container mx-auto px-4 space-y-8">
-                <LessonContent lessonId={lessonId} lessonContent={lessonContent} userLearningProgress={userLearningProgress} />
+                <LessonContent lessonId={lessonId} lessonContent={lessonContent} userStats={userStats} userLearningProgress={userLearningProgress} />
             </div>
         </PageTransition>
     )
