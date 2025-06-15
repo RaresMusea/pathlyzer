@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowLeft, HeartCrackIcon, ListChecks } from "lucide-react";
+import { AlertTriangle, ArrowLeft, HeartCrackIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
