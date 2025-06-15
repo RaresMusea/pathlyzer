@@ -4,6 +4,7 @@ import { getQuizIdByLessonId } from "@/app/service/learning/quiz/quizService";
 import { getUnitIdByLessonId } from "@/app/service/learning/units/unitService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { ExaminationWrapper } from "@/components/learning/courses/examination/ExaminationWrapper";
+import { NoLives } from "@/components/misc/errors/NoLives";
 import { ExaminationProvider } from "@/context/ExaminationContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { ExaminationClientViewDto, UserStatsDto } from "@/types/types";
@@ -21,6 +22,10 @@ export default async function QuizPage({ params }: { params: Promise<{ courseId:
 
     if (!unitId) {
         return notFound();
+    }
+
+    if (!userStats || userStats.lives === 0) {
+        return <NoLives backText="Back to learning path" backUrl={`/courses/learn/${courseId}`} />
     }
 
     const isLastLesson: boolean = await getLessonOrder(lessonId) === await getHighestOrderLesson(unitId);
