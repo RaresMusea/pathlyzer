@@ -1,11 +1,12 @@
 import { courseExists } from "@/app/service/learning/course/courseService";
 import { getQuestionById } from "@/app/service/learning/examination/quiz/questionService";
 import { lessonExists } from "@/app/service/learning/lessons/lessonService";
+import { applyCooldown } from "@/app/service/user/cooldownService";
 import { loseLife } from "@/app/service/user/userStatsService";
 import { ExaminationCheckSchema } from "@/schemas/ExaminationCheckSchema";
 import { getCurrentlyLoggedInUserIdApiRoute, isValidSession } from "@/security/Security";
 import { CheckResult, QuestionCheckDto } from "@/types/types";
-import { QuestionType, UserStats } from "@prisma/client";
+import { CooldownReason, QuestionType, UserCooldown, UserStats } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 const validateUrlParams = (params: { courseId: string, lessonId: string }) => {
@@ -98,6 +99,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
             if (!penaltyResult) {
                 return NextResponse.json({ message: "Failed to apply penalty!" }, { status: 500 });
+            }
+
+            if (penaltyResult.lives === 0) {
+                const cooldownResult: UserCooldown | null = await applyCooldown(CooldownReason.NORMAL);
+            
+                if (!cooldownResult) {
+                    return NextResponse.json({ message: "Failed to apply user cooldown!" }, { status: 500 });
+                }
             }
 
             return NextResponse.json({ status: 'incorrect', penalty: { newLives: penaltyResult.lives }, result }, { status: 200 });
