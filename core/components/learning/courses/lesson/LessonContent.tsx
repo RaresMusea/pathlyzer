@@ -1,20 +1,22 @@
 "use client";
 
-import { LessonContentDto } from "@/types/types";
+import { LessonContentDto, SummarizedUserStats } from "@/types/types";
 import { CoursePreview } from "../course-preview/CoursePreview";
 import { ProgressType, useLearningSession } from "@/hooks/useLearningSession";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ListChecks } from "lucide-react";
 import { motion } from "framer-motion";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { OutOfLivesModalGeneric } from "./OutOfLivesModalGeneric";
 
-export const LessonContent = ({ lessonId, lessonContent, userLearningProgress }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number }) => {
+export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats }) => {
     const progressRef = useRef(0);
     const pathName = usePathname();
     const [scrollProgress, setScrollProgress] = useState(0);
-    
+    const [outOfLivesModalVisible, setOutOfLivesModalVisible] = useState<boolean>(false);
+    const router = useRouter();
+
     useEffect(() => {
         const container = document.querySelector('.scrollContainer') as HTMLElement;
         if (!container) return;
@@ -44,6 +46,16 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress }:
         };
     }, [userLearningProgress]);
 
+    const handleQuizTaking = () => {
+        console.log("USER LIVES", userStats.lives);
+        if (userStats.lives === 0) {
+            setOutOfLivesModalVisible(true);
+            return;
+        }
+
+        router.push(`${pathName}/quiz`);
+    }
+
 
     useLearningSession(lessonId, ProgressType.LESSON, () => progressRef.current);
 
@@ -52,19 +64,21 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress }:
             <h1 className="text-4xl font-semibold mb-5">{lessonContent.title}</h1>
             <CoursePreview content={JSON.parse(String(lessonContent.content))} />
             {scrollProgress >= 95 &&
-                <Link href={`${pathName}/quiz`}>
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="text-right"
-                        style={{ originX: 1 }}
-                    >
-                        <Button type="button" className="text-white transition-color bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]">
-                            <ListChecks className="mr-2 h-3 w-3" />
-                            Take quiz
-                        </Button>
-                    </motion.div>
-                </Link>
+                <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="text-right"
+                    style={{ originX: 1 }}
+                >
+                    <Button onClick={handleQuizTaking} type="button" className="text-white transition-color bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)]">
+                        <ListChecks className="mr-2 h-3 w-3" />
+                        Take quiz
+                    </Button>
+                </motion.div>
+            }
+            {
+                outOfLivesModalVisible &&
+                <OutOfLivesModalGeneric open={outOfLivesModalVisible} setIsOpen={setOutOfLivesModalVisible} />
             }
         </>
     )
