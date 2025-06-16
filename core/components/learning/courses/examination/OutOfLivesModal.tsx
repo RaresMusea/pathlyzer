@@ -5,11 +5,14 @@ import { useExamination } from "@/context/ExaminationContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export const OutOfLivesModal = () => {
+export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) => {
     const [isVisible, setIsVisible] = useState(true);
     const { closeOutOfLivesModal } = useExamination();
+    const [showLifeRegenerationAnimation, setShowLifeRegenerationAnimation] = useState(false)
+    const [showHeartAnimation, setShowHeartAnimation] = useState(true)
+    const [timeLeft, setTimeLeft] = useState(remainingTime)
     const theme = useTheme().theme;
 
     const handleClose = () => {
@@ -18,6 +21,53 @@ export const OutOfLivesModal = () => {
             closeOutOfLivesModal();
         }, 500);
     };
+
+    useEffect(() => {
+        setTimeLeft(remainingTime);
+    }, [remainingTime]);
+
+    useEffect(() => {
+        if (timeLeft <= 0) return;
+
+        const interval = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    setShowLifeRegenerationAnimation(true);
+                    return 0
+                }
+                return prev - 1;
+            })
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [timeLeft]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowHeartAnimation(false);
+        }, 4000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (showLifeRegenerationAnimation) {
+            const timer = setTimeout(() => {
+                setShowLifeRegenerationAnimation(false);
+            }, 4000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showLifeRegenerationAnimation]);
+
+    const formatTime = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60)
+        const remainingSeconds = seconds % 60
+        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+    }
+
+    const progressPercentage = remainingTime > 0 ? ((remainingTime - timeLeft) / remainingTime) * 100 : 100
 
     return (
         <AnimatePresence>
@@ -38,37 +88,83 @@ export const OutOfLivesModal = () => {
                     >
                         <div className="bg-gradient-to-r from-red-500 to-red-600 py-6 px-8 text-center">
                             <h2 className="text-2xl font-bold text-white">You&apos;re out of lives!</h2>
-                            <p className="text-red-100 mt-1">You need to retake the course to continue.</p>
+                            <p className="text-red-100 mt-1">You need to wait or use the practice mode to get one life back.</p>
                         </div>
 
                         <div className="p-8">
-                            <div className="flex justify-center mb-8">
-                                <HeartsAnimation theme={theme as string} />
-                            </div>
+                            <AnimatePresence mode="wait">
+                                {showHeartAnimation ? (
+                                    <motion.div
+                                        key="heart-animation"
+                                        className="flex justify-center mb-8"
+                                        initial={{ opacity: 1 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        <HeartsAnimation theme={theme as string} />
+                                    </motion.div>
+                                ) : showLifeRegenerationAnimation ? (
+                                    <motion.div
+                                        key="life-regeneration"
+                                        className="flex justify-center mb-8"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        <LifeRegenAnimation />
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        key="recovery-options"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        <div className="text-center mb-6">
+                                            <div className="flex justify-center mb-4">
+                                                <TimerDisplay timeLeft={timeLeft} totalTime={remainingTime} />
+                                            </div>
+                                            <h3 className="text-xl font-semibold mb-2">Regain a life!</h3>
+                                            <p className="text-gray-600 mb-4">
+                                                {timeLeft > 0 ? (
+                                                    <>
+                                                        Poți aștepta <span className="font-bold text-orange-600">{formatTime(timeLeft)}</span> sau
+                                                        poți face practice pentru a reduce timpul de așteptare.
+                                                    </>
+                                                ) : (
+                                                    <span className="font-bold text-green-600">Poți lua din nou quiz-ul!</span>
+                                                )}
+                                            </p>
+                                    </motion.div>
+                                )}
+                                <div className="flex justify-center mb-8">
+                                    <HeartsAnimation theme={theme as string} />
+                                </div>
 
-                            <motion.div
-                                className="text-center mb-6"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                            >
-                                <h3 className="text-xl font-semibold mb-2 text-foreground">
-                                    All lives lost
-                                </h3>
-                                <p className="text-muted-foreground">
-                                    To gain another life and resume the quiz, you&apos;ll need to complete the course again.
-                                </p>
-                            </motion.div>
-
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-                                <Button
-                                    onClick={handleClose}
-                                    className="w-full bg-red-500 hover:bg-red-600 text-white"
-                                    size="lg"
+                                <motion.div
+                                    className="text-center mb-6"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.5 }}
                                 >
-                                    Return to lesson
-                                </Button>
-                            </motion.div>
+                                    <h3 className="text-xl font-semibold mb-2 text-foreground">
+                                        All lives lost
+                                    </h3>
+                                    <p className="text-muted-foreground">
+                                        To gain another life and resume the quiz, you&apos;ll need to complete the course again.
+                                    </p>
+                                </motion.div>
+
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
+                                    <Button
+                                        onClick={handleClose}
+                                        className="w-full bg-red-500 hover:bg-red-600 text-white"
+                                        size="lg"
+                                    >
+                                        Return to lesson
+                                    </Button>
+                                </motion.div>
                         </div>
 
                         <FloatingHeartPieces />
@@ -146,6 +242,186 @@ function HeartsAnimation({ theme }: { theme: string }) {
                 transition={{ delay: 3, duration: 0.5 }}
             >
                 <BrokenHeartAnimation theme={theme} />
+            </motion.div>
+        </div>
+    )
+}
+
+function LifeRegenAnimation() {
+    return (
+        <div className="relative w-32 h-32 flex items-center justify-center">
+            {/* Background glow effect */}
+            <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full opacity-20"
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.5, 1] }}
+                transition={{ duration: 1.5, times: [0, 0.6, 1] }}
+            />
+
+            {/* Healing particles */}
+            {Array.from({ length: 12 }).map((_, i) => {
+                const angle = (i / 12) * Math.PI * 2
+                const radius = 60
+                const x = Math.cos(angle) * radius
+                const y = Math.sin(angle) * radius
+
+                return (
+                    <motion.div
+                        key={i}
+                        className="absolute w-2 h-2 bg-green-400 rounded-full"
+                        style={{ left: "50%", top: "50%" }}
+                        initial={{ x: x, y: y, opacity: 0, scale: 0 }}
+                        animate={{
+                            x: [x, 0],
+                            y: [y, 0],
+                            opacity: [0, 1, 0],
+                            scale: [0, 1, 0],
+                        }}
+                        transition={{
+                            duration: 1.2,
+                            delay: i * 0.1,
+                            times: [0, 0.5, 1],
+                        }}
+                    />
+                )
+            })}
+
+            {/* Central heart that regenerates */}
+            <motion.div
+                className="relative z-10"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8, type: "spring", stiffness: 200 }}
+            >
+                {/* Broken heart pieces that come together */}
+                <motion.div
+                    className="absolute inset-0"
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 0 }}
+                    transition={{ delay: 1.5, duration: 0.5 }}
+                >
+                    {/* Left piece */}
+                    <motion.div
+                        className="absolute left-0 top-0 w-1/2 h-full overflow-hidden"
+                        initial={{ x: -20, rotate: -15 }}
+                        animate={{ x: 0, rotate: 0 }}
+                        transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
+                    >
+                        <Heart className="h-16 w-16 text-red-300 fill-red-300" />
+                    </motion.div>
+
+                    {/* Right piece */}
+                    <motion.div
+                        className="absolute right-0 top-0 w-1/2 h-full overflow-hidden"
+                        initial={{ x: 20, rotate: 15 }}
+                        animate={{ x: 0, rotate: 0 }}
+                        transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
+                    >
+                        <Heart className="h-16 w-16 text-red-300 fill-red-300" style={{ marginLeft: "-2rem" }} />
+                    </motion.div>
+                </motion.div>
+
+                {/* Fully healed heart */}
+                <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, 1.2, 1], opacity: 1 }}
+                    transition={{ delay: 1.5, duration: 0.8, times: [0, 0.6, 1] }}
+                >
+                    <Heart className="h-16 w-16 text-red-500 fill-red-500" />
+
+                    {/* Healing sparkles around the heart */}
+                    {Array.from({ length: 8 }).map((_, i) => {
+                        const sparkleAngle = (i / 8) * Math.PI * 2
+                        const sparkleRadius = 35
+                        const sparkleX = Math.cos(sparkleAngle) * sparkleRadius
+                        const sparkleY = Math.sin(sparkleAngle) * sparkleRadius
+
+                        return (
+                            <motion.div
+                                key={`sparkle-${i}`}
+                                className="absolute w-1 h-1 bg-yellow-400 rounded-full"
+                                style={{ left: "50%", top: "50%" }}
+                                initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+                                animate={{
+                                    x: [0, sparkleX, sparkleX * 1.5],
+                                    y: [0, sparkleY, sparkleY * 1.5],
+                                    opacity: [0, 1, 0],
+                                    scale: [0, 1, 0],
+                                }}
+                                transition={{
+                                    duration: 1,
+                                    delay: 1.8 + i * 0.1,
+                                    times: [0, 0.5, 1],
+                                }}
+                            />
+                        )
+                    })}
+                </motion.div>
+
+                {/* Pulse effect */}
+                <motion.div
+                    className="absolute inset-0 border-2 border-green-400 rounded-full"
+                    initial={{ scale: 1, opacity: 0 }}
+                    animate={{ scale: [1, 2, 3], opacity: [0, 0.6, 0] }}
+                    transition={{ delay: 2, duration: 1.5, repeat: 2 }}
+                />
+            </motion.div>
+
+            {/* "+1 Life" text */}
+            <motion.div
+                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 2.5, duration: 0.5 }}
+            >
+                <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">+1 Viață</div>
+            </motion.div>
+        </div>
+    )
+}
+
+function TimerDisplay({ timeLeft, totalTime }: { timeLeft: number, totalTime: number }) {
+    const progress = totalTime > 0 ? ((totalTime - timeLeft) / totalTime) * 100 : 100
+
+    return (
+        <div className="relative w-24 h-24">
+            <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" stroke="#E5E7EB" strokeWidth="8" fill="none" />
+                <motion.circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    stroke="#F97316"
+                    strokeWidth="8"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 40}`}
+                    strokeDashoffset={`${2 * Math.PI * 40 * (1 - progress / 100)}`}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 40 * (1 - progress / 100) }}
+                    transition={{ duration: 0.5 }}
+                />
+            </svg>
+
+            {/* Timer display */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.div
+                    className="text-xl font-bold text-orange-600"
+                    animate={{ scale: timeLeft % 60 === 0 && timeLeft > 0 ? [1, 1.2, 1] : 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    {Math.floor(timeLeft / 60)}
+                </motion.div>
+                <div className="text-xs text-gray-500">{Math.floor(timeLeft / 60) === 1 ? "min" : "min"}</div>
+            </div>
+
+            {/* Heart icon */}
+            <motion.div
+                className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "loop" }}
+            >
+                <Heart className="h-3 w-3 text-white fill-white" />
             </motion.div>
         </div>
     )
