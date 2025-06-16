@@ -3,16 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { useExamination } from "@/context/ExaminationContext";
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart } from "lucide-react";
+import { BookOpen, Heart } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) => {
     const [isVisible, setIsVisible] = useState(true);
     const { closeOutOfLivesModal } = useExamination();
-    const [showLifeRegenerationAnimation, setShowLifeRegenerationAnimation] = useState(false)
-    const [showHeartAnimation, setShowHeartAnimation] = useState(true)
-    const [timeLeft, setTimeLeft] = useState(remainingTime)
+    const [showLifeRegenerationAnimation, setShowLifeRegenerationAnimation] = useState(false);
+    const [showHeartAnimation, setShowHeartAnimation] = useState(true);
+    const [canPractice, setCanPractice] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(remainingTime);
     const theme = useTheme().theme;
 
     const handleClose = () => {
@@ -21,6 +22,12 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
             closeOutOfLivesModal();
         }, 500);
     };
+
+    useEffect(() => {
+        const wasLifeGranted = async () => {
+            
+        }
+    }, []);
 
     useEffect(() => {
         setTimeLeft(remainingTime);
@@ -34,10 +41,10 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
                 if (prev <= 1) {
                     clearInterval(interval);
                     setShowLifeRegenerationAnimation(true);
-                    return 0
+                    return 0;
                 }
                 return prev - 1;
-            })
+            });
         }, 1000);
 
         return () => clearInterval(interval);
@@ -62,12 +69,12 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
     }, [showLifeRegenerationAnimation]);
 
     const formatTime = (seconds: number) => {
-        const minutes = Math.floor(seconds / 60)
-        const remainingSeconds = seconds % 60
-        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-    }
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+    };
 
-    const progressPercentage = remainingTime > 0 ? ((remainingTime - timeLeft) / remainingTime) * 100 : 100
+    const progressPercentage = remainingTime > 0 ? ((remainingTime - timeLeft) / remainingTime) * 100 : 100;
 
     return (
         <AnimatePresence>
@@ -87,8 +94,10 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
                         <div className="bg-gradient-to-r from-red-500 to-red-600 py-6 px-8 text-center">
-                            <h2 className="text-2xl font-bold text-white">You&apos;re out of lives!</h2>
-                            <p className="text-red-100 mt-1">You need to wait or use the practice mode to get one life back.</p>
+                            <h2 className="text-2xl font-bold text-white">You're out of lives!</h2>
+                            <p className="text-red-100 dark:text-red-200 mt-1">
+                                Wait or use practice mode to regenerate a life.
+                            </p>
                         </div>
 
                         <div className="p-8">
@@ -125,55 +134,85 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
                                             <div className="flex justify-center mb-4">
                                                 <TimerDisplay timeLeft={timeLeft} totalTime={remainingTime} />
                                             </div>
-                                            <h3 className="text-xl font-semibold mb-2">Regain a life!</h3>
-                                            <p className="text-gray-600 mb-4">
+
+                                            <h3 className="text-xl font-semibold mb-2 dark:text-white">Recover a life!</h3>
+                                            <p className="text-gray-600 dark:text-gray-300 mb-4">
                                                 {timeLeft > 0 ? (
                                                     <>
-                                                        Poți aștepta <span className="font-bold text-orange-600">{formatTime(timeLeft)}</span> sau
-                                                        poți face practice pentru a reduce timpul de așteptare.
+                                                        You can wait <span className="font-bold text-orange-600">{formatTime(timeLeft)}</span> or use Practice mode to reduce the time.
                                                     </>
                                                 ) : (
-                                                    <span className="font-bold text-green-600">Poți lua din nou quiz-ul!</span>
+                                                    <span className="font-bold text-green-600">You can retake the quiz now!</span>
                                                 )}
                                             </p>
+
+                                            {timeLeft > 0 && (
+                                                <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-600 rounded-lg p-4 mb-4">
+                                                    <div className="flex items-center justify-center mb-2">
+                                                        <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-300 mr-2" />
+                                                        <span className="font-medium text-blue-800 dark:text-blue-100">Practice = Reduced Time</span>
+                                                    </div>
+                                                    <p className="text-sm text-blue-700 dark:text-blue-200">
+                                                        Each minute of practice reduces the cooldown by 2 minutes!
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {remainingTime > 0 && (
+                                                <div className="mb-6">
+                                                    <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                                        <span>Recovery progress</span>
+                                                        <span>{Math.round(progressPercentage)}%</span>
+                                                    </div>
+                                                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                        <motion.div
+                                                            className="h-full bg-gradient-to-r from-orange-500 to-red-500"
+                                                            initial={{ width: "0%" }}
+                                                            animate={{ width: `${progressPercentage}%` }}
+                                                            transition={{ duration: 0.5 }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-col space-y-3">
+                                            {timeLeft > 0 ? (
+                                                <>
+                                                    <Button
+                                                        onClick={() => { }}
+                                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                                                        size="lg"
+                                                    >
+                                                        <BookOpen className="h-5 w-5 mr-2" />
+                                                        Start Practice
+                                                    </Button>
+                                                    <Button variant="outline" onClick={handleClose} className="w-full dark:border-gray-700 dark:text-white">
+                                                        Back to lesson
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <Button
+                                                    onClick={handleClose}
+                                                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                                                    size="lg"
+                                                >
+                                                    <Heart className="h-5 w-5 mr-2" />
+                                                    Retry the quiz
+                                                </Button>
+                                            )}
+                                        </div>
                                     </motion.div>
                                 )}
-                                <div className="flex justify-center mb-8">
-                                    <HeartsAnimation theme={theme as string} />
-                                </div>
-
-                                <motion.div
-                                    className="text-center mb-6"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 }}
-                                >
-                                    <h3 className="text-xl font-semibold mb-2 text-foreground">
-                                        All lives lost
-                                    </h3>
-                                    <p className="text-muted-foreground">
-                                        To gain another life and resume the quiz, you&apos;ll need to complete the course again.
-                                    </p>
-                                </motion.div>
-
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-                                    <Button
-                                        onClick={handleClose}
-                                        className="w-full bg-red-500 hover:bg-red-600 text-white"
-                                        size="lg"
-                                    >
-                                        Return to lesson
-                                    </Button>
-                                </motion.div>
+                            </AnimatePresence>
                         </div>
-
-                        <FloatingHeartPieces />
                     </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>
     );
 };
+
 
 function HeartsAnimation({ theme }: { theme: string }) {
     return (
@@ -250,7 +289,6 @@ function HeartsAnimation({ theme }: { theme: string }) {
 function LifeRegenAnimation() {
     return (
         <div className="relative w-32 h-32 flex items-center justify-center">
-            {/* Background glow effect */}
             <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full opacity-20"
                 initial={{ scale: 0 }}
@@ -258,7 +296,6 @@ function LifeRegenAnimation() {
                 transition={{ duration: 1.5, times: [0, 0.6, 1] }}
             />
 
-            {/* Healing particles */}
             {Array.from({ length: 12 }).map((_, i) => {
                 const angle = (i / 12) * Math.PI * 2
                 const radius = 60
@@ -286,21 +323,18 @@ function LifeRegenAnimation() {
                 )
             })}
 
-            {/* Central heart that regenerates */}
             <motion.div
                 className="relative z-10"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8, type: "spring", stiffness: 200 }}
             >
-                {/* Broken heart pieces that come together */}
                 <motion.div
                     className="absolute inset-0"
                     initial={{ opacity: 1 }}
                     animate={{ opacity: 0 }}
                     transition={{ delay: 1.5, duration: 0.5 }}
                 >
-                    {/* Left piece */}
                     <motion.div
                         className="absolute left-0 top-0 w-1/2 h-full overflow-hidden"
                         initial={{ x: -20, rotate: -15 }}
@@ -310,7 +344,6 @@ function LifeRegenAnimation() {
                         <Heart className="h-16 w-16 text-red-300 fill-red-300" />
                     </motion.div>
 
-                    {/* Right piece */}
                     <motion.div
                         className="absolute right-0 top-0 w-1/2 h-full overflow-hidden"
                         initial={{ x: 20, rotate: 15 }}
@@ -321,7 +354,6 @@ function LifeRegenAnimation() {
                     </motion.div>
                 </motion.div>
 
-                {/* Fully healed heart */}
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: [0, 1.2, 1], opacity: 1 }}
@@ -329,7 +361,6 @@ function LifeRegenAnimation() {
                 >
                     <Heart className="h-16 w-16 text-red-500 fill-red-500" />
 
-                    {/* Healing sparkles around the heart */}
                     {Array.from({ length: 8 }).map((_, i) => {
                         const sparkleAngle = (i / 8) * Math.PI * 2
                         const sparkleRadius = 35
@@ -358,7 +389,6 @@ function LifeRegenAnimation() {
                     })}
                 </motion.div>
 
-                {/* Pulse effect */}
                 <motion.div
                     className="absolute inset-0 border-2 border-green-400 rounded-full"
                     initial={{ scale: 1, opacity: 0 }}
@@ -367,7 +397,6 @@ function LifeRegenAnimation() {
                 />
             </motion.div>
 
-            {/* "+1 Life" text */}
             <motion.div
                 className="absolute -bottom-8 left-1/2 transform -translate-x-1/2"
                 initial={{ y: 10, opacity: 0 }}
@@ -403,7 +432,6 @@ function TimerDisplay({ timeLeft, totalTime }: { timeLeft: number, totalTime: nu
                 />
             </svg>
 
-            {/* Timer display */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <motion.div
                     className="text-xl font-bold text-orange-600"
@@ -415,7 +443,6 @@ function TimerDisplay({ timeLeft, totalTime }: { timeLeft: number, totalTime: nu
                 <div className="text-xs text-gray-500">{Math.floor(timeLeft / 60) === 1 ? "min" : "min"}</div>
             </div>
 
-            {/* Heart icon */}
             <motion.div
                 className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1"
                 animate={{ scale: [1, 1.1, 1] }}
