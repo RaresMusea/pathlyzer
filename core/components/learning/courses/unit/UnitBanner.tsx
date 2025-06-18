@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { CircleCheck, Lock, NotebookText } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 type UnitBannerProps = {
     title: string;
@@ -13,11 +12,10 @@ type UnitBannerProps = {
     isCurrent: boolean;
     isCompleted: boolean;
     currentLessonId: string;
-    lives: number;
 }
 
 
-export const UnitBanner = ({ title, lives, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
+export const UnitBanner = ({ title, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
