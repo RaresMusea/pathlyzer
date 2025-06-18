@@ -40,7 +40,7 @@ export default async function CoursePathPage({ params }: { params: Promise<{ cou
 
                     {learningPath.map((item) => (
                         <div key={item.unit.id} className="mb-10">
-                            <Unit lives={userStats?.lives} item={item} />
+                            <Unit item={item} />
                         </div>
                     ))}
                 </div>
