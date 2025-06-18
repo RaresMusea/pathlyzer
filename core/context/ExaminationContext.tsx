@@ -144,7 +144,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
 
     const closeOutOfLivesModal = useCallback(() => {
         closeModal('outOfLives');
-        router.push('../');
+        router.back();
     }, [closeModal])
 
     const closeAbortModal = useCallback(() => {
