@@ -14,6 +14,7 @@ import { LoadingButton } from "@/components/misc/loading/LoadingButton";
 import { OutOfLivesModal } from "./OutOfLivesModal";
 import { ExaminationCompleteModal } from "./ExaminationCompleteModal";
 import { useGamification } from "@/context/GamificationContext";
+import axios from "axios";
 
 const MAX_FOCUS_LOSSES: number = 3;
 
@@ -39,6 +40,7 @@ export const ExaminationComponent = () => {
     } = useExamination();
 
     const [focusLossCount, setFocusLossCount] = useState(0);
+    const [cooldownRemaining, setCooldownRemaining] = useState<number | null> (null);
     const {xp, level} = useGamification();
 
     const handleFocusLoss = useCallback(() => {
@@ -74,6 +76,25 @@ export const ExaminationComponent = () => {
         }
     }, [focusLossCount, handleFocusLoss]);
 
+    useEffect(() => {
+        const fetchCooldown = async() => {
+            const response = await axios.get('/api/user-stats/cooldown');
+
+            if (response.status === 200) {
+                if (response.data.active && typeof response.data.remainingSeconds === 'number') {
+                    setCooldownRemaining(response.data.remainingSeconds);
+                }
+                else {
+                    setCooldownRemaining(null);
+                }
+            }
+        }
+
+        if (modals.outOfLives) {
+            fetchCooldown();
+        }
+    }, [modals.outOfLives]);
+
     return (
         <div>
             <AnimatePresence>
@@ -84,7 +105,7 @@ export const ExaminationComponent = () => {
 
                 {
                     modals.outOfLives &&
-                    <OutOfLivesModal key="outOfLivesModal" />
+                    <OutOfLivesModal key="outOfLivesModal" remainingTime={cooldownRemaining ?? 0} />
                 }
 
                 {

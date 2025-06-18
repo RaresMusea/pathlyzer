@@ -25,6 +25,7 @@ model User {
   TwoFAConfirmation TwoFactorConfirmation?
   UnitProgress      UnitProgress[]
   UserStats         UserStats?
+  UserCooldown      UserCooldown?
 }
 
 model UserStats {
@@ -274,9 +275,19 @@ model LessonPracticeItem {
   lessonPracticeId String @map("lesson_practice_id")
   title            String
   content          String
-  duration         Int @map("duration_seconds") @default(30)
+  duration         Int    @default(30) @map("duration_seconds")
 
   lessonPractice LessonPractice @relation(fields: [lessonPracticeId], references: [id], onDelete: Cascade)
+}
+
+model UserCooldown {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  reason          CooldownReason
+  startedAt       DateTime       @default(now()) @map("started_at")
+  durationMinutes Int            @map("cooldown_length_minutes")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
@@ -304,4 +315,9 @@ enum QuestionType {
   SINGLE
   MULTIPLE
   CODE_FILL
+}
+
+enum CooldownReason {
+  NORMAL
+  FRAUD
 }

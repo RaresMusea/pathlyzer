@@ -5,8 +5,6 @@ import { cn } from "@/lib/utils";
 import { CircleCheck, Lock, NotebookText } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { OutOfLivesModal } from "../examination/OutOfLivesModal";
 
 type UnitBannerProps = {
     title: string;
@@ -14,13 +12,11 @@ type UnitBannerProps = {
     isCurrent: boolean;
     isCompleted: boolean;
     currentLessonId: string;
-    lives: number;
 }
 
 
-export const UnitBanner = ({ title, lives, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
+export const UnitBanner = ({ title, description, isCompleted, isCurrent, currentLessonId }: UnitBannerProps) => {
     const pathname = usePathname();
-    const [triggerModal, setTriggerModal] = useState(false);
     const router = useRouter();
 
     const containerClass = cn(
@@ -38,11 +34,6 @@ export const UnitBanner = ({ title, lives, description, isCompleted, isCurrent, 
     );
 
     const handleContinuePress = () => {
-        if (lives <= 0) {
-            setTriggerModal(true);
-            return;
-        }
-
         router.push(`${pathname}/lesson/${currentLessonId}`);   
     }
 
@@ -78,9 +69,6 @@ export const UnitBanner = ({ title, lives, description, isCompleted, isCurrent, 
                     }
                 </>
             </div>
-            {
-                triggerModal && <OutOfLivesModal />
-            }
         </div>
     );
 };
