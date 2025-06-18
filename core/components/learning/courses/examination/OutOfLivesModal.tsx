@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { useExamination } from "@/context/ExaminationContext";
+import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Heart } from "lucide-react";
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) => {
@@ -15,6 +17,7 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
     const [canPractice, setCanPractice] = useState(false);
     const [timeLeft, setTimeLeft] = useState(remainingTime);
     const theme = useTheme().theme;
+    const pathname = usePathname();
 
     const handleClose = () => {
         setIsVisible(false);
@@ -25,9 +28,26 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
 
     useEffect(() => {
         const wasLifeGranted = async () => {
-            
+            try {
+                const segments = pathname.split('/');
+                const courseId = segments[3];
+                const lessonId = segments[5];
+
+                if (!courseId || !lessonId) return;
+
+                const response = await axios.get(`/api/courses/${courseId}/lessons/${lessonId}/life-granted`);
+                if (response.status === 200 && typeof response.data.wasLifeGranted === 'boolean') {
+                    setCanPractice(!(response.data.wasLifeGranted));
+                }
+            } catch (error) {
+                console.error("Failed to check life granted:", error);
+            }
+        };
+
+        if (pathname) {
+            wasLifeGranted();
         }
-    }, []);
+    }, [pathname, setCanPractice]);
 
     useEffect(() => {
         setTimeLeft(remainingTime);
@@ -139,21 +159,23 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
                                             <p className="text-gray-600 dark:text-gray-300 mb-4">
                                                 {timeLeft > 0 ? (
                                                     <>
-                                                        You can wait <span className="font-bold text-orange-600">{formatTime(timeLeft)}</span> or use Practice mode to reduce the time.
+                                                        You can wait{" "}
+                                                        <span className="font-bold text-orange-600">{formatTime(timeLeft)}</span>
+                                                        {canPractice && " or use Practice mode to reduce the time."}
                                                     </>
                                                 ) : (
                                                     <span className="font-bold text-green-600">You can retake the quiz now!</span>
                                                 )}
                                             </p>
 
-                                            {timeLeft > 0 && (
+                                            {canPractice && timeLeft > 0 && (
                                                 <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-600 rounded-lg p-4 mb-4">
                                                     <div className="flex items-center justify-center mb-2">
                                                         <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-300 mr-2" />
                                                         <span className="font-medium text-blue-800 dark:text-blue-100">Practice = Reduced Time</span>
                                                     </div>
                                                     <p className="text-sm text-blue-700 dark:text-blue-200">
-                                                        Each minute of practice reduces the cooldown by 2 minutes!
+                                                        Each minute of practice slightly reduces the cooldown!
                                                     </p>
                                                 </div>
                                             )}
@@ -179,15 +201,25 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
                                         <div className="flex flex-col space-y-3">
                                             {timeLeft > 0 ? (
                                                 <>
+                                                    {canPractice ? (
+                                                        <Button
+                                                            onClick={() => { }}
+                                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                                                            size="lg"
+                                                        >
+                                                            <BookOpen className="h-5 w-5 mr-2" />
+                                                            Start Practice
+                                                        </Button>
+                                                    ) : (
+                                                        <div className="text-sm text-gray-500 dark:text-gray-400 text-center px-4">
+                                                            Practice mode is not available for this lesson. You must wait for the full cooldown.
+                                                        </div>
+                                                    )}
                                                     <Button
-                                                        onClick={() => { }}
-                                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                                                        size="lg"
+                                                        variant="outline"
+                                                        onClick={handleClose}
+                                                        className="w-full dark:border-gray-700 dark:text-white"
                                                     >
-                                                        <BookOpen className="h-5 w-5 mr-2" />
-                                                        Start Practice
-                                                    </Button>
-                                                    <Button variant="outline" onClick={handleClose} className="w-full dark:border-gray-700 dark:text-white">
                                                         Back to lesson
                                                     </Button>
                                                 </>
@@ -211,8 +243,8 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
             )}
         </AnimatePresence>
     );
-};
 
+}
 
 function HeartsAnimation({ theme }: { theme: string }) {
     return (

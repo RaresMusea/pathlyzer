@@ -5,30 +5,30 @@ import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security"
 import { CourseDto, LessonDto } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server"
 
-export async function GET(request: NextRequest, params: { courseId: string, lessonId: string }): Promise<NextResponse> {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ courseId: string, lessonId: string }> }): Promise<NextResponse> {
     const userId: string | null = await getCurrentlyLoggedInUserIdApiRoute();
-
-    console.log(request);
 
     if (!userId) {
         return NextResponse.json({ message: 'Unauthorized!' }, { status: 401 });
     }
 
-    if (!params.courseId) {
+    const { courseId, lessonId } = await params;
+
+    if (!courseId) {
         return NextResponse.json({ message: 'The course ID cannot be empty!' }, { status: 400 });
     }
 
-    if (!params.lessonId) {
+    if (!lessonId) {
         return NextResponse.json({ message: 'The lesson ID cannot be empty!' }, { status: 400 });
     }
 
-    const course: CourseDto | undefined = await getCourseByIdUser(params.courseId);
+    const course: CourseDto | undefined = await getCourseByIdUser(courseId);
 
     if (!course) {
         return NextResponse.json({ message: 'The specified course cannot be found or it is unnaccessible!' }, { status: 404 });
     }
 
-    const lesson: LessonDto | null = await getLessonById(params.lessonId);
+    const lesson: LessonDto | null = await getLessonById(lessonId);
 
     if (!lesson) {
         return NextResponse.json({ message: 'The specified lesson cannot be found or it is unnaccessible!' }, { status: 404 });
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest, params: { courseId: string, less
         where: {
             userId_lessonId: {
                 userId,
-                lessonId: params.lessonId
+                lessonId: lessonId
             }
         },
         select: {
