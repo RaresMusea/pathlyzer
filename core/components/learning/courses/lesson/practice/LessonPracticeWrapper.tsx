@@ -99,7 +99,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
             </header>
             {
                 mode === LessonPracticeMode.PREPARATION ?
-                    <LessonPracticeLandingModal onStart={() => { setMode(LessonPracticeMode.PRACTICE) }} onExit={() => { }} remainingTime={1800} />
+                    <LessonPracticeLandingModal onStart={() => { setMode(LessonPracticeMode.PRACTICE) }} remainingTime={1800} />
                     : <div></div>
             }
         </div>

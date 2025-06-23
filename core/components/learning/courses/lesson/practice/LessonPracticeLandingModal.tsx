@@ -12,13 +12,11 @@ import {
 
 interface PracticeLandingProps {
     onStart: () => void;
-    onExit: () => void;
     remainingTime: number;
 }
 
 export default function LessonPracticeLandingModal({
     onStart,
-    onExit,
     remainingTime,
 }: PracticeLandingProps) {
     const containerVariants = {
@@ -97,7 +95,7 @@ export default function LessonPracticeLandingModal({
                         <div>
                             <h3 className="text-base sm:text-lg font-semibold mb-1">Timed Progress</h3>
                             <p className="text-sm sm:text-base text-[hsl(var(--muted-foreground))]">
-                                Each section has a recommended reading time. Your progress is tracked automatically, and you'll know when you're eligible to return to the quiz.
+                                Each section has a recommended reading time. Your progress is tracked automatically, and you&apos;ll know when you&apos;re eligible to return to the quiz.
                             </p>
                         </div>
                     </motion.div>
@@ -109,7 +107,7 @@ export default function LessonPracticeLandingModal({
                         <div>
                             <h3 className="text-base sm:text-lg font-semibold mb-1">Clear Purpose</h3>
                             <p className="text-sm sm:text-base text-[hsl(var(--muted-foreground))]">
-                                Practice is not a test. It's a chance to reinforce concepts and regain lives by actively engaging with the material.
+                                Practice is not a test. It&apos;s a chance to reinforce concepts and regain lives by actively engaging with the material.
                             </p>
                         </div>
                     </motion.div>
@@ -140,7 +138,7 @@ export default function LessonPracticeLandingModal({
                                             <span className="font-bold text-orange-600">{formatTime(remainingTime)}</span>
                                         </>
                                     ) : (
-                                        <span className="font-bold text-green-700">You're ready to retry the quiz!</span>
+                                        <span className="font-bold text-green-700">You&apos;re ready to retry the quiz!</span>
                                     )}
                                 </p>
                             </div>
