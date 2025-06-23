@@ -5,7 +5,7 @@ import { LearningPathItem } from "@/types/types";
 import { UnitBanner } from "./UnitBanner";
 import { Lesson } from "../lesson/Lesson";
 
-export const Unit = ({ item, lives }: { item: LearningPathItem, lives: number }) => {
+export const Unit = ({ item }: { item: LearningPathItem }) => {
     const unitRef = useRef<HTMLDivElement | null>(null);
 
     console.log("ITEM", item);
@@ -21,7 +21,6 @@ export const Unit = ({ item, lives }: { item: LearningPathItem, lives: number })
     return (
         <div ref={unitRef} className="unitContainer">
             <UnitBanner
-                lives={lives}
                 currentLessonId={item.unit.lessons.find(l => l.isCurrent)?.lessonInfo.id as string}
                 title={unit.name}
                 description={unit.description}
