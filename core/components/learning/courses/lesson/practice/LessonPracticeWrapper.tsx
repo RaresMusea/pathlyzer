@@ -26,20 +26,22 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
     const theme = useTheme().theme;
     const [mode, setMode] = useState<LessonPracticeMode>(LessonPracticeMode.PREPARATION);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
+    const [remainingTime, setRemainingTime] = useState<number>(totalDuration);
 
     useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+        let interval: NodeJS.Timeout | null = null;
 
-    if (mode === LessonPracticeMode.PRACTICE) {
-        interval = setInterval(() => {
-            setElapsedTime((prev) => prev + 1);
-        }, 1000);
-    }
+        if (mode === LessonPracticeMode.PRACTICE) {
+            interval = setInterval(() => {
+                setElapsedTime((prev) => prev + 1);
+                setRemainingTime((prev) => Math.max(prev - 1, 0));
+            }, 1000);
+        }
 
-    return () => {
-        if (interval) clearInterval(interval);
-    };
-}, [mode]);
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [mode]);
 
     const handleExit = () => {
 
@@ -77,7 +79,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
                             <div className="flex items-center">
                                 <Heart className="h-5 w-5 text-red-500 mr-1" fill="currentColor" />
                                 <span className="font-medium text-foreground">
-                                    +1 in {Math.ceil((totalDuration - 10) / 60)} min
+                                    +1 in {formatTime(remainingTime)}
                                 </span>
                             </div>
                         }
@@ -97,7 +99,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
             </header>
             {
                 mode === LessonPracticeMode.PREPARATION ?
-                    <LessonPracticeLandingModal onStart={() => {setMode(LessonPracticeMode.PRACTICE)}} onExit={() => { }} remainingTime={1800} />
+                    <LessonPracticeLandingModal onStart={() => { setMode(LessonPracticeMode.PRACTICE) }} onExit={() => { }} remainingTime={1800} />
                     : <div></div>
             }
         </div>
