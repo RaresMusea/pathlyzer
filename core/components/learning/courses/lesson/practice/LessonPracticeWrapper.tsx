@@ -7,7 +7,7 @@ import { LessonPracticeItemDto } from "@/types/types";
 import { BookOpen, Clock, Heart, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LessonPracticeLandingModal from "./LessonPracticeLandingModal";
 
 enum LessonPracticeMode {
@@ -25,6 +25,21 @@ const formatTime = (seconds: number) => {
 export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practiceItems: LessonPracticeItemDto[], totalDuration: number }) => {
     const theme = useTheme().theme;
     const [mode, setMode] = useState<LessonPracticeMode>(LessonPracticeMode.PREPARATION);
+    const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+    useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (mode === LessonPracticeMode.PRACTICE) {
+        interval = setInterval(() => {
+            setElapsedTime((prev) => prev + 1);
+        }, 1000);
+    }
+
+    return () => {
+        if (interval) clearInterval(interval);
+    };
+}, [mode]);
 
     const handleExit = () => {
 
@@ -48,7 +63,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
                         {mode === LessonPracticeMode.PRACTICE &&
                             <div className="flex items-center">
                                 <Clock className="h-5 w-5 text-blue-600 mr-2" />
-                                <span className="font-medium text-foreground">{formatTime(90)}</span>
+                                <span className="font-medium text-foreground">{formatTime(elapsedTime)}</span>
                             </div>
                         }
                         <div className="flex items-center">
