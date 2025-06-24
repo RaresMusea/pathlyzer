@@ -12,10 +12,12 @@ export const PracticeExitConfirmationModal = ({ handler }: { handler: (openState
     const pathname = usePathname();
 
     const handleConfirmExit = () => {
+        const lessonId = pathname.split('/')[5];
         setIsVisible(false);
+        
         setTimeout(() => {
             handler(false);
-            router.push('..'); //TODO Change this later
+            router.push(`../` + lessonId);
         }, 300);
     }
 
