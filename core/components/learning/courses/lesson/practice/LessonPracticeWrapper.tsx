@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import LessonPracticeLandingModal from "./LessonPracticeLandingModal";
+import { PracticeExitConfirmationModal } from "./modals/PracticeExitConfirmationModal";
 
 enum LessonPracticeMode {
     PREPARATION,
@@ -26,6 +27,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
     const theme = useTheme().theme;
     const [mode, setMode] = useState<LessonPracticeMode>(LessonPracticeMode.PREPARATION);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
+    const [modalStates, setModalStates] = useState({ completionModalVisible: false, exitModalVisible: false });
     const [remainingTime, setRemainingTime] = useState<number>(totalDuration);
 
     useEffect(() => {
@@ -44,8 +46,18 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
     }, [mode]);
 
     const handleExit = () => {
-
+        setModalStates((prev) => ({ ...prev, exitModalVisible: true }));
     }
+
+    const handleExitPracticeModalState = (openState: boolean) => {
+        if (openState) {
+            setModalStates((prev) => ({ ...prev, exitModalVisible: true }));
+            return;
+        }
+
+        setModalStates((prev) => ({ ...prev, exitModalVisible: false }));
+    }
+
 
     return (
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] flex flex-col">
@@ -97,6 +109,10 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
                     </div>
                 </div>
             </header>
+            {
+                modalStates.exitModalVisible && <PracticeExitConfirmationModal handler={handleExitPracticeModalState} />
+            }
+
             {
                 mode === LessonPracticeMode.PREPARATION ?
                     <LessonPracticeLandingModal onStart={() => { setMode(LessonPracticeMode.PRACTICE) }} remainingTime={1800} />
