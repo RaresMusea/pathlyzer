@@ -7,9 +7,10 @@ import { LessonPracticeItemDto } from "@/types/types";
 import { BookOpen, Clock, Heart, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LessonPracticeLandingModal from "./LessonPracticeLandingModal";
 import { PracticeExitConfirmationModal } from "./modals/PracticeExitConfirmationModal";
+import { LessonPracticeContent } from "./LessonPracticeContent";
 
 enum LessonPracticeMode {
     PREPARATION,
@@ -29,21 +30,51 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
     const [elapsedTime, setElapsedTime] = useState<number>(0);
     const [modalStates, setModalStates] = useState({ completionModalVisible: false, exitModalVisible: false });
     const [remainingTime, setRemainingTime] = useState<number>(totalDuration);
+    const [isActive, setIsActive] = useState(false);
+    const [currentSectionIdx, setCurrentSectionIdx] = useState(0);
+
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
-
-        if (mode === LessonPracticeMode.PRACTICE) {
-            interval = setInterval(() => {
-                setElapsedTime((prev) => prev + 1);
-                setRemainingTime((prev) => Math.max(prev - 1, 0));
-            }, 1000);
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
         }
 
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [mode]);
+        if (
+            mode !== LessonPracticeMode.PRACTICE ||
+            !isActive ||
+            modalStates.completionModalVisible ||
+            modalStates.exitModalVisible
+        ) {
+            return;
+        }
+
+        intervalRef.current = setInterval(() => {
+            setElapsedTime((prevElapsed) => {
+                const newTime = prevElapsed + 1;
+
+                let accumulated = 0;
+                for (let i = 0; i < practiceItems.length; i++) {
+                    accumulated += practiceItems[i].duration;
+                    if (newTime <= accumulated) {
+                        setCurrentSectionIdx(i);
+                        break;
+                    }
+                }
+
+                if (newTime >= totalDuration) {
+                    setIsActive(false);
+                    setModalStates((prev) => ({ ...prev, completionModalVisible: true }));
+                }
+
+                return newTime;
+            });
+
+            setRemainingTime((prevRemaining) => Math.max(prevRemaining - 1, 0));
+        }, 1000);
+    }, [mode, isActive, modalStates, totalDuration, practiceItems]);
+
 
     const handleExit = () => {
         setModalStates((prev) => ({ ...prev, exitModalVisible: true }));
@@ -115,8 +146,8 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
 
             {
                 mode === LessonPracticeMode.PREPARATION ?
-                    <LessonPracticeLandingModal onStart={() => { setMode(LessonPracticeMode.PRACTICE) }} remainingTime={1800} />
-                    : <div></div>
+                    <LessonPracticeLandingModal onStart={() => { setMode(LessonPracticeMode.PRACTICE); setIsActive(true) }} remainingTime={1800} />
+                    : <LessonPracticeContent practiceItems={practiceItems} totalDuration={totalDuration} elapsedTime={elapsedTime} currentSectionIdx={currentSectionIdx} />
             }
         </div>
     )
