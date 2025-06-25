@@ -7,7 +7,7 @@ import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, CheckCircle, Heart, Sparkles } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export const PracticeCompletionModal = ({ onClose, practiceTime }: { onClose: () => void; practiceTime: number; }) => {
@@ -15,31 +15,40 @@ export const PracticeCompletionModal = ({ onClose, practiceTime }: { onClose: ()
     const [showHeartAnimation, setShowHeartAnimation] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
+    const hasRun = useRef(false);
     const { setLives } = useGamification();
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setShowHeartAnimation(false);
+            setShowHeartAnimation(false); // ❤️ acest timeout trebuie să ruleze întotdeauna
         }, 4000);
 
-        const finishPractice = async () => {
-            const { courseId, lessonId } = getParams();
+        if (!hasRun.current) {
+            hasRun.current = true;
 
-            if (!courseId || !lessonId) {
-                return;
-            }
+            const finishPractice = async () => {
+                const { courseId, lessonId } = getParams();
 
-            const response = await axios.patch(`/api/courses/${courseId}/lessons/${lessonId}/grant-life`);
+                if (!courseId || !lessonId) {
+                    return;
+                }
 
-            if (response.status === 200) {
-                setLives(response.data.lives);
-            } else {
-                toast.error("Failed to grant life. Please try again later.");
-                console.error("Failed to grant life:", response.data);
-            }
+                try {
+                    const response = await axios.patch(`/api/courses/${courseId}/lessons/${lessonId}/grant-life`);
+                    if (response.status === 200) {
+                        setLives(response.data.lives);
+                    } else {
+                        toast.error("Failed to grant life. Please try again later.");
+                        console.error("Failed to grant life:", response.data);
+                    }
+                } catch (err) {
+                    toast.error("An error occurred while granting life.");
+                    console.error("Error:", err);
+                }
+            };
+
+            finishPractice();
         }
-
-        finishPractice();
 
         return () => clearTimeout(timer);
     }, []);
@@ -49,6 +58,8 @@ export const PracticeCompletionModal = ({ onClose, practiceTime }: { onClose: ()
         setTimeout(() => {
             onClose();
         }, 300);
+        const { courseId, lessonId } = getParams();
+        router.push(`/courses/learn/${courseId}/lesson/${lessonId}/quiz`);
     };
 
     const getParams = () => {

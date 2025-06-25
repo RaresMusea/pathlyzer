@@ -133,7 +133,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
                             <div className="flex items-center">
                                 <Heart className="h-5 w-5 text-red-500 mr-1" fill="currentColor" />
                                 <span className="font-medium text-foreground">
-                                    {lives === 0? `+1 in ${formatTime(remainingTime)}`: `${lives}`}
+                                    {lives === 0 ? `+1 in ${formatTime(remainingTime)}` : `${lives}`}
                                 </span>
                             </div>
                         }

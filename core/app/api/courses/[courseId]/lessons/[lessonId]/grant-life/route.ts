@@ -8,7 +8,7 @@ import { LessonProgress, Prisma, UserCooldown } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ courseId: string, lessonId: string }> }): Promise<NextResponse> {
-    //console.log(request);
+    console.log(request);
 
     const currentUserId = await getCurrentlyLoggedInUserIdApiRoute();
 
@@ -82,23 +82,24 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const cooldownEnd = new Date(cooldownStart.getTime() + cooldownDurationMs);
     const now = new Date();
 
-    // if (now > cooldownEnd) {
-    //     try {
-    //         await db.userCooldown.delete({
-    //             where: {
-    //                 userId: currentUserId,
-    //             },
-    //         });
-    //     } catch (err) {
-    //         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-    //             console.warn("Cooldown already deleted.");
-    //         } else {
-    //             throw err;
-    //         }
-    //     }
+    if (now > cooldownEnd) {
+        console.log('Depaseste cooldown');
+        try {
+            await db.userCooldown.deleteMany({
+                where: {
+                    userId: currentUserId,
+                },
+            });
+        } catch (err) {
+            if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+                console.warn("Cooldown already deleted.");
+            } else {
+                throw err;
+            }
+        }
 
-    //     return NextResponse.json({ message: 'The cooldown has already expired!' }, { status: 400 });
-    // }
+        return NextResponse.json({ message: 'The cooldown has already expired!' }, { status: 400 });
+    }
 
     try {
         await db.$transaction([
@@ -113,7 +114,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                     wasLifeGranted: true,
                 },
             }),
-            db.userCooldown.delete({
+            db.userCooldown.deleteMany({
                 where: {
                     userId: currentUserId,
                 },
