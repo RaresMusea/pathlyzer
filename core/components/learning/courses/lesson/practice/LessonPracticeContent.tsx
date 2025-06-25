@@ -19,7 +19,7 @@ export const LessonPracticeContent = ({ practiceItems, totalDuration, elapsedTim
   const currentSectionProgress = Math.min((sectionElapsedTime / currentDuration) * 100, 100);
 
   return (
-    <main className="flex-1 container mx-auto px-4 py-8">
+    <main className="flex-1 font-nunito container mx-auto px-4 py-8">
       <motion.div
         className="max-w-3xl mx-auto"
         initial={{ opacity: 0, y: 20 }}

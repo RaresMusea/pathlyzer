@@ -12,6 +12,7 @@ import LessonPracticeLandingModal from "./LessonPracticeLandingModal";
 import { PracticeExitConfirmationModal } from "./modals/PracticeExitConfirmationModal";
 import { LessonPracticeContent } from "./LessonPracticeContent";
 import { PracticeCompletionModal } from "./modals/PracticeCompletionModal";
+import { useGamification } from "@/context/GamificationContext";
 
 enum LessonPracticeMode {
     PREPARATION,
@@ -33,6 +34,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
     const [remainingTime, setRemainingTime] = useState<number>(totalDuration);
     const [isActive, setIsActive] = useState(false);
     const [currentSectionIdx, setCurrentSectionIdx] = useState(0);
+    const { lives } = useGamification();
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -98,8 +100,8 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
         setModalStates((prev) => ({ ...prev, exitModalVisible: false }));
     }
 
-
     return (
+
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] flex flex-col">
             <header className="bg-background/80 backdrop-blur-sm border-b border-[hsl(var(--border))] py-3 px-4 sm:px-6 sticky top-0 z-50 font-nunito">
                 <div className="container mx-auto grid grid-cols-3 items-center">
@@ -131,7 +133,7 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
                             <div className="flex items-center">
                                 <Heart className="h-5 w-5 text-red-500 mr-1" fill="currentColor" />
                                 <span className="font-medium text-foreground">
-                                    +1 in {formatTime(remainingTime)}
+                                    {lives === 0? `+1 in ${formatTime(remainingTime)}`: `${lives}`}
                                 </span>
                             </div>
                         }

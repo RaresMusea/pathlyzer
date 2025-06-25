@@ -1,6 +1,8 @@
 import { getLessonPracticeByLessonId } from "@/app/service/learning/lessons/practice/lessonPracticeService";
+import { getUserStats } from "@/app/service/user/userStatsService";
 import { LessonPracticeWrapper } from "@/components/learning/courses/lesson/practice/LessonPracticeWrapper";
-import { LessonPracticeDto } from "@/types/types";
+import { GamificationProvider } from "@/context/GamificationContext";
+import { LessonPracticeDto, UserStatsDto } from "@/types/types";
 import { notFound } from "next/navigation";
 
 export default async function LessonPracticePage({ params }: { params: Promise<{ courseId: string, lessonId: string }> }) {
@@ -11,9 +13,17 @@ export default async function LessonPracticePage({ params }: { params: Promise<{
         notFound();
     }
 
+    const initialUserStats: UserStatsDto | null = await getUserStats();
+
+    if (!initialUserStats) {
+        notFound();
+    }
+
     const totalDuration = practiceCard.items.reduce((sum, section) => sum + section.duration, 0);
 
     return (
-        <LessonPracticeWrapper practiceItems={practiceCard.items} totalDuration={totalDuration} />
+        <GamificationProvider initialUserStats={initialUserStats}>
+            <LessonPracticeWrapper practiceItems={practiceCard.items} totalDuration={totalDuration} />
+        </GamificationProvider>
     )
 }

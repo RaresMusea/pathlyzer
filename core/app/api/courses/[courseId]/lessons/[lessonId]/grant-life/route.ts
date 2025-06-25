@@ -1,16 +1,14 @@
 import { getCourseByIdUser } from "@/app/service/learning/course/courseService";
-import { getCurrentUserLessonProgress } from "@/app/service/learning/lessons/lessonProgressService";
-import { getLessonById } from "@/app/service/learning/lessons/lessonService";
+import { getLessonByIdUser } from "@/app/service/learning/lessons/lessonService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { db } from "@/persistency/Db";
 import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
 import { CourseDto, LessonDto, UserStatsDto } from "@/types/types";
-import { LessonProgress, UserCooldown } from "@prisma/client";
+import { LessonProgress, Prisma, UserCooldown } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ courseId: string, lessonId: string }> }): Promise<NextResponse> {
-    console.log(request);
+    //console.log(request);
 
     const currentUserId = await getCurrentlyLoggedInUserIdApiRoute();
 
@@ -19,6 +17,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const { courseId, lessonId } = await params;
+
+    console.log('Course ID:', courseId);
+    console.log('Lesson ID:', lessonId);
 
     if (!courseId) {
         return NextResponse.json({ message: 'The course ID cannot be empty!' }, { status: 400 });
@@ -31,12 +32,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const course: CourseDto | undefined = await getCourseByIdUser(courseId);
 
     if (!course) {
+        console.error('The course does not exist!');
         return NextResponse.json({ message: 'The specified course cannot be found or it is unnaccessible!' }, { status: 404 });
     }
 
-    const lesson: LessonDto | null = await getLessonById(lessonId);
+    const lesson: LessonDto | null = await getLessonByIdUser(lessonId);
 
-    if (!lesson) {
+    if (lesson === null) {
+        console.error('The lesson does not exist!');
         return NextResponse.json({ message: 'The specified lesson cannot be found or it is unnaccessible!' }, { status: 404 });
     }
 
@@ -52,6 +55,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const userStats: UserStatsDto | null = await getUserStats();
 
     if (!userStats) {
+        console.error('User stats not found!');
         return NextResponse.json({ message: 'User stats not found!' }, { status: 404 });
     }
 
@@ -78,15 +82,23 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const cooldownEnd = new Date(cooldownStart.getTime() + cooldownDurationMs);
     const now = new Date();
 
-    if (now > cooldownEnd) {
-        await db.userCooldown.delete({
-            where: {
-                userId: currentUserId
-            }
-        });
+    // if (now > cooldownEnd) {
+    //     try {
+    //         await db.userCooldown.delete({
+    //             where: {
+    //                 userId: currentUserId,
+    //             },
+    //         });
+    //     } catch (err) {
+    //         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+    //             console.warn("Cooldown already deleted.");
+    //         } else {
+    //             throw err;
+    //         }
+    //     }
 
-        return NextResponse.json({ message: 'The cooldown has already expired!' }, { status: 400 });
-    }
+    //     return NextResponse.json({ message: 'The cooldown has already expired!' }, { status: 400 });
+    // }
 
     try {
         await db.$transaction([

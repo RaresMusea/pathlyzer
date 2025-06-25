@@ -1,22 +1,45 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useGamification } from "@/context/GamificationContext";
 import { formatTime } from "@/lib/TimeUtils";
+import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, CheckCircle, Heart, Sparkles } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const PracticeCompletionModal = ({ onClose, practiceTime }: { onClose: () => void; practiceTime: number; }) => {
     const [isVisible, setIsVisible] = useState(true);
     const [showHeartAnimation, setShowHeartAnimation] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
+    const { setLives } = useGamification();
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowHeartAnimation(false);
         }, 4000);
+
+        const finishPractice = async () => {
+            const { courseId, lessonId } = getParams();
+
+            if (!courseId || !lessonId) {
+                return;
+            }
+
+            const response = await axios.patch(`/api/courses/${courseId}/lessons/${lessonId}/grant-life`);
+
+            if (response.status === 200) {
+                setLives(response.data.lives);
+            } else {
+                toast.error("Failed to grant life. Please try again later.");
+                console.error("Failed to grant life:", response.data);
+            }
+        }
+
+        finishPractice();
 
         return () => clearTimeout(timer);
     }, []);
@@ -28,11 +51,17 @@ export const PracticeCompletionModal = ({ onClose, practiceTime }: { onClose: ()
         }, 300);
     };
 
-    const navigateBackToLesson = () => {
+    const getParams = () => {
         const sections = pathname.split("/");
-        const lessonId = sections[sections.length - 1];
+        const lessonId = sections[sections.length - 2];
         const courseIndex = sections.indexOf("learn");
         const courseId = courseIndex !== -1 ? sections[courseIndex + 1] : null;
+
+        return { courseId, lessonId };
+    }
+
+    const navigateBackToLesson = () => {
+        const { courseId, lessonId } = getParams();
 
         router.push(`/courses/learn/${courseId}/lesson/${lessonId}`);
     }
