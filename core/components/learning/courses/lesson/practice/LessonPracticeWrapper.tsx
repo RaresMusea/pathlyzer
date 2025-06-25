@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import LessonPracticeLandingModal from "./LessonPracticeLandingModal";
 import { PracticeExitConfirmationModal } from "./modals/PracticeExitConfirmationModal";
 import { LessonPracticeContent } from "./LessonPracticeContent";
+import { PracticeCompletionModal } from "./modals/PracticeCompletionModal";
 
 enum LessonPracticeMode {
     PREPARATION,
@@ -80,6 +81,14 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
         setModalStates((prev) => ({ ...prev, exitModalVisible: true }));
     }
 
+    const handleCompletionModalClose = () => {
+        setModalStates((prev) => ({ ...prev, completionModalVisible: false }));
+        setElapsedTime(0);
+        setRemainingTime(totalDuration);
+        setIsActive(false);
+        setCurrentSectionIdx(0);
+    }
+
     const handleExitPracticeModalState = (openState: boolean) => {
         if (openState) {
             setModalStates((prev) => ({ ...prev, exitModalVisible: true }));
@@ -142,6 +151,11 @@ export const LessonPracticeWrapper = ({ practiceItems, totalDuration }: { practi
             </header>
             {
                 modalStates.exitModalVisible && <PracticeExitConfirmationModal handler={handleExitPracticeModalState} />
+            }
+
+            {
+                mode === LessonPracticeMode.PRACTICE && modalStates.completionModalVisible &&
+                <PracticeCompletionModal onClose={handleCompletionModalClose} practiceTime={totalDuration} />
             }
 
             {
