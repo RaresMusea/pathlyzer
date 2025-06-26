@@ -33,7 +33,11 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     const cooldownEnd = new Date(cooldownStart.getTime() + cooldownDurationMs);
     const now = new Date();
 
+    console.log('now>cooldownEnd:', now > cooldownEnd);
+    console.log('userStats.lives:', userStats.lives);
+
     if (now > cooldownEnd && userStats.lives === 0) {
+        console.warn('S-a intrat pe bransa buna!');
         try {
             await db.$transaction([
                 db.userCooldown.deleteMany({
@@ -60,5 +64,5 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
         }
     }
 
-    return NextResponse.json({ message: 'An error occurred while processing your request.' }, { status: 500 });
+    return NextResponse.json({ message: 'Cooldown not expired or lives not zero.' }, { status: 400 });
 }
