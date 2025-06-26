@@ -34,7 +34,7 @@ export const PracticeCompletionModal = ({ onClose, practiceTime }: { onClose: ()
                 }
 
                 try {
-                    const response = await axios.patch(`/api/courses/${courseId}/lessons/${lessonId}/grant-life`);
+                    const response = await axios.patch(`/api/courses/${courseId}/lessons/${lessonId}/grant-practice-life`);
                     if (response.status === 200) {
                         setLives(response.data.lives);
                     } else {

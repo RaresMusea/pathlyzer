@@ -1,49 +1,63 @@
-import { useEffect, useState } from "react";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 
-export const useCooldown = (cooldown: number) => {
-    const [isCooldownActive, setIsCooldownActive] = useState(false);
-    const [remainingTime, setRemainingTime] = useState(cooldown);
-
-    const COOLDOWN_KEY = "cooldown_start_time";
+export const useCooldown = (lives: number, setLives: (newState: number) => void) => {
+    const [remainingCooldown, setRemainingCooldown] = useState<number>(0);
+    const hasRan = useRef(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem(COOLDOWN_KEY);
-        if (saved) {
-            const savedTime = parseInt(saved, 10);
-            const elapsed = Math.floor((Date.now() - savedTime) / 1000);
-            if (elapsed < cooldown) {
-                setIsCooldownActive(true);
-                setRemainingTime(cooldown - elapsed);
-            } else {
-                localStorage.removeItem(COOLDOWN_KEY);
+        if (hasRan.current || lives !== 0) return;
+        hasRan.current = true;
+
+        const getCooldown = async () => {
+            try {
+                const response = await axios.get(`/api/user-stats/cooldown`);
+                if (response.status === 200) {
+                    const data = response.data;
+                    setRemainingCooldown(data.active ? data.remainingSeconds : 0);
+                }
+            } catch (err) {
+                console.error("Failed to fetch cooldown:", err);
             }
-        }
-    }, [cooldown]);
+        };
+
+        getCooldown();
+    }, [lives]);
 
     useEffect(() => {
-        if (!isCooldownActive) return;
+        if (remainingCooldown === 0) return;
 
         const interval = setInterval(() => {
-            setRemainingTime((prev) => {
+            setRemainingCooldown((prev) => {
                 if (prev <= 1) {
                     clearInterval(interval);
-                    setIsCooldownActive(false);
-                    localStorage.removeItem(COOLDOWN_KEY);
-                    return cooldown;
+                    return 0;
                 }
                 return prev - 1;
             });
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isCooldownActive, cooldown]);
+    }, [remainingCooldown]);
 
-    const startCooldown = () => {
-        const now = Date.now();
-        localStorage.setItem(COOLDOWN_KEY, now.toString());
-        setIsCooldownActive(true);
-        setRemainingTime(cooldown);
-    };
+    useEffect(() => {
+        if (remainingCooldown !== 0) return;
 
-    return { isCooldownActive, remainingTime, startCooldown };
+        const grantLife = async () => {
+            try {
+                const response = await axios.patch(`/api/user-stats/cooldown/grant-life`);
+                if (response.status === 200) {
+                    setLives(response.data.lives);
+                }
+            } catch (err) {
+                console.error("Failed to grant life after cooldown:", err);
+            }
+        };
+
+        grantLife();
+    }, [remainingCooldown]);
+
+    return {
+        remainingCooldown
+    }
 };

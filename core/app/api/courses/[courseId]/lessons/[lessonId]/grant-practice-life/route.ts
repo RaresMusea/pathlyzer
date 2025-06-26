@@ -4,7 +4,7 @@ import { getUserStats } from "@/app/service/user/userStatsService";
 import { db } from "@/persistency/Db";
 import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
 import { CourseDto, LessonDto, UserStatsDto } from "@/types/types";
-import { LessonProgress, Prisma, UserCooldown } from "@prisma/client";
+import { CooldownReason, LessonProgress, Prisma, UserCooldown } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ courseId: string, lessonId: string }> }): Promise<NextResponse> {
@@ -17,9 +17,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const { courseId, lessonId } = await params;
-
-    console.log('Course ID:', courseId);
-    console.log('Lesson ID:', lessonId);
 
     if (!courseId) {
         return NextResponse.json({ message: 'The course ID cannot be empty!' }, { status: 400 });
@@ -77,13 +74,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         return NextResponse.json({ message: 'You do not have an active cooldown!' }, { status: 400 });
     }
 
+    if (userCooldown.reason !== CooldownReason.NORMAL) {
+        return NextResponse.json({ message: 'Cannot obtain lives in case of a fraud! Please wait for the cooldown to end and try performing the evaluation once again!' }, { status: 400 });
+    }
+
     const cooldownStart: Date = userCooldown.startedAt;
     const cooldownDurationMs: number = userCooldown.durationMinutes * 60 * 1000;
     const cooldownEnd = new Date(cooldownStart.getTime() + cooldownDurationMs);
     const now = new Date();
 
     if (now > cooldownEnd) {
-        console.log('Depaseste cooldown');
         try {
             await db.userCooldown.deleteMany({
                 where: {
@@ -98,7 +98,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             }
         }
 
-        return NextResponse.json({ message: 'The cooldown has already expired!' }, { status: 400 });
+        return NextResponse.json({ message: 'Life not granted: either cooldown not expired or lives > 0.' }, { status: 400 });
     }
 
     try {
@@ -131,10 +131,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             }),
         ]);
 
-        return NextResponse.json({ message: 'Life granted and cooldown removed!', lives: 1 }, { status: 200 });
+        return NextResponse.json({ message: 'Practice life granted and cooldown removed!', lives: 1 }, { status: 200 });
 
     } catch (error) {
         console.error('Error granting life:', error);
-        return NextResponse.json({ message: 'An error occurred while granting life.' }, { status: 500 });
+        return NextResponse.json({ message: 'An error occurred while granting life from practice.' }, { status: 500 });
     }
 }
