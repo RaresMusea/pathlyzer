@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { SummarizedUserStatsWrapper } from "@/components/user/SummarizedUserStats";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { getCurrentProgress } from "@/lib/CourseUtils";
-import { SummarizedUserStats } from "@/types/types";
 
 export default async function CoursePathPage({ params }: { params: Promise<{ courseId: string }> }) {
     const { courseId } = await params;

@@ -32,6 +32,12 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
         setIsVisible(false);
         setTimeout(() => {
             closeOutOfLivesModal();
+            const segments = pathname.split('/');
+            const courseId = segments[3];
+            const lessonId = segments[5];
+            
+            router.push(`/courses/learn/${courseId}/lesson/${lessonId}`);
+
         }, 500);
     };
 

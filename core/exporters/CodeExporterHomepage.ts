@@ -377,10 +377,10 @@ PORT = 8080
 def handle_client(conn):
     request = conn.recv(4096)
     body = b"<html><body><h1>Hello from Python HTTP Server</h1></body></html>"
-    response = b"HTTP/1.1 200 OK\r\n" + \
-               b"Content-Type: text/html\r\n" + \
-               b"Content-Length: " + str(len(body)).encode() + b"\r\n" + \
-               b"Connection: close\r\n\r\n" + \
+    response = b"HTTP/1.1 200 OK\\r\\n" + \
+               b"Content-Type: text/html\\r\\n" + \
+               b"Content-Length: " + str(len(body)).encode() + b"\\r\\n" + \
+               b"Connection: close\\r\\n\\r\\n" + \
                body
     conn.sendall(response)
     conn.close()

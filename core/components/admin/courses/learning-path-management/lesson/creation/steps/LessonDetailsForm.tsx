@@ -34,7 +34,7 @@ export const LessonDetailsForm = () => {
                                 <React.Fragment>
                                     <FormField control={form.control} name="details.title" render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Unit name</FormLabel>
+                                            <FormLabel>Lesson name</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
@@ -53,7 +53,7 @@ export const LessonDetailsForm = () => {
                                 <React.Fragment>
                                     <FormField control={form.control} name="details.description" render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Unit description</FormLabel>
+                                            <FormLabel>Lesson description</FormLabel>
                                             <FormControl>
                                                 <Textarea
                                                     {...field}
