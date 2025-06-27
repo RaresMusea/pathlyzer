@@ -7,15 +7,8 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
 
-const CustomTooltip = ({
-    active,
-    payload,
-    label,
-}: {
-    active?: boolean;
-    payload?: { name: string; dataKey: string; value: number; color?: string }[];
-    label?: string;
-}) => {
+// @ts-ignore
+const CustomTooltip = ({ active, payload, label}: any) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-background border border-border rounded-lg shadow-lg p-3 animate-in fade-in-0 zoom-in-95">
