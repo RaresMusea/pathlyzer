@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Clock1, Flame, Target } from "lucide-react";
+import { Clock1, Flame, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { formatSecondsToTimeReadable } from "@/lib/TimeUtils";
 

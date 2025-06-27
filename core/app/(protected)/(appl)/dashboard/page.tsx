@@ -1,4 +1,4 @@
-import { getCurrentUserLearningDurationTotal, getLearningSession, getLongestLearningStreak } from "@/app/service/learning/learning-session/learningSessionService";
+import { getCurrentUserLearningDurationTotal, getLongestLearningStreak } from "@/app/service/learning/learning-session/learningSessionService";
 import { getUserCooldown } from "@/app/service/user/cooldownService";
 import { getUserCompletions } from "@/app/service/user/dashboardService";
 import { getUserStats } from "@/app/service/user/userStatsService";
@@ -22,7 +22,6 @@ const formatUserName = (name: string | null | undefined): string => {
     return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 };
 
-
 export default async function DashboardPage() {
     const user = await auth();
     const userStats: UserStatsDto | null = await getUserStats();
@@ -30,8 +29,6 @@ export default async function DashboardPage() {
     const totalLearningTime: number = await getCurrentUserLearningDurationTotal();
     const longestLearningStreak: number = await getLongestLearningStreak();
     const userCompletions: UserLearningCompletionDto = await getUserCompletions();
-
-    console.log(userCooldown);
 
     if (!user || !user.user) {
         redirect(UNAUTHORIZED_REDIRECT);
