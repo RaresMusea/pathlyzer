@@ -7,18 +7,18 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
 import { TooltipProps } from "recharts";
+import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
-interface RechartsPayload {
-  name: string;
-  value: number;
-  color?: string;
-  dataKey?: string;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: RechartsPayload[];
-  label?: string;
+interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
+    active?: boolean;
+    payload?: {
+        name: string;
+        value: number;
+        color?: string;
+        dataKey?: string;
+        payload: any;
+    }[];
+    label?: string;
 }
 
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
@@ -77,7 +77,7 @@ export const WeeklyLearningActivityChart = ({ weeklyActivity }: { weeklyActivity
                             <BarChart data={weeklyActivity} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                                <ChartTooltip  content={CustomTooltip as React.FC<TooltipProps<string, string>>} />
+                                 <ChartTooltip content={<CustomTooltip />} />
                                 <Bar
                                     dataKey="sessions"
                                     fill="var(--color-sessions)"
