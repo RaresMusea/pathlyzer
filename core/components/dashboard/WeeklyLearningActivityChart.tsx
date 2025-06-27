@@ -4,7 +4,7 @@ import { WeeklyActivityEntry } from "@/types/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { TrendingUp } from "lucide-react";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
-import { Bar, BarChart, ResponsiveContainer, TooltipProps, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
 
 interface RechartsPayload {
