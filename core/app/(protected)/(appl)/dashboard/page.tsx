@@ -59,7 +59,7 @@ export default async function DashboardPage() {
                     {/* <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" /> */}
                     <div className="grid gap-8 lg:grid-cols-2">
                         <div className="grid gap-8 md:grid-cols-2">
-                            <div className="col-span-full w-full">
+                            <div className="col-span-full w-[380px] md:w-full" >
                                 <WeeklyLearningActivityChart weeklyActivity={weeklyLearningActivity} />
                             </div>
                         </div>
