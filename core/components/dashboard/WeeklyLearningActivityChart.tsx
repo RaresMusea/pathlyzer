@@ -7,13 +7,20 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
 
-// @ts-ignore
-const CustomTooltip = ({ active, payload, label}: any) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: { name: string; value: number; color?: string; dataKey?: string }[];
+  label?: string;
+}) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-background border border-border rounded-lg shadow-lg p-3 animate-in fade-in-0 zoom-in-95">
                 <p className="font-medium text-foreground">{label}</p>
-                {payload.map((entry: { name: string; dataKey: string; value: number; color?: string }, index: number) => (
+                {payload.map((entry: { name: string; value: number; color?: string; dataKey?: string }, index: number) => (
                     <p key={index} className="text-sm" style={{ color: entry.color }}>
                         {entry.name}:
                         {entry.dataKey === "duration"
