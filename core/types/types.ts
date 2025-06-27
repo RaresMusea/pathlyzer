@@ -377,4 +377,11 @@ export interface LessonPracticeItemDto {
     content: string;
 }
 
+export interface UserLearningCompletionDto {
+    completedCourses: number;
+    completedLessons: number;
+    completedUnits: number;
+    completedEvaluations: number;
+}
+
 // #endregion

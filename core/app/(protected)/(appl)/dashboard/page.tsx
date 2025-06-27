@@ -1,7 +1,9 @@
 import { getCurrentUserLearningDurationTotal, getLearningSession, getLongestLearningStreak } from "@/app/service/learning/learning-session/learningSessionService";
 import { getUserCooldown } from "@/app/service/user/cooldownService";
+import { getUserCompletions } from "@/app/service/user/dashboardService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { auth } from "@/auth";
+import { CompletionsCard } from "@/components/dashboard/CompletionsCard";
 import { LearningTimeCard } from "@/components/dashboard/LearningTimeCard";
 import { LivesCard } from "@/components/dashboard/LivesCard";
 import { XpCard } from "@/components/dashboard/XpCard";
@@ -9,7 +11,7 @@ import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { DashboardLoadError } from "@/components/misc/errors/DashboardLoadError";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
-import { UserStatsDto } from "@/types/types";
+import { UserLearningCompletionDto, UserStatsDto } from "@/types/types";
 import { UserCooldown } from "@prisma/client";
 import { redirect } from "next/navigation";
 
@@ -27,6 +29,7 @@ export default async function DashboardPage() {
     const userCooldown: UserCooldown | null = await getUserCooldown();
     const totalLearningTime: number = await getCurrentUserLearningDurationTotal();
     const longestLearningStreak: number = await getLongestLearningStreak();
+    const userCompletions: UserLearningCompletionDto = await getUserCompletions();
 
     console.log(userCooldown);
 
@@ -52,7 +55,7 @@ export default async function DashboardPage() {
                             <LivesCard lives={userStats.lives ?? 0} cooldownDuration={userCooldown ? userCooldown?.durationMinutes: 0} cooldownReason={userCooldown? userCooldown?.reason : undefined} />
                         </GamificationProvider>
                         <LearningTimeCard learningTime={totalLearningTime} longestStreak={longestLearningStreak} />
-
+                        <CompletionsCard userCompletions={userCompletions} />
                     </div>
                     <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
                         
