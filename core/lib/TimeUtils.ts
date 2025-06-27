@@ -17,3 +17,25 @@ export const formatSecondsToTimeReadable = (totalSeconds: number): string => {
 
     return parts.join(" ");
 };
+
+export const getCurrentWeekRange = (): string => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+
+    const start = new Date(today);
+    start.setDate(today.getDate() - dayOfWeek);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+
+    const format = (d: Date) =>
+        d.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        });
+
+    return `${format(start)} – ${format(end)}`;
+};
+
+export const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

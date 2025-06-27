@@ -377,11 +377,22 @@ export interface LessonPracticeItemDto {
     content: string;
 }
 
+// #region User dashboard-related types
+
 export interface UserLearningCompletionDto {
     completedCourses: number;
     completedLessons: number;
     completedUnits: number;
     completedEvaluations: number;
 }
+
+export interface WeeklyActivityEntry {
+  day: string;
+  sessions: number;
+  duration: number;
+  xpGained: number;
+  lessonsCompleted: number;
+}
+
 
 // #endregion

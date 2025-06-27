@@ -1,17 +1,18 @@
 import { getCurrentUserLearningDurationTotal, getLongestLearningStreak } from "@/app/service/learning/learning-session/learningSessionService";
 import { getUserCooldown } from "@/app/service/user/cooldownService";
-import { getUserCompletions } from "@/app/service/user/dashboardService";
+import { getUserCompletions, getWeeklyLearningActivity } from "@/app/service/user/dashboardService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { auth } from "@/auth";
 import { CompletionsCard } from "@/components/dashboard/CompletionsCard";
 import { LearningTimeCard } from "@/components/dashboard/LearningTimeCard";
 import { LivesCard } from "@/components/dashboard/LivesCard";
+import { WeeklyLearningActivityChart } from "@/components/dashboard/WeeklyLearningActivityChart";
 import { XpCard } from "@/components/dashboard/XpCard";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { DashboardLoadError } from "@/components/misc/errors/DashboardLoadError";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
-import { UserLearningCompletionDto, UserStatsDto } from "@/types/types";
+import { UserLearningCompletionDto, UserStatsDto, WeeklyActivityEntry } from "@/types/types";
 import { UserCooldown } from "@prisma/client";
 import { redirect } from "next/navigation";
 
@@ -29,6 +30,7 @@ export default async function DashboardPage() {
     const totalLearningTime: number = await getCurrentUserLearningDurationTotal();
     const longestLearningStreak: number = await getLongestLearningStreak();
     const userCompletions: UserLearningCompletionDto = await getUserCompletions();
+    const weeklyLearningActivity: WeeklyActivityEntry[] = await getWeeklyLearningActivity();
 
     if (!user || !user.user) {
         redirect(UNAUTHORIZED_REDIRECT);
@@ -49,13 +51,19 @@ export default async function DashboardPage() {
                     <div className="grid auto-rows-min gap-4 md:grid-cols-4">
                         <XpCard xp={userStats?.xp ?? 0} level={userStats?.level ?? 0} />
                         <GamificationProvider initialUserStats={userStats}>
-                            <LivesCard lives={userStats.lives ?? 0} cooldownDuration={userCooldown ? userCooldown?.durationMinutes: 0} cooldownReason={userCooldown? userCooldown?.reason : undefined} />
+                            <LivesCard lives={userStats.lives ?? 0} cooldownDuration={userCooldown ? userCooldown?.durationMinutes : 0} cooldownReason={userCooldown ? userCooldown?.reason : undefined} />
                         </GamificationProvider>
                         <LearningTimeCard learningTime={totalLearningTime} longestStreak={longestLearningStreak} />
                         <CompletionsCard userCompletions={userCompletions} />
                     </div>
-                    <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-                        
+                    {/* <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" /> */}
+                    <div className="grid gap-8 lg:grid-cols-2">
+                        <div className="grid gap-8 md:grid-cols-2">
+                            <div className="col-span-full w-full">
+                                <WeeklyLearningActivityChart weeklyActivity={weeklyLearningActivity} />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </PageTransition>
