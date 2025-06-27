@@ -9,17 +9,20 @@ import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtil
 import { TooltipProps } from "recharts";
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
+interface CustomTooltipPayload {
+    name: string;
+    value: number;
+    color?: string;
+    dataKey?: string;
+    payload: WeeklyActivityEntry;
+}
+
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
     active?: boolean;
-    payload?: {
-        name: string;
-        value: number;
-        color?: string;
-        dataKey?: string;
-        payload: any;
-    }[];
+    payload?: CustomTooltipPayload[];
     label?: string;
 }
+
 
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
