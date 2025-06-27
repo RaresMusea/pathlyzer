@@ -7,10 +7,15 @@ import { useState } from "react";
 import { PopoverArrow } from "@radix-ui/react-popover";
 import { getXpThreshold } from "@/lib/UserUtils";
 import { Progress } from "../ui/progress";
+import { useGamification } from "@/context/GamificationContext";
+import { useCooldown } from "@/hooks/useCooldown";
+import { formatTime } from "@/lib/TimeUtils";
 
 export const SummarizedUserStatsWrapper = ({ userStats }: { userStats: SummarizedUserStats }) => {
     const [livesPopoverOpen, setLivesPopoverOpen] = useState(false);
     const [xpPopoverOpen, setXpPopoverOpen] = useState(false);
+    const { lives, setLives } = useGamification();
+    const { remainingCooldown } = useCooldown(lives, setLives);
 
     return (
         <div className="flex items-center gap-4 text-sm font-medium cursor-pointer">
@@ -21,10 +26,19 @@ export const SummarizedUserStatsWrapper = ({ userStats }: { userStats: Summarize
                         {userStats?.lives}
                     </div>
                 </PopoverTrigger>
-                <PopoverContent className="font-nunito">
-                    The number of lives you have left. Each wrong answer will cost you a life. You can regain lives by practicing previous lessons or by passing unit exams.
+                <PopoverContent className="font-nunito space-y-2">
+                    <div>
+                        The number of lives you have left. Each wrong answer will cost you a life.
+                        You can regain lives by practicing previous lessons or by passing unit exams.
+                    </div>
+                    {remainingCooldown > 0 && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                            Next life in: {formatTime(remainingCooldown)}
+                        </div>
+                    )}
                     <PopoverArrow className="fill-gray-300 dark:fill-gray-900" />
                 </PopoverContent>
+
             </Popover>
             <Popover open={xpPopoverOpen} onOpenChange={setXpPopoverOpen}>
                 <PopoverTrigger

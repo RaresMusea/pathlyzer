@@ -6,7 +6,7 @@ import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Heart } from "lucide-react";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) => {
@@ -18,11 +18,26 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
     const [timeLeft, setTimeLeft] = useState(remainingTime);
     const theme = useTheme().theme;
     const pathname = usePathname();
+    const router = useRouter();
+
+    const navigateToPractice = () => {
+        const segments = pathname.split('/');
+        const courseId = segments[3];
+        const lessonId = segments[5];
+
+        router.push(`/courses/learn/${courseId}/lesson/${lessonId}/practice`);
+    }
 
     const handleClose = () => {
         setIsVisible(false);
         setTimeout(() => {
             closeOutOfLivesModal();
+            const segments = pathname.split('/');
+            const courseId = segments[3];
+            const lessonId = segments[5];
+            
+            router.push(`/courses/learn/${courseId}/lesson/${lessonId}`);
+
         }, 500);
     };
 
@@ -203,7 +218,7 @@ export const OutOfLivesModal = ({ remainingTime }: { remainingTime: number }) =>
                                                 <>
                                                     {canPractice ? (
                                                         <Button
-                                                            onClick={() => { }}
+                                                            onClick={navigateToPractice}
                                                             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                                                             size="lg"
                                                         >

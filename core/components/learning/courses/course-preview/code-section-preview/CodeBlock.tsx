@@ -63,7 +63,7 @@ export const CodeBlock = ({ code, language, html }: ICodeBlock) => {
     const [currentTheme, setCurrentTheme] = useState<string>('catppuccin-mocha');
     const [highlightedHtml, setHighlightedHtml] = useState<string>(html);
     const codeBlockRef = useRef<HTMLDivElement>(null);
-    const codeContentRef = useRef<HTMLDivElement>(null)
+    const codeContentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const updateHighlighting = async () => {
