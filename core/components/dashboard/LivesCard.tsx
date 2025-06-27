@@ -41,6 +41,14 @@ export const LivesCard = ({ cooldownReason, cooldownDuration }: { lives: number,
                     {lives > 0 ? <div className="text-2xl font-bold">{lives} / 5 lives</div> : <span className="text-red-600 text-2xl font-bold">Out of lives</span>}
 
                 </div>
+                <div className="flex gap-1.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <Heart
+                            key={i}
+                            className={`h-6 w-6 ${i < lives ? "text-red-500 fill-red-500" : "text-muted-foreground"}`}
+                        />
+                    ))}
+                </div>
                 <div>
                     {
                         lives === 0 &&
