@@ -77,7 +77,7 @@ export const WeeklyLearningActivityChart = ({ weeklyActivity }: { weeklyActivity
                             <BarChart data={weeklyActivity} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                                <ChartTooltip  content={CustomTooltip as React.FC<TooltipProps<any, string>>} />
+                                <ChartTooltip  content={CustomTooltip as React.FC<TooltipProps<string, string>>} />
                                 <Bar
                                     dataKey="sessions"
                                     fill="var(--color-sessions)"
