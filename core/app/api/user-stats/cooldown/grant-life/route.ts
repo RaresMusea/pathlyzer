@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 
             return NextResponse.json({ message: 'Life granted and cooldown removed!', lives: 1 }, { status: 200 });
         } catch (err) {
-            console.error('Error');
+            console.error('Error: ', err);
             return NextResponse.json({ message: 'An error occurred while processing your request.' }, { status: 500 });
         }
     }

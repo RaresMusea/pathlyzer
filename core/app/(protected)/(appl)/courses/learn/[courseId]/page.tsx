@@ -1,6 +1,6 @@
 import { getCourseByIdUser } from "@/app/service/learning/course/courseService";
 import { getLearningPath } from "@/app/service/learning/paths/learningPathService";
-import { getSummarizedUserStats, getUserStats } from "@/app/service/user/userStatsService";
+import { getUserStats } from "@/app/service/user/userStatsService";
 import { Unit } from "@/components/learning/courses/unit/Unit";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { Progress } from "@/components/ui/progress";
