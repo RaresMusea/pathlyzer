@@ -4,23 +4,28 @@ import { WeeklyActivityEntry } from "@/types/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { TrendingUp } from "lucide-react";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, TooltipProps, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
 
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-}: {
+interface RechartsPayload {
+  name: string;
+  value: number;
+  color?: string;
+  dataKey?: string;
+}
+
+interface CustomTooltipProps {
   active?: boolean;
-  payload?: { name: string; value: number; color?: string; dataKey?: string }[];
+  payload?: RechartsPayload[];
   label?: string;
-}) => {
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-background border border-border rounded-lg shadow-lg p-3 animate-in fade-in-0 zoom-in-95">
                 <p className="font-medium text-foreground">{label}</p>
-                {payload.map((entry: { name: string; value: number; color?: string; dataKey?: string }, index: number) => (
+                {payload.map((entry, index) => (
                     <p key={index} className="text-sm" style={{ color: entry.color }}>
                         {entry.name}:
                         {entry.dataKey === "duration"
