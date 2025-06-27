@@ -6,6 +6,7 @@ import { TrendingUp } from "lucide-react";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
+import { TooltipProps } from "recharts";
 
 interface RechartsPayload {
   name: string;
@@ -76,7 +77,7 @@ export const WeeklyLearningActivityChart = ({ weeklyActivity }: { weeklyActivity
                             <BarChart data={weeklyActivity} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                                <ChartTooltip content={<CustomTooltip />} />
+                                <ChartTooltip  content={CustomTooltip as React.FC<TooltipProps<any, string>>} />
                                 <Bar
                                     dataKey="sessions"
                                     fill="var(--color-sessions)"
