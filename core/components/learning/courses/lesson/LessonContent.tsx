@@ -9,10 +9,14 @@ import { ListChecks } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { OutOfLivesModalGeneric } from "./OutOfLivesModalGeneric";
+import { useCooldown } from "@/hooks/useCooldown";
+import { useGamification } from "@/context/GamificationContext";
 
 export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats }) => {
     const progressRef = useRef(0);
     const pathName = usePathname();
+    const { lives, setLives } = useGamification();
+    const { remainingCooldown } = useCooldown(lives, setLives);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [outOfLivesModalVisible, setOutOfLivesModalVisible] = useState<boolean>(false);
     const router = useRouter();
@@ -78,7 +82,7 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, u
             }
             {
                 outOfLivesModalVisible &&
-                <OutOfLivesModalGeneric open={outOfLivesModalVisible} setIsOpen={setOutOfLivesModalVisible} />
+                    <OutOfLivesModalGeneric setVisibility={setOutOfLivesModalVisible} remainingTime={remainingCooldown} />
             }
         </>
     )
