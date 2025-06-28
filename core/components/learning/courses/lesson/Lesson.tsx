@@ -77,8 +77,7 @@ export const Lesson = ({ lessonInfo, isCurrent, learningProgress, isAccessible, 
 
     const Icon = isCompleted ? Check : isLast ? Crown : Star;
 
-    //To be defined more precisely later on
-    const href = isCompleted ? `/lesson/${lessonInfo.id}` : `${pathname}/lesson/${lessonInfo.id}`;
+    const href = isCompleted ? `${pathname}/lesson/${lessonInfo.id}` : `${pathname}/lesson/${lessonInfo.id}`;
 
     const [popoverOpen, setPopoverOpen] = useState(false);
 
