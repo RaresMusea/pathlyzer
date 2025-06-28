@@ -6,7 +6,7 @@ import { BookOpen } from "lucide-react";
 
 export const CompletionsCard = ({ userCompletions }: { userCompletions: UserLearningCompletionDto }) => {
     return (
-        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-in fade-in-0 slide-in-from-bottom-4 delay-300">
+        <Card className="group hover:shadow-lg dark:bg-muted/50 transition-all duration-300 hover:-translate-y-1 animate-in fade-in-0 slide-in-from-bottom-4 delay-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium">Completions</CardTitle>
                 <div className="p-2 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors">

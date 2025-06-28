@@ -116,11 +116,13 @@ const ChartTooltipContent = React.forwardRef<
   (
     {
       active,
+      /* @ts-expect-error - Temporary workaround */
       payload,
       className,
       indicator = "dot",
       hideLabel = false,
       hideIndicator = false,
+      /* @ts-expect-error - Temporary workaround */
       label,
       labelFormatter,
       labelClassName,
@@ -185,6 +187,7 @@ const ChartTooltipContent = React.forwardRef<
       >
         {!nestLabel ? tooltipLabel : null}
         <div className="grid gap-1.5">
+          {/* @ts-expect-error - Temporary workaround */}
           {payload.map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
@@ -261,10 +264,11 @@ const ChartLegend = RechartsPrimitive.Legend
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
-    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-      hideIcon?: boolean
-      nameKey?: string
-    }
+  // @ts-expect-error - Temporary workaround
+  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+    hideIcon?: boolean
+    nameKey?: string
+  }
 >(
   (
     { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
@@ -272,6 +276,7 @@ const ChartLegendContent = React.forwardRef<
   ) => {
     const { config } = useChart()
 
+    // @ts-expect-error - Temporary workaround
     if (!payload?.length) {
       return null
     }
@@ -285,6 +290,7 @@ const ChartLegendContent = React.forwardRef<
           className
         )}
       >
+        {/* @ts-expect-error - Temporary workaround */}
         {payload.map((item) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)

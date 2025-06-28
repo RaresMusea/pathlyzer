@@ -3,26 +3,24 @@
 import { WeeklyActivityEntry } from "@/types/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { TrendingUp } from "lucide-react";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
+import { Tooltip as RechartsTooltip } from "recharts";
+import { ChartContainer } from "@/components/ui/chart"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { formatSecondsToTimeReadable, getCurrentWeekRange } from "@/lib/TimeUtils";
 import { TooltipProps } from "recharts";
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
-interface CustomTooltipPayload {
-    name: string;
-    value: number;
-    color?: string;
-    dataKey?: string;
-    payload: WeeklyActivityEntry;
-}
-
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
     active?: boolean;
-    payload?: CustomTooltipPayload[];
+    payload?: {
+        name: string;
+        value: number;
+        payload: WeeklyActivityEntry;
+        color: string;
+        dataKey: string;
+    }[];
     label?: string;
 }
-
 
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
@@ -42,7 +40,6 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     }
     return null
 }
-
 export const WeeklyLearningActivityChart = ({ weeklyActivity }: { weeklyActivity: WeeklyActivityEntry[] }) => {
     return (
         <Card className="w-full max-w-4xl sm:w-full mx-auto hover:shadow-lg transition-all animate-in fade-in-0 slide-in-from-left-4 duration-1000">
@@ -80,7 +77,7 @@ export const WeeklyLearningActivityChart = ({ weeklyActivity }: { weeklyActivity
                             <BarChart data={weeklyActivity} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                                 <ChartTooltip content={<CustomTooltip />} />
+                                <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted))' }} />
                                 <Bar
                                     dataKey="sessions"
                                     fill="var(--color-sessions)"
@@ -90,6 +87,12 @@ export const WeeklyLearningActivityChart = ({ weeklyActivity }: { weeklyActivity
                                 <Bar
                                     dataKey="duration"
                                     fill="var(--color-duration)"
+                                    radius={[4, 4, 0, 0]}
+                                    className="hover:opacity-80 transition-opacity"
+                                />
+                                <Bar
+                                    dataKey="xpGained"
+                                    fill="var(--color-xpGained)"
                                     radius={[4, 4, 0, 0]}
                                     className="hover:opacity-80 transition-opacity"
                                 />
