@@ -401,5 +401,10 @@ export interface SkilsDistributionDto {
     percent: number;
 }
 
+export interface MonthlyXpProgressDto {
+  month: string;
+  xp: number;
+  level: number;
+}
 
 // #endregion

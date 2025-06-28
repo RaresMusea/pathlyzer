@@ -32,7 +32,7 @@ export const XpCard = ({ xp, level }: { xp: number, level: number }) => {
                     <div className="h-2 bg-muted rounded-full flex-1">
                         <div className="h-2 bg-yellow-500 rounded-full transition-all duration-1000 ease-out" style={{ width: `${progressPercentage}%` }}></div>
                     </div>
-                    <span className="text-xs text-muted-foreground">{Math.floor(progressPercentage)}% until reaching level {level + 1}</span>
+                    <span className="text-xs text-muted-foreground">{100 - Math.floor(progressPercentage)}% until reaching level {level + 1}</span>
                 </div>
             </CardContent>
         </Card>

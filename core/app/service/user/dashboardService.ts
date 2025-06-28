@@ -1,8 +1,9 @@
-import { dayLabels } from "@/lib/TimeUtils";
+import { dayLabels, monthNames } from "@/lib/TimeUtils";
+import { getXpThreshold } from "@/lib/UserUtils";
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
-import { SkilsDistributionDto, UserLearningCompletionDto, WeeklyActivityEntry } from "@/types/types";
+import { MonthlyXpProgressDto, SkilsDistributionDto, UserLearningCompletionDto, WeeklyActivityEntry } from "@/types/types";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
@@ -171,4 +172,69 @@ export const getSkillsDistribution = cache(async (): Promise<SkilsDistributionDt
     });
 
     return formatted;
+});
+
+export const getMonthlyXpProgress = cache(async (): Promise<MonthlyXpProgressDto[]> => {
+    const userId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!userId) {
+        redirect(DEFAULT_LOGIN_REDIRECT);
+    }
+
+    const currentYear = new Date().getFullYear();
+
+    const lessonProgress = await db.lessonProgress.findMany({
+        where: {
+            userId,
+            completed: true,
+            accessedAt: {
+                gte: new Date(`${currentYear}-01-01T00:00:00Z`),
+                lte: new Date(`${currentYear}-12-31T23:59:59Z`)
+            }
+        },
+        include: {
+            lesson: {
+                include: {
+                    Quiz: {
+                        include: {
+                            questions: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const xpByMonth = new Map<number, number>();
+
+    lessonProgress.forEach(progress => {
+        const monthIdx = progress.accessedAt.getMonth(); // 0-11
+
+        const totalXpForLesson = progress.lesson?.Quiz?.questions.reduce((acc, q) => acc + q.rewardXp, 0) || 0;
+
+        xpByMonth.set(monthIdx, (xpByMonth.get(monthIdx) || 0) + totalXpForLesson);
+    });
+
+    let cumulativeXp = 0;
+    const monthlyProgress: MonthlyXpProgressDto[] = [];
+
+    const currentMonthIdx = new Date().getMonth();
+
+    for (let i = 0; i < currentMonthIdx + 1; i++) {
+        const xpThisMonth = xpByMonth.get(i) || 0;
+        cumulativeXp += xpThisMonth;
+
+        let level = 1;
+        while (getXpThreshold(level + 1) <= cumulativeXp) {
+            level++;
+        }
+
+        monthlyProgress.push({
+            month: monthNames[i],
+            xp: cumulativeXp,
+            level
+        });
+    }
+
+    return monthlyProgress;
 });

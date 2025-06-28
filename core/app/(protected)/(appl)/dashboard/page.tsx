@@ -1,11 +1,12 @@
 import { getCurrentUserLearningDurationTotal, getLongestLearningStreak } from "@/app/service/learning/learning-session/learningSessionService";
 import { getUserCooldown } from "@/app/service/user/cooldownService";
-import { getSkillsDistribution, getUserCompletions, getWeeklyLearningActivity } from "@/app/service/user/dashboardService";
+import { getMonthlyXpProgress, getSkillsDistribution, getUserCompletions, getWeeklyLearningActivity } from "@/app/service/user/dashboardService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { auth } from "@/auth";
 import { CompletionsCard } from "@/components/dashboard/CompletionsCard";
 import { LearningTimeCard } from "@/components/dashboard/LearningTimeCard";
 import { LivesCard } from "@/components/dashboard/LivesCard";
+import { MonthlyXpProgressChart } from "@/components/dashboard/MonthlyXpProgressChart";
 import { SkillsDistributionPieChart } from "@/components/dashboard/SkillsDistributionPieChart";
 import { WeeklyLearningActivityChart } from "@/components/dashboard/WeeklyLearningActivityChart";
 import { XpCard } from "@/components/dashboard/XpCard";
@@ -13,7 +14,7 @@ import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { DashboardLoadError } from "@/components/misc/errors/DashboardLoadError";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
-import { SkilsDistributionDto, UserLearningCompletionDto, UserStatsDto, WeeklyActivityEntry } from "@/types/types";
+import { MonthlyXpProgressDto, SkilsDistributionDto, UserLearningCompletionDto, UserStatsDto, WeeklyActivityEntry } from "@/types/types";
 import { UserCooldown } from "@prisma/client";
 import { redirect } from "next/navigation";
 
@@ -33,6 +34,7 @@ export default async function DashboardPage() {
     const userCompletions: UserLearningCompletionDto = await getUserCompletions();
     const weeklyLearningActivity: WeeklyActivityEntry[] = await getWeeklyLearningActivity();
     const skillsDistribution: SkilsDistributionDto[] = await getSkillsDistribution();
+    const monthlyXpProgress: MonthlyXpProgressDto[] = await getMonthlyXpProgress();
 
     if (!user || !user.user) {
         redirect(UNAUTHORIZED_REDIRECT);
@@ -44,7 +46,7 @@ export default async function DashboardPage() {
 
     return (
         <PageTransition>
-            <div className="container mx-auto font-nunito px-4 space-y-8">
+            <div className="container mx-auto font-nunito px-4 mb-6 space-y-8">
                 <div>
                     <h1 className="text-3xl px-6 font-semibold mb-0 pb-0 space-y-0">Hello, {formatUserName(user.user.name)}! 👋</h1>
                     <p className="font-normal font-nunito px-6 space-y-0">Here&apos;a summary of your learning progress.</p>
@@ -58,16 +60,6 @@ export default async function DashboardPage() {
                         <LearningTimeCard learningTime={totalLearningTime} longestStreak={longestLearningStreak} />
                         <CompletionsCard userCompletions={userCompletions} />
                     </div>
-                    {/* <div className="grid gap-8 lg:grid-cols-2">
-                        <div className="grid gap-8 md:grid-cols-2">
-                            <div className="col-span-full w-[380px] md:w-full" >
-                                <WeeklyLearningActivityChart weeklyActivity={weeklyLearningActivity} />
-                            </div>
-                            <div className="col-span-full w-[380px] md:w-full" >
-                                <SkillsDistributionPieChart skillsDistribution={skillsDistribution} />
-                            </div>
-                        </div>
-                    </div> */}
                     <div className="grid gap-8 md:grid-cols-2">
                         <div className="w-[380px] md:w-full">
                             <WeeklyLearningActivityChart weeklyActivity={weeklyLearningActivity} />
@@ -75,6 +67,10 @@ export default async function DashboardPage() {
                         <div className="w-[380px] md:w-full">
                             <SkillsDistributionPieChart skillsDistribution={skillsDistribution} />
                         </div>
+                    </div>
+
+                    <div className="grid gap-8 md:grid-cols-2 pb-4">
+                        <MonthlyXpProgressChart monthlyXpProgress={monthlyXpProgress} />
                     </div>
                 </div>
             </div>
