@@ -115,6 +115,16 @@ export const getLessonById = cache(async (lessonId: string): Promise<LessonDto |
     return lesson ?? null;
 });
 
+export const getLessonByIdUser = cache(async (lessonId: string): Promise<LessonDto | null> => {
+    if (!await isValidSession()) {
+        throw new Error('Unauthorized!');
+    }
+
+    const lesson: LessonDto | null = await db.lesson.findUnique({ where: { id: lessonId }, select: { id: true, title: true, description: true, order: true } });
+
+    return lesson ?? null;
+});
+
 export const deleteLesson = async (lessonId: string): Promise<boolean> => {
     if (!await isValidAdminSession()) {
         throw new Error('Unauthorized!');

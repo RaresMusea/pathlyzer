@@ -4,15 +4,16 @@ import { Pathgrid } from "@/components/hero-section/Pathgrid";
 import CycleText from "../ui/cycle-text";
 import { TechCloud } from "./TechCloud";
 import { InviewType, InViewWrapper } from "./InView";
-import { TabsDemo } from "./TabsDemo";
 import { SpreadableCards } from "./SpreadableCards";
 import { Session } from "next-auth";
+import { CodeGroup } from "../learning/courses/course-preview/code-section-preview/CodeGroup";
+import { demoGroup } from "@/exporters/CodeExporterHomepage";
 
-export const Homepage = ({session}: {session: Session | null}) => {
+export const Homepage = ({ session }: { session: Session | null }) => {
 
     return (
         <main className="bg-background">
-            <Pathgrid session={session}/>
+            <Pathgrid session={session} />
             <div className="flex justify-center items-center flex-col">
                 <InViewWrapper type={InviewType.NORMAL}>
                     <div className="w-full mt-5">
@@ -23,7 +24,11 @@ export const Homepage = ({session}: {session: Session | null}) => {
 
                 <InViewWrapper type={InviewType.NORMAL}>
                     <p className="text-center my-5 mx-4 font-nunito text-base sm:text-base md:text-lg lg:text-lg xl:text-xl">For each learning path, we provide meaningful explanations, along with examples and code snippets in order to enchance and also facilitate your experience!</p>
-                    <TabsDemo />
+
+                    <InViewWrapper type={InviewType.NORMAL}>
+                        <CodeGroup id={0} blocks={demoGroup}></CodeGroup>
+                    </InViewWrapper>
+
                     <p className="font-nunito mt-10 mx-3 font-bold text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">The snippets above may look scary at first, don&apos;t they?</p>
                     <p className="font-nunito mt-10 mx-3 font-bold text-center text-base sm:text-base md:text-lg lg:text-xl xl:text-2xl">No need to worry — Pathlyzer is built to empower both novices and experts.</p>
                     <p className="font-nunito mt-10 mx-3 font-bold text-center text-base sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-8">How we will do that? Click on the card below to learn more.</p>

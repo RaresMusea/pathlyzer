@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 import { useGamification } from "@/context/GamificationContext";
 import { getXpThreshold } from "@/lib/UserUtils";
-
+import { formatTime } from "@/lib/TimeUtils";
+import { useCooldown } from "@/hooks/useCooldown";
 
 export const UserProgress = () => {
-    const { lives, xp, level } = useGamification();
+    const { lives, xp, level, setLives } = useGamification();
+    const {remainingCooldown} = useCooldown(lives, setLives);
 
     return (
         <Card>
@@ -16,17 +18,16 @@ export const UserProgress = () => {
                 <CardTitle className="text-xl">Your progress</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-                {/* Lives */}
+
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <h3 className="font-medium flex items-center">
                             <Heart className="mr-2 h-5 w-5 text-red-500" />
                             Lifes
                         </h3>
-                        <span className="font-bold">
-                            {lives}/{5}
-                        </span>
+                        <span className="font-bold">{lives}/5</span>
                     </div>
+
                     <div className="flex gap-1.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                             <Heart
@@ -35,10 +36,19 @@ export const UserProgress = () => {
                             />
                         ))}
                     </div>
-                    <p className="text-xs text-muted-foreground">Regain life points by completing previous sections of a course</p>
+
+                    {lives === 0 && remainingCooldown > 0 && (
+                        <>
+                            <p className="text-xs italic text-yellow-600">
+                                Next life in {formatTime(remainingCooldown)}
+                            </p>
+                            <p className="text-xs text-muted-foreground text-justify">
+                                Regain life points by completing lesson practice modes, by completing the last quizzes of a unit or by waiting for the cooldown to expire.
+                            </p>
+                        </>
+                    )}
                 </div>
 
-                {/* XP */}
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <h3 className="font-medium flex items-center">
@@ -49,7 +59,9 @@ export const UserProgress = () => {
                             {xp}/{getXpThreshold(level + 1)}
                         </span>
                     </div>
+
                     <Progress value={(xp / getXpThreshold(level + 1)) * 100} className="h-2" />
+
                     <div className="flex justify-between items-center text-xs text-muted-foreground">
                         <div className="flex items-center">
                             <Star className="mr-1 h-4 w-4 text-yellow-500 fill-yellow-500" />
@@ -61,7 +73,8 @@ export const UserProgress = () => {
                         </div>
                     </div>
                 </div>
+
             </CardContent>
         </Card>
-    )
-}
+    );
+};

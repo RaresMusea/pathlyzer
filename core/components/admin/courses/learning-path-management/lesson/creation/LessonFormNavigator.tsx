@@ -73,7 +73,7 @@ export const LessonFormNavigator = () => {
                         {
                             isTransitioning ?
                                 <LoadingButton type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] opacity-60 text-white rounded-md">Saving lesson...</LoadingButton> :
-                                <Button type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white rounded-md">
+                                <Button type="submit" className="px-4 py-2 bg-[var(--pathlyzer-table-border)] hover:bg-[var(--pathlyzer)] text-white hover:text-white rounded-md">
                                     <Save className="h-4 w-4 mr-2" />
                                     Save lesson
                                 </Button>
