@@ -11,7 +11,9 @@ export const XpCard = ({ xp, level }: { xp: number, level: number }) => {
 
     const xpSinceLevelStart = xp - currentLevelXp;
     const xpNeededForNextLevel = nextLevelXp - currentLevelXp;
-    const progressPercentage = xpNeededForNextLevel > 0 ? Math.min((xpSinceLevelStart / xpNeededForNextLevel) * 100, 100) : 0;
+    const progressPercentage = xpNeededForNextLevel > 0
+  ? Math.min(Math.max((xpSinceLevelStart / xpNeededForNextLevel) * 100, 0), 100)
+  : 0;
 
     return (
         <Card className="group hover:shadow-lg h-auto min-h-fit dark:bg-muted/50 font-nunito transition-all duration-300 hover:-translate-y-1 animate-in fade-in-0 slide-in-from-bottom-4">

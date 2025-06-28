@@ -394,5 +394,12 @@ export interface WeeklyActivityEntry {
   lessonsCompleted: number;
 }
 
+export interface SkilsDistributionDto {
+    name: string;
+    value: number;
+    color: string;
+    percent: number;
+}
+
 
 // #endregion

@@ -1,18 +1,19 @@
 import { getCurrentUserLearningDurationTotal, getLongestLearningStreak } from "@/app/service/learning/learning-session/learningSessionService";
 import { getUserCooldown } from "@/app/service/user/cooldownService";
-import { getUserCompletions, getWeeklyLearningActivity } from "@/app/service/user/dashboardService";
+import { getSkillsDistribution, getUserCompletions, getWeeklyLearningActivity } from "@/app/service/user/dashboardService";
 import { getUserStats } from "@/app/service/user/userStatsService";
 import { auth } from "@/auth";
 import { CompletionsCard } from "@/components/dashboard/CompletionsCard";
 import { LearningTimeCard } from "@/components/dashboard/LearningTimeCard";
 import { LivesCard } from "@/components/dashboard/LivesCard";
+import { SkillsDistributionPieChart } from "@/components/dashboard/SkillsDistributionPieChart";
 import { WeeklyLearningActivityChart } from "@/components/dashboard/WeeklyLearningActivityChart";
 import { XpCard } from "@/components/dashboard/XpCard";
 import { PageTransition } from "@/components/misc/animations/PageTransition";
 import { DashboardLoadError } from "@/components/misc/errors/DashboardLoadError";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { UNAUTHORIZED_REDIRECT } from "@/routes";
-import { UserLearningCompletionDto, UserStatsDto, WeeklyActivityEntry } from "@/types/types";
+import { SkilsDistributionDto, UserLearningCompletionDto, UserStatsDto, WeeklyActivityEntry } from "@/types/types";
 import { UserCooldown } from "@prisma/client";
 import { redirect } from "next/navigation";
 
@@ -31,6 +32,7 @@ export default async function DashboardPage() {
     const longestLearningStreak: number = await getLongestLearningStreak();
     const userCompletions: UserLearningCompletionDto = await getUserCompletions();
     const weeklyLearningActivity: WeeklyActivityEntry[] = await getWeeklyLearningActivity();
+    const skillsDistribution: SkilsDistributionDto[] = await getSkillsDistribution();
 
     if (!user || !user.user) {
         redirect(UNAUTHORIZED_REDIRECT);
@@ -56,12 +58,22 @@ export default async function DashboardPage() {
                         <LearningTimeCard learningTime={totalLearningTime} longestStreak={longestLearningStreak} />
                         <CompletionsCard userCompletions={userCompletions} />
                     </div>
-                    {/* <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" /> */}
-                    <div className="grid gap-8 lg:grid-cols-2">
+                    {/* <div className="grid gap-8 lg:grid-cols-2">
                         <div className="grid gap-8 md:grid-cols-2">
                             <div className="col-span-full w-[380px] md:w-full" >
                                 <WeeklyLearningActivityChart weeklyActivity={weeklyLearningActivity} />
                             </div>
+                            <div className="col-span-full w-[380px] md:w-full" >
+                                <SkillsDistributionPieChart skillsDistribution={skillsDistribution} />
+                            </div>
+                        </div>
+                    </div> */}
+                    <div className="grid gap-8 md:grid-cols-2">
+                        <div className="w-[380px] md:w-full">
+                            <WeeklyLearningActivityChart weeklyActivity={weeklyLearningActivity} />
+                        </div>
+                        <div className="w-[380px] md:w-full">
+                            <SkillsDistributionPieChart skillsDistribution={skillsDistribution} />
                         </div>
                     </div>
                 </div>

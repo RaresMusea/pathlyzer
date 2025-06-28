@@ -2,9 +2,16 @@ import { dayLabels } from "@/lib/TimeUtils";
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
-import { UserLearningCompletionDto, WeeklyActivityEntry } from "@/types/types";
+import { SkilsDistributionDto, UserLearningCompletionDto, WeeklyActivityEntry } from "@/types/types";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+
+const COLORS: Record<string, string> = {
+    "Blank": "#3b82f6",
+    "Java": "#8b5cf6",
+    "C++": "#10b981",
+    "Typescript": "#6b7280",
+};
 
 export const getUserCompletions = cache(async (): Promise<UserLearningCompletionDto> => {
     const userId = await getCurrentlyLoggedInUserIdApiRoute();
@@ -70,7 +77,7 @@ export const getUserCompletions = cache(async (): Promise<UserLearningCompletion
 
 export const getWeeklyLearningActivity = async (): Promise<WeeklyActivityEntry[]> => {
     const userId = await getCurrentlyLoggedInUserIdApiRoute();
-    if (!userId) return [];
+    if (!userId) redirect(DEFAULT_LOGIN_REDIRECT);
 
     const now = new Date();
     const startOfWeek = new Date(now);
@@ -131,3 +138,37 @@ export const getWeeklyLearningActivity = async (): Promise<WeeklyActivityEntry[]
     const ordered = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return ordered.map(label => daysMap[label]);
 };
+
+export const getSkillsDistribution = cache(async (): Promise<SkilsDistributionDto[]> => {
+    const userId = await getCurrentlyLoggedInUserIdApiRoute();
+
+    if (!userId) {
+        redirect(DEFAULT_LOGIN_REDIRECT);
+    }
+
+    const skillsDistribution = await db.project.groupBy({
+        by: ['template'],
+        where: {
+            ownerId: userId,
+        },
+        _count: {
+            template: true,
+        }
+    });
+
+    const totalCount = skillsDistribution.reduce((sum, item) => sum + item._count.template, 0);
+
+    const formatted = skillsDistribution.map(item => {
+        const count = item._count.template;
+        const percent = totalCount > 0 ? (count / totalCount) * 100 : 0;
+
+        return {
+            name: item.template ?? "Blank",
+            value: count,
+            percent,
+            color: COLORS[item.template] ?? COLORS["Blank"],
+        };
+    });
+
+    return formatted;
+});
