@@ -6,17 +6,13 @@ import { Portal } from "./ModalPortal";
 import { useEffect, useState } from "react";
 import { BookOpen, Heart } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useExamination } from "@/context/ExaminationContext";
 import { usePathname, useRouter } from "next/navigation";
 import axios from "axios";
-import { set } from "lodash";
 
 export const OutOfLivesModalGeneric = ({
     setVisibility,
-    visibility,
     remainingTime
 }: {
-    visibility: boolean;
     setVisibility: (visible: boolean) => void;
     remainingTime: number;
 }) => {

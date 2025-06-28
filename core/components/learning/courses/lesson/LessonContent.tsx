@@ -11,7 +11,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { OutOfLivesModalGeneric } from "./OutOfLivesModalGeneric";
 import { useCooldown } from "@/hooks/useCooldown";
 import { useGamification } from "@/context/GamificationContext";
-import { ExaminationProvider } from "@/context/ExaminationContext";
 
 export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats }) => {
     const progressRef = useRef(0);
@@ -83,7 +82,7 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, u
             }
             {
                 outOfLivesModalVisible &&
-                    <OutOfLivesModalGeneric visibility={outOfLivesModalVisible} setVisibility={setOutOfLivesModalVisible} remainingTime={remainingCooldown} />
+                    <OutOfLivesModalGeneric setVisibility={setOutOfLivesModalVisible} remainingTime={remainingCooldown} />
             }
         </>
     )
