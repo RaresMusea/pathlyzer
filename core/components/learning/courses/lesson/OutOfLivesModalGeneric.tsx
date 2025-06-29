@@ -19,8 +19,9 @@ export const OutOfLivesModalGeneric = ({
     const [isVisible, setIsVisible] = useState(true);
     const [showLifeRegenerationAnimation, setShowLifeRegenerationAnimation] = useState(false);
     const [showHeartAnimation, setShowHeartAnimation] = useState(true);
-    const [canPractice, setCanPractice] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(remainingTime);
+    const [canPractice, setCanPractice] = useState(false);;
+    const [cooldownStart] = useState(remainingTime);
+    const [timeLeft, setTimeLeft] = useState(() => remainingTime);
     const theme = useTheme().theme;
     const pathname = usePathname();
     const router = useRouter();
@@ -69,9 +70,9 @@ export const OutOfLivesModalGeneric = ({
         }
     }, [pathname, setCanPractice]);
 
-    useEffect(() => {
-        setTimeLeft(remainingTime);
-    }, [remainingTime]);
+    // useEffect(() => {
+    //     setTimeLeft(remainingTime);
+    // }, [remainingTime]);
 
     useEffect(() => {
         if (timeLeft <= 0) return;
@@ -114,7 +115,7 @@ export const OutOfLivesModalGeneric = ({
         return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
     };
 
-    const progressPercentage = remainingTime > 0 ? ((remainingTime - timeLeft) / remainingTime) * 100 : 100;
+    const progressPercentage = cooldownStart > 0 ? ((cooldownStart - timeLeft) / cooldownStart) * 100 : 100;
 
     return (
         <Portal>
@@ -173,7 +174,7 @@ export const OutOfLivesModalGeneric = ({
                                         >
                                             <div className="text-center mb-6">
                                                 <div className="flex justify-center mb-4">
-                                                    <TimerDisplay timeLeft={timeLeft} totalTime={remainingTime} />
+                                                    <TimerDisplay timeLeft={timeLeft} totalTime={cooldownStart} />
                                                 </div>
 
                                                 <h3 className="text-xl font-semibold mb-2 dark:text-white">Recover a life!</h3>
@@ -207,12 +208,12 @@ export const OutOfLivesModalGeneric = ({
                                                             <span>Recovery progress</span>
                                                             <span>{Math.round(progressPercentage)}%</span>
                                                         </div>
-                                                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden relative">
                                                             <motion.div
-                                                                className="h-full bg-gradient-to-r from-orange-500 to-red-500"
+                                                                className="h-full bg-gradient-to-r from-orange-500 to-red-500 absolute top-0 left-0"
                                                                 initial={{ width: "0%" }}
                                                                 animate={{ width: `${progressPercentage}%` }}
-                                                                transition={{ duration: 0.5 }}
+                                                                transition={{ duration: 1, ease: "linear" }}
                                                             />
                                                         </div>
                                                     </div>
@@ -463,7 +464,8 @@ function LifeRegenAnimation() {
 }
 
 function TimerDisplay({ timeLeft, totalTime }: { timeLeft: number, totalTime: number }) {
-    const progress = totalTime > 0 ? ((totalTime - timeLeft) / totalTime) * 100 : 100
+    const circumference = 2 * Math.PI * 40;
+    const progress = totalTime > 0 ? Math.max(0, ((totalTime - timeLeft) / totalTime) * 100) : 100;
 
     return (
         <div className="relative w-24 h-24">
@@ -477,36 +479,30 @@ function TimerDisplay({ timeLeft, totalTime }: { timeLeft: number, totalTime: nu
                     strokeWidth="8"
                     fill="none"
                     strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 40}`}
-                    strokeDashoffset={`${2 * Math.PI * 40 * (1 - progress / 100)}`}
-                    initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
-                    animate={{ strokeDashoffset: 2 * Math.PI * 40 * (1 - progress / 100) }}
-                    transition={{ duration: 0.5 }}
+                    strokeDasharray={circumference}
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: circumference * (1 - progress / 100) }}
+                    transition={{ duration: 1 }}
                 />
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <motion.div
-                    className="text-xl font-bold text-orange-600"
-                    animate={{ scale: timeLeft % 60 === 0 && timeLeft > 0 ? [1, 1.2, 1] : 1 }}
+                    key={timeLeft}
+                    initial={{ scale: 1.2 }}
+                    animate={{ scale: 1 }}
                     transition={{ duration: 0.3 }}
+                    className="text-xl font-bold text-orange-600"
                 >
                     {Math.floor(timeLeft / 60)}
                 </motion.div>
-                <div className="text-xs text-gray-500">{Math.floor(timeLeft / 60) === 1 ? "min" : "min"}</div>
+                <div className="text-xs text-gray-500">
+                    {Math.floor(timeLeft / 60) === 1 ? "min" : "mins"}
+                </div>
             </div>
-
-            <motion.div
-                className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1"
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "loop" }}
-            >
-                <Heart className="h-3 w-3 text-white fill-white" />
-            </motion.div>
         </div>
-    )
+    );
 }
-
 function BrokenHeartAnimation({ theme }: { theme: string }) {
     return (
         <div className="relative w-20 h-20">
