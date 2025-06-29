@@ -6,6 +6,8 @@ import { Check, Code, Package, Server } from "lucide-react";
 import Image from "next/image";
 import { TerminalLayout } from "./TerminalLayout";
 import { AnimatePresence, motion } from "framer-motion";
+import { getLogoBasedOnTech } from "@/exporters/LogoExporter";
+import { useTheme } from "next-themes";
 
 const creationWizardVariants = {
     hidden: {
@@ -37,8 +39,8 @@ const creationWizardVariants = {
 
 export const ProjectCreationProgressWizard = () => {
     const { creating, creationComplete, showProgressWizard, loadingStep, projectConfig, getSelectedTemplate, progress, loadingDetails } = useProjectCreator();
-
-    console.log(projectConfig);
+    const theme = useTheme().theme || 'light';
+    
 
     return (
         <>
@@ -150,7 +152,7 @@ export const ProjectCreationProgressWizard = () => {
                                             <div className="w-5 h-5 relative mt-0.5">
                                                 {projectConfig.template && (
                                                     <Image
-                                                        src={getSelectedTemplate()?.logo || "/placeholder.svg?height=20&width=20"}
+                                                        src={getLogoBasedOnTech(getSelectedTemplate()?.label || 'Blank', theme) || "/placeholder.svg?height=20&width=20"}
                                                         alt={getSelectedTemplate()?.label || ""}
                                                         fill
                                                         className="object-contain"
