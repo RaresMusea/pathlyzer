@@ -34,7 +34,7 @@ export default async function ReadLesson({ params }: { params: Promise<{ courseI
         <PageTransition>
             <div className="container mx-auto px-4 space-y-8">
                 <GamificationProvider initialUserStats={userStats}>
-                    <LessonContent lessonId={lessonId} lessonContent={lessonContent} userStats={userStats} userLearningProgress={userLearningProgress} userCooldownReason={userCooldown?.reason} cooldownMinutes={userCooldown?.durationMinutes} />
+                    <LessonContent lessonId={lessonId} lessonContent={lessonContent} userStats={userStats} userLearningProgress={userLearningProgress} userCooldownReason={userCooldown?.reason} />
                 </GamificationProvider>
             </div>
         </PageTransition>

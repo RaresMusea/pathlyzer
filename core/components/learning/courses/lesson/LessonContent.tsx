@@ -14,7 +14,7 @@ import { useGamification } from "@/context/GamificationContext";
 import { CooldownReason } from "@prisma/client";
 import { PenaltyModalGeneric } from "./PenaltyModalGeneric";
 
-export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats, userCooldownReason, cooldownMinutes }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats, userCooldownReason?: CooldownReason, cooldownMinutes?: number }) => {
+export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats, userCooldownReason }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats, userCooldownReason?: CooldownReason }) => {
     const progressRef = useRef(0);
     const pathName = usePathname();
     const { lives, setLives } = useGamification();
@@ -96,7 +96,7 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, u
 
             {
                 fraudModalVisible &&
-                <PenaltyModalGeneric onClose={() => setFraudModalVisible(false)} cooldownMinutes={remainingCooldown} cooldownReason={userCooldownReason} />
+                <PenaltyModalGeneric onClose={() => setFraudModalVisible(false)} cooldownMinutes={remainingCooldown} />
             }
         </>
     )

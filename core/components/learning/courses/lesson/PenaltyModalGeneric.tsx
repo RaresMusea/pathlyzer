@@ -9,7 +9,7 @@ import { formatTime } from "@/lib/TimeUtils";
 import { Button } from "@/components/ui/button";
 import { CooldownReason } from "@prisma/client";
 
-export const PenaltyModalGeneric = ({ onClose, cooldownReason, cooldownMinutes }: { onClose: () => void, cooldownReason?: CooldownReason, cooldownMinutes?: number }) => {
+export const PenaltyModalGeneric = ({ onClose, cooldownMinutes }: { onClose: () => void, cooldownMinutes?: number }) => {
     const [isVisible, setIsVisible] = useState(true);
     const [showAnimation, setShowAnimation] = useState(true);
     const [timeLeft, setTimeLeft] = useState(cooldownMinutes ? cooldownMinutes : 0);
