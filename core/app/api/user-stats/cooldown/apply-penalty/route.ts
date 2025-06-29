@@ -5,6 +5,7 @@ import { CooldownReason, UserCooldown } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
+    console.log(request);
     const currentUserId = await getCurrentlyLoggedInUserIdApiRoute();
 
     if (!currentUserId) {

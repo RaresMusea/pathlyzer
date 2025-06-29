@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertOctagon, Ban, BookOpen, Clock, Heart } from "lucide-react";
 import { formatTime } from "@/lib/TimeUtils";
 import { Button } from "@/components/ui/button";
-import { CooldownReason } from "@prisma/client";
 
 export const PenaltyModalGeneric = ({ onClose, cooldownMinutes }: { onClose: () => void, cooldownMinutes?: number }) => {
     const [isVisible, setIsVisible] = useState(true);
