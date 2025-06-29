@@ -1,16 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { formatTime } from "@/lib/TimeUtils";
+import { useEffect, useState } from "react";
+import { Portal } from "./ModalPortal";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertOctagon, Ban, BookOpen, Clock, Heart } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { formatTime } from "@/lib/TimeUtils";
+import { Button } from "@/components/ui/button";
+import { CooldownReason } from "@prisma/client";
 
-export const PenaltyModal = ({ onClose }: { onClose: () => void }) => {
+export const PenaltyModalGeneric = ({ onClose, cooldownReason, cooldownMinutes }: { onClose: () => void, cooldownReason?: CooldownReason, cooldownMinutes?: number }) => {
     const [isVisible, setIsVisible] = useState(true);
     const [showAnimation, setShowAnimation] = useState(true);
-    const [timeLeft, setTimeLeft] = useState(60 * 60);
+    const [timeLeft, setTimeLeft] = useState(cooldownMinutes ? cooldownMinutes : 0);
     const router = useRouter();
     const pathname = usePathname();
 
@@ -52,150 +54,151 @@ export const PenaltyModal = ({ onClose }: { onClose: () => void }) => {
     const progressPercentage = ((60 * 60 - timeLeft) / (60 * 60)) * 100;
 
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.div
-                    className="font-nunito fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                >
+        <Portal>
+            <AnimatePresence>
+                {isVisible && (
                     <motion.div
-                        className="bg-background rounded-xl shadow-2xl overflow-hidden max-w-md w-full border border-border"
-                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="font-nunito fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        <div className="bg-gradient-to-r from-red-600 to-red-800 py-6 px-8 text-center">
-                            <motion.div
-                                initial={{ rotate: 0, scale: 0.8 }}
-                                animate={{ rotate: [0, -10, 10, -10, 0], scale: 1 }}
-                                transition={{ duration: 0.7, times: [0, 0.25, 0.5, 0.75, 1] }}
-                            >
-                                <AlertOctagon className="h-10 w-10 text-white mx-auto" />
-                            </motion.div>
-                            <h2 className="text-2xl font-bold text-white mt-2">Penalty!</h2>
-                            <p className="text-red-100 dark:text-red-200 mt-1">
-                                You exited the quiz too many times.
-                            </p>
-                        </div>
-
-                        <div className="p-8">
-                            <AnimatePresence mode="wait">
-                                {showAnimation ? (
-                                    <motion.div
-                                        key="animation"
-                                        className="flex justify-center mb-6"
-                                        initial={{ opacity: 1 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        <CountdownExplosionAnimation />
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        key="penalty-details"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        <div className="flex justify-center mb-6">
-                                            <PenaltyTimerDisplay timeLeft={timeLeft} totalTime={60 * 60} />
-                                        </div>
-
-                                        <div className="text-center mb-6">
-                                            <h3 className="text-xl font-semibold mb-4 dark:text-white">
-                                                Fraud penalty
-                                            </h3>
-                                            <p className="text-muted-foreground mb-4">
-                                                You left the quiz 3 times, indicating possible cheating
-                                                attempts. This behavior is not allowed and has been
-                                                penalized.
-                                            </p>
-
-                                            <div className="bg-muted border border-red-400 dark:border-red-600 rounded-lg p-4 mb-4">
-                                                <div className="grid grid-cols-1 gap-3 text-center">
-                                                    <div className="flex items-center justify-center">
-                                                        <Heart className="h-5 w-5 text-red-500 mr-2" />
-                                                        <span className="font-medium text-red-700 dark:text-red-300">
-                                                            All lives lost
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center justify-center">
-                                                        <Clock className="h-5 w-5 text-orange-500 mr-2" />
-                                                        <span className="font-medium text-orange-700 dark:text-orange-300">
-                                                            Cooldown: {timeLeft > 0 ? formatTime(timeLeft) : "Expired"}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center justify-center">
-                                                        <Ban className="h-5 w-5 text-gray-500 mr-2" />
-                                                        <span className="font-medium text-gray-700 dark:text-gray-300">
-                                                            Practice disabled
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {timeLeft > 0 && (
-                                                <div className="mb-4">
-                                                    <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                                                        <span>Penalty progress</span>
-                                                        <span>{Math.round(progressPercentage)}%</span>
-                                                    </div>
-                                                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                                        <motion.div
-                                                            className="h-full bg-gradient-to-r from-red-500 to-orange-500"
-                                                            initial={{ width: "0%" }}
-                                                            animate={{ width: `${progressPercentage}%` }}
-                                                            transition={{ duration: 0.5 }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            <div className="bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-600 rounded-lg p-4">
-                                                <div className="flex items-center justify-center mb-2">
-                                                    <BookOpen className="h-5 w-5 text-amber-600 dark:text-amber-300 mr-2" />
-                                                    <span className="font-medium text-amber-800 dark:text-amber-200">
-                                                        Active restrictions
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm text-amber-700 dark:text-amber-300">
-                                                    During this penalty, you cannot use practice mode to
-                                                    reduce waiting time. You&apos;ll need to wait{" "}
-                                                    {timeLeft > 0 ? formatTime(timeLeft) : "0:00"} to regain
-                                                    a life.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: showAnimation ? 0.7 : 0.3 }}
-                            >
-                                <Button
-                                    onClick={handleClose}
-                                    className="w-full bg-red-600 hover:bg-red-700 text-white"
-                                    size="lg"
-                                    disabled={showAnimation}
+                        <motion.div
+                            className="bg-background rounded-xl shadow-2xl overflow-hidden max-w-md w-full border border-border"
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        >
+                            <div className="bg-gradient-to-r from-red-600 to-red-800 py-6 px-8 text-center">
+                                <motion.div
+                                    initial={{ rotate: 0, scale: 0.8 }}
+                                    animate={{ rotate: [0, -10, 10, -10, 0], scale: 1 }}
+                                    transition={{ duration: 0.7, times: [0, 0.25, 0.5, 0.75, 1] }}
                                 >
-                                    {timeLeft > 0 ? "Back to lesson" : "Retry quiz"}
-                                </Button>
-                            </motion.div>
-                        </div>
-                    </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
-};
+                                    <AlertOctagon className="h-10 w-10 text-white mx-auto" />
+                                </motion.div>
+                                <h2 className="text-2xl font-bold text-white mt-2">Penalty!</h2>
+                                <p className="text-red-100 dark:text-red-200 mt-1">
+                                    You exited the quiz too many times.
+                                </p>
+                            </div>
 
+                            <div className="p-8">
+                                <AnimatePresence mode="wait">
+                                    {showAnimation ? (
+                                        <motion.div
+                                            key="animation"
+                                            className="flex justify-center mb-6"
+                                            initial={{ opacity: 1 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.5 }}
+                                        >
+                                            <CountdownExplosionAnimation />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="penalty-details"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.5 }}
+                                        >
+                                            <div className="flex justify-center mb-6">
+                                                <PenaltyTimerDisplay timeLeft={timeLeft} totalTime={60 * 60} />
+                                            </div>
+
+                                            <div className="text-center mb-6">
+                                                <h3 className="text-xl font-semibold mb-4 dark:text-white">
+                                                    Fraud penalty
+                                                </h3>
+                                                <p className="text-muted-foreground mb-4">
+                                                    You left the quiz 3 times, indicating possible cheating
+                                                    attempts. This behavior is not allowed and has been
+                                                    penalized.
+                                                </p>
+
+                                                <div className="bg-muted border border-red-400 dark:border-red-600 rounded-lg p-4 mb-4">
+                                                    <div className="grid grid-cols-1 gap-3 text-center">
+                                                        <div className="flex items-center justify-center">
+                                                            <Heart className="h-5 w-5 text-red-500 mr-2" />
+                                                            <span className="font-medium text-red-700 dark:text-red-300">
+                                                                All lives lost
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center justify-center">
+                                                            <Clock className="h-5 w-5 text-orange-500 mr-2" />
+                                                            <span className="font-medium text-orange-700 dark:text-orange-300">
+                                                                Cooldown: {timeLeft > 0 ? formatTime(timeLeft) : "Expired"}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center justify-center">
+                                                            <Ban className="h-5 w-5 text-gray-500 mr-2" />
+                                                            <span className="font-medium text-gray-700 dark:text-gray-300">
+                                                                Practice disabled
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {timeLeft > 0 && (
+                                                    <div className="mb-4">
+                                                        <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                                                            <span>Penalty progress</span>
+                                                            <span>{Math.round(progressPercentage)}%</span>
+                                                        </div>
+                                                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                            <motion.div
+                                                                className="h-full bg-gradient-to-r from-red-500 to-orange-500"
+                                                                initial={{ width: "0%" }}
+                                                                animate={{ width: `${progressPercentage}%` }}
+                                                                transition={{ duration: 0.5 }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                <div className="bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-600 rounded-lg p-4">
+                                                    <div className="flex items-center justify-center mb-2">
+                                                        <BookOpen className="h-5 w-5 text-amber-600 dark:text-amber-300 mr-2" />
+                                                        <span className="font-medium text-amber-800 dark:text-amber-200">
+                                                            Active restrictions
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm text-amber-700 dark:text-amber-300">
+                                                        During this penalty, you cannot use practice mode to
+                                                        reduce waiting time. You&apos;ll need to wait{" "}
+                                                        {timeLeft > 0 ? formatTime(timeLeft) : "0:00"} to regain
+                                                        a life.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: showAnimation ? 0.7 : 0.3 }}
+                                >
+                                    <Button
+                                        onClick={handleClose}
+                                        className="w-full bg-red-600 hover:bg-red-700 text-white"
+                                        size="lg"
+                                        disabled={showAnimation}
+                                    >
+                                        {timeLeft > 0 ? "Back to lesson" : "Retry quiz"}
+                                    </Button>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </Portal>
+    )
+}
 
 function PenaltyTimerDisplay({ timeLeft, totalTime }: { timeLeft: number; totalTime: number }) {
     const progress = ((totalTime - timeLeft) / totalTime) * 100
@@ -231,7 +234,6 @@ function PenaltyTimerDisplay({ timeLeft, totalTime }: { timeLeft: number; totalT
                 <div className="text-xs text-gray-500">{Math.floor(timeLeft / 60) === 1 ? "min" : "min"}</div>
             </div>
 
-            {/* Penalty icon */}
             <motion.div
                 className="absolute -top-2 -right-2 bg-red-500 rounded-full p-2"
                 animate={{ scale: [1, 1.1, 1] }}

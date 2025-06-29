@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
 import { useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
@@ -42,20 +42,33 @@ export const ExaminationComponent = () => {
         submitAnswer
     } = useExamination();
 
-    const [focusLossCount, setFocusLossCount] = useState(0);
+    const penaltyAppliedRef = useRef(false);
     const [cooldownRemaining, setCooldownRemaining] = useState<number | null>(null);
     const { xp, level } = useGamification();
     const [penaltyModalVisible, setPenaltyModalVisible] = useState<boolean>(false);
     const focusLossRef = useRef(0);
 
-    const handleFocusLoss = () => {
-        if (penaltyModalVisible) return;
+    const handleFocusLoss = async () => {
+        if (penaltyModalVisible || penaltyAppliedRef.current) return;
 
         focusLossRef.current += 1;
 
-        if (focusLossRef.current > MAX_FOCUS_LOSSES) {
+        if (focusLossRef.current > MAX_FOCUS_LOSSES && !penaltyAppliedRef.current) {
             setPenaltyModalVisible(true);
+            penaltyAppliedRef.current = true;
             playSound(PENALTY);
+
+            try {
+                const response = await axios.patch(`/api/user-stats/cooldown/apply-penalty`);
+                if (response.status === 200) {
+                    console.log("Penalty applied on server.");
+                } else {
+                    console.warn("Penalty request responded non-200", response);
+                }
+            } catch (err) {
+                console.error("Failed to apply penalty:", err);
+            }
+
         } else {
             openOutOfFocusModal();
         }
@@ -79,7 +92,7 @@ export const ExaminationComponent = () => {
             document.removeEventListener('visibilitychange', handleViewSwitch);
             document.removeEventListener('blur', handleBlur);
         }
-    }, [focusLossCount, handleFocusLoss]);
+    }, [focusLossRef.current, handleFocusLoss]);
 
     useEffect(() => {
         const fetchCooldown = async () => {
@@ -109,7 +122,7 @@ export const ExaminationComponent = () => {
                 }
 
                 {
-                    modals.outOfFocus &&
+                    modals.outOfFocus && !penaltyAppliedRef.current &&
                     <OutOfFocusWarningModal key="outOfFocusWarning" />
                 }
 
