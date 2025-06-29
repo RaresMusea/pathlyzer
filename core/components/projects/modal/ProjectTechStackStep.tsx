@@ -70,7 +70,7 @@ export const ProjectTechStackStep = () => {
                                     <div className="flex items-center">
                                         <div className="w-6 h-6 mr-2 relative">
                                             <Image
-                                                src={getLogoBasedOnTech(getSelectedFramework()?.logo || blankLogo, theme || 'light')}
+                                                src={getLogoBasedOnTech(getSelectedFramework()?.label || blankLogo, theme || 'light')}
                                                 alt={getSelectedFramework()?.label || ""}
                                                 fill
                                                 className="object-contain"
@@ -88,7 +88,7 @@ export const ProjectTechStackStep = () => {
                                         <div className="flex items-center">
                                             <div className="w-6 h-6 mr-2 relative">
                                                 <Image
-                                                    src={getLogoBasedOnTech(framework?.logo || blankLogo, theme || 'light')}
+                                                    src={getLogoBasedOnTech(framework?.label || blankLogo, theme || 'light')}
                                                     alt={framework?.label || ''}
                                                     fill
                                                     className="object-contain"
@@ -111,7 +111,7 @@ export const ProjectTechStackStep = () => {
                             <div className="flex items-center mb-3">
                                 <div className="w-10 h-10 mr-3 relative">
                                     <Image
-                                        src={getLogoBasedOnTech(getSelectedTemplate()?.logo || blankLogo, theme || 'light')}
+                                        src={getLogoBasedOnTech(getSelectedTemplate()?.label || blankLogo, theme || 'light')}
                                         alt={getSelectedTemplate()?.label || ''}
                                         fill
                                         className="object-contain"
@@ -132,7 +132,7 @@ export const ProjectTechStackStep = () => {
                                 <div className="flex items-center mb-3">
                                     <div className="w-10 h-10 mr-3 relative">
                                         <Image
-                                            src={getLogoBasedOnTech(getSelectedFramework()?.logo || blankLogo, theme || 'light')}
+                                            src={getLogoBasedOnTech(getSelectedFramework()?.label || blankLogo, theme || 'light')}
                                             alt={getSelectedFramework()?.label || ""}
                                             fill
                                             className="object-contain"

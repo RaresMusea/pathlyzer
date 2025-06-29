@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const cooldownEnd = new Date(cooldownStart.getTime() + cooldownDurationMs);
     const now = new Date();
 
-    if (now > cooldownEnd) {
+    if (now > cooldownEnd && userStats.lives === 0) {
         try {
             await db.userCooldown.deleteMany({
                 where: {

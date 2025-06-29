@@ -11,15 +11,19 @@ import { usePathname, useRouter } from "next/navigation";
 import { OutOfLivesModalGeneric } from "./OutOfLivesModalGeneric";
 import { useCooldown } from "@/hooks/useCooldown";
 import { useGamification } from "@/context/GamificationContext";
+import { CooldownReason } from "@prisma/client";
+import { PenaltyModalGeneric } from "./PenaltyModalGeneric";
 
-export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats }) => {
+export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, userStats, userCooldownReason }: { lessonId: string, lessonContent: LessonContentDto, userLearningProgress: number, userStats: SummarizedUserStats, userCooldownReason?: CooldownReason }) => {
     const progressRef = useRef(0);
     const pathName = usePathname();
     const { lives, setLives } = useGamification();
     const { remainingCooldown } = useCooldown(lives, setLives);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [outOfLivesModalVisible, setOutOfLivesModalVisible] = useState<boolean>(false);
+    const [fraudModalVisible, setFraudModalVisible] = useState<boolean>(false);
     const router = useRouter();
+
 
     useEffect(() => {
         const container = document.querySelector('.scrollContainer') as HTMLElement;
@@ -51,9 +55,13 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, u
     }, [userLearningProgress]);
 
     const handleQuizTaking = () => {
-        console.log("USER LIVES", userStats.lives);
         if (userStats.lives === 0) {
-            setOutOfLivesModalVisible(true);
+            if (userCooldownReason === CooldownReason.NORMAL) {
+                setOutOfLivesModalVisible(true);
+            }
+            else if (userCooldownReason === CooldownReason.FRAUD) {
+                setFraudModalVisible(true);
+            }
             return;
         }
 
@@ -80,9 +88,15 @@ export const LessonContent = ({ lessonId, lessonContent, userLearningProgress, u
                     </Button>
                 </motion.div>
             }
+
             {
                 outOfLivesModalVisible &&
-                    <OutOfLivesModalGeneric setVisibility={setOutOfLivesModalVisible} remainingTime={remainingCooldown} />
+                <OutOfLivesModalGeneric setVisibility={setOutOfLivesModalVisible} remainingTime={remainingCooldown} />
+            }
+
+            {
+                fraudModalVisible &&
+                <PenaltyModalGeneric onClose={() => setFraudModalVisible(false)} cooldownMinutes={remainingCooldown} />
             }
         </>
     )

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OutOfFocusWarningModal } from "./OutOfFocusWarningModal";
 import { useExamination } from "@/context/ExaminationContext";
 import { QuestionType } from "@prisma/client";
@@ -15,6 +15,9 @@ import { OutOfLivesModal } from "./OutOfLivesModal";
 import { ExaminationCompleteModal } from "./ExaminationCompleteModal";
 import { useGamification } from "@/context/GamificationContext";
 import axios from "axios";
+import { PenaltyModal } from "./PenaltyModal";
+import { playSound } from "@/lib/AudioUtils";
+import { PENALTY } from "@/exporters/AudioExporter";
 
 const MAX_FOCUS_LOSSES: number = 3;
 
@@ -39,22 +42,37 @@ export const ExaminationComponent = () => {
         submitAnswer
     } = useExamination();
 
-    const [focusLossCount, setFocusLossCount] = useState(0);
-    const [cooldownRemaining, setCooldownRemaining] = useState<number | null> (null);
-    const {xp, level} = useGamification();
+    const penaltyAppliedRef = useRef(false);
+    const [cooldownRemaining, setCooldownRemaining] = useState<number | null>(null);
+    const { xp, level } = useGamification();
+    const [penaltyModalVisible, setPenaltyModalVisible] = useState<boolean>(false);
+    const focusLossRef = useRef(0);
 
-    const handleFocusLoss = useCallback(() => {
-        const newCount: number = focusLossCount + 1;
-        setFocusLossCount(focusLossCount + 1);
+    const handleFocusLoss = async () => {
+        if (penaltyModalVisible || penaltyAppliedRef.current) return;
 
-        if (newCount >= MAX_FOCUS_LOSSES) {
-            //@TODO: Set a penalty modal to visible
-            //@TODO Lose all lives
-        }
-        else {
+        focusLossRef.current += 1;
+
+        if (focusLossRef.current > MAX_FOCUS_LOSSES && !penaltyAppliedRef.current) {
+            setPenaltyModalVisible(true);
+            penaltyAppliedRef.current = true;
+            playSound(PENALTY);
+
+            try {
+                const response = await axios.patch(`/api/user-stats/cooldown/apply-penalty`);
+                if (response.status === 200) {
+                    console.log("Penalty applied on server.");
+                } else {
+                    console.warn("Penalty request responded non-200", response);
+                }
+            } catch (err) {
+                console.error("Failed to apply penalty:", err);
+            }
+
+        } else {
             openOutOfFocusModal();
         }
-    }, [setFocusLossCount, focusLossCount, openOutOfFocusModal]);
+    };
 
     useEffect(() => {
         const handleViewSwitch = () => {
@@ -74,10 +92,10 @@ export const ExaminationComponent = () => {
             document.removeEventListener('visibilitychange', handleViewSwitch);
             document.removeEventListener('blur', handleBlur);
         }
-    }, [focusLossCount, handleFocusLoss]);
+    }, [focusLossRef.current, handleFocusLoss]);
 
     useEffect(() => {
-        const fetchCooldown = async() => {
+        const fetchCooldown = async () => {
             const response = await axios.get('/api/user-stats/cooldown');
 
             if (response.status === 200) {
@@ -99,7 +117,12 @@ export const ExaminationComponent = () => {
         <div>
             <AnimatePresence>
                 {
-                    modals.outOfFocus &&
+                    penaltyModalVisible &&
+                    <PenaltyModal onClose={() => setPenaltyModalVisible(false)} />
+                }
+
+                {
+                    modals.outOfFocus && !penaltyAppliedRef.current &&
                     <OutOfFocusWarningModal key="outOfFocusWarning" />
                 }
 
