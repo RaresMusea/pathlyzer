@@ -33,6 +33,7 @@ interface ExaminationContextProps {
     gainedXp: number;
     correctChoiceIds: string[];
     isPending: boolean;
+    isLastFromUnit: boolean;
 
 
     abortExamination: () => void;
@@ -361,6 +362,7 @@ export const ExaminationProvider: React.FC<{ children: React.ReactNode, args: Ex
                 examinationTitle,
                 correctChoiceIds,
                 examinationState,
+                isLastFromUnit,
                 abortExamination,
                 openAbortModal,
                 isCheckingDisabled,

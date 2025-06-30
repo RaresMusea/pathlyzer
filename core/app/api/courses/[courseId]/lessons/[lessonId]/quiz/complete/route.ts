@@ -2,7 +2,7 @@ import { courseExists } from "@/app/service/learning/course/courseService";
 import { updateEnrollmentProgress } from "@/app/service/learning/course/enrollmentService";
 import { getQuizById } from "@/app/service/learning/examination/quiz/quizService";
 import { lessonExists } from "@/app/service/learning/lessons/lessonService";
-import { getUnitIdByLessonId } from "@/app/service/learning/units/unitService";
+import { getUnitIdByLessonId, getUnitOrderById } from "@/app/service/learning/units/unitService";
 import { getCompleteUserStats, updateUserStats } from "@/app/service/user/userStatsService";
 import { getXpThreshold } from "@/lib/UserUtils";
 import { db } from "@/persistency/Db";
@@ -11,6 +11,8 @@ import { getCurrentlyLoggedInUserIdApiRoute } from "@/security/Security";
 import { UserStatsMutationDto } from "@/types/types";
 import { Enrollment, Quiz, UnitProgress, UserStats } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+
+const MAX_LIVES = 5;
 
 const validateUrlParams = (params: { courseId: string, lessonId: string }) => {
     if (!params.courseId || !params.lessonId) {
@@ -85,13 +87,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             level++;
         }
 
+        const newLives = isLastLesson
+            ? Math.max(userStats.lives, MAX_LIVES)
+            : userStats.lives;
+
+        console.log("new lives: ", newLives);
+
         const userStatsUpdateResult: UserStats | null = await updateUserStats({
             id: userStats.id,
             xp: newXp,
             level,
             userId,
             completedQuizzes: (userStats.completedQuizzes ?? 0) + 1,
-            lives: userStats.lives
+            lives: newLives
         })
 
         if (!userStatsUpdateResult) {
@@ -109,6 +117,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             return NextResponse.json({ message: 'The unit does not exist anymore!' }, { status: 500 });
         }
 
+        const unitOrder: number | null = await getUnitOrderById(unitId);
+
+        if (unitOrder === null) {
+            return NextResponse.json({ message: 'The unit order does not exist!' }, { status: 500 });
+        }
+
         if (isLastLesson) {
             const result: UnitProgress | null = await db.unitProgress.update({
                 where: { userId_unitId: { userId, unitId } },
@@ -119,6 +133,28 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 return NextResponse.json({ message: 'Unable to update unit progress!' }, { status: 500 });
             }
 
+            const nextUnit = await db.unit.findFirst({
+                where: {
+                    courseId,
+                    order: { gt: unitOrder }
+                },
+                orderBy: { order: "asc" }
+            });
+
+            if (nextUnit) {
+                await db.unitProgress.upsert({
+                    where: {
+                        userId_unitId: { userId, unitId: nextUnit.id }
+                    },
+                    create: {
+                        userId,
+                        unitId: nextUnit.id,
+                        completed: false
+                    },
+                    update: {}
+                });
+            }
+
             const enrollmentUpdate: Enrollment | null = await updateEnrollmentProgress(courseId, userId);
 
             if (!enrollmentUpdate) {
@@ -126,7 +162,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             }
         }
 
-        return NextResponse.json({ currentXp: newXp, currentLevel: level }, { status: 200 });
+        return NextResponse.json({
+            currentXp: newXp,
+            currentLevel: level
+        }, { status: 200 });
 
     } catch (error) {
         console.error(error);

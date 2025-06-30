@@ -24,8 +24,15 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         return (
             <div className="bg-background border border-border rounded-lg shadow-lg p-3">
                 <p className="font-medium">{label}</p>
-                <p className="text-sm text-muted-foreground">XP: {data.xp}</p>
-                <p className="text-sm text-muted-foreground">Level: {data.level}</p>
+                <p className="text-sm text-muted-foreground">
+                    XP: {data.xp}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                    Level this year: {data.level}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                    Actual Level: {data.globalLevel}
+                </p>
             </div>
         );
     }

@@ -1,4 +1,4 @@
-import { dayLabels, monthNames } from "@/lib/TimeUtils";
+import { dayLabels, getStartOfWeek, monthNames } from "@/lib/TimeUtils";
 import { getXpThreshold } from "@/lib/UserUtils";
 import { db } from "@/persistency/Db";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
@@ -81,12 +81,11 @@ export const getWeeklyLearningActivity = async (): Promise<WeeklyActivityEntry[]
     if (!userId) redirect(DEFAULT_LOGIN_REDIRECT);
 
     const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - 6);
-    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeek = getStartOfWeek(now, "sunday");
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
 
     const daysMap: Record<string, WeeklyActivityEntry> = {};
-
     for (let i = 0; i < 7; i++) {
         const d = new Date(startOfWeek);
         d.setDate(d.getDate() + i);
@@ -95,7 +94,11 @@ export const getWeeklyLearningActivity = async (): Promise<WeeklyActivityEntry[]
     }
 
     const sessions = await db.learningSession.findMany({
-        where: { userId, startedAt: { gte: startOfWeek }, endedAt: { not: null } },
+        where: {
+            userId,
+            startedAt: { gte: startOfWeek, lt: endOfWeek },
+            endedAt: { not: null }
+        },
         select: { startedAt: true, duration: true }
     });
 
@@ -110,7 +113,7 @@ export const getWeeklyLearningActivity = async (): Promise<WeeklyActivityEntry[]
         where: {
             userId,
             completed: true,
-            accessedAt: { gte: startOfWeek }
+            accessedAt: { gte: startOfWeek, lt: endOfWeek }
         },
         select: {
             accessedAt: true,
@@ -131,13 +134,11 @@ export const getWeeklyLearningActivity = async (): Promise<WeeklyActivityEntry[]
         const date = new Date(progress.accessedAt);
         const label = dayLabels[date.getDay()];
         const xp = progress.lesson?.Quiz?.questions.reduce((sum, q) => sum + q.rewardXp, 0) ?? 0;
-
         daysMap[label].lessonsCompleted += 1;
         daysMap[label].xpGained += xp;
     }
 
-    const ordered = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    return ordered.map(label => daysMap[label]);
+    return dayLabels.map(label => daysMap[label]);
 };
 
 export const getSkillsDistribution = cache(async (): Promise<SkilsDistributionDto[]> => {
@@ -236,5 +237,15 @@ export const getMonthlyXpProgress = cache(async (): Promise<MonthlyXpProgressDto
         });
     }
 
-    return monthlyProgress;
+    const userStats = await db.userStats.findUnique({
+        where: { userId },
+        select: { level: true }
+    });
+
+    const globalLevel = userStats?.level ?? 1;
+
+    return monthlyProgress.map(item => ({
+        ...item,
+        globalLevel
+    }));
 });

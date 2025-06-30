@@ -38,5 +38,17 @@ export const getCurrentWeekRange = (): string => {
     return `${format(start)} – ${format(end)}`;
 };
 
+export const getStartOfWeek = (date: Date, weekStartsOn: "sunday" | "monday" = "sunday"): Date => {
+    const day = date.getDay();
+    const diff = weekStartsOn === "sunday"
+        ? -day
+        : -((day + 6) % 7); // Luni=0
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() + diff);
+    return start;
+}
+
+
 export const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-export const monthNames = ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

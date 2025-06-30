@@ -119,6 +119,10 @@ export const updateUserStats = async (data: UserStatsMutationDto): Promise<UserS
         updateData.level = data.level;
     }
 
+    if (data.lives !== undefined && data.lives !== existing.lives) {
+        updateData.lives = data.lives;
+    }
+
     if (data.completedExams !== undefined && data.completedExams !== existing.completedExams) {
         updateData.completedExams = data.completedExams;
     }
