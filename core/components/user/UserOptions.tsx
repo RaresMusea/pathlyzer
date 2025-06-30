@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Shield, Sparkles } from "lucide-react"
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut, Shield } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -16,15 +16,35 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/c
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { getUserInitials } from "@/lib/UserUtils";
 import { UserRole } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog } from "../ui/dialog";
 import { LogoutModal } from "./LogoutModal";
 import { signOut } from "next-auth/react";
+import { Switch } from "../ui/switch";
+import axios from "axios";
+import { toast } from "sonner";
 
 export const UserOptions = () => {
     const { isMobile } = useSidebar();
     const currentUser = useCurrentUser();
     const [logoutDialogOpen, setLogoutDialogOpen] = useState<boolean>(false);
+    const [twoFaEnabled, setTwoFaEnabled] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchTwoFaStatus = async () => {
+            const response = await axios.get('/api/user/2fa');
+
+            if (response.status === 200) {
+                setTwoFaEnabled(response.data.is2FAEnabled);
+            }
+            else {
+                console.error("Failed to fetch Two-Factor Authentication status.");
+            }
+        };
+
+        fetchTwoFaStatus();
+
+    }, []);
 
     if (!currentUser) {
         return null;
@@ -38,8 +58,24 @@ export const UserOptions = () => {
         setLogoutDialogOpen(false);
     };
 
+    const handleToggle2FA = async (checked: boolean) => {
+        try {
+            const response = await axios.patch('/api/user/2fa', { enabled: checked });
+
+            if (response.status === 200) {
+                setTwoFaEnabled(checked);
+                toast.success(`Two-Factor Authentication ${checked ? "enabled" : "disabled"}!`);
+            } else {
+                toast.error("Failed to update Two-Factor Authentication settings.");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("An unexpected error occurred while updating the Two-Factor Authentication settings.");
+        }
+    };
+
     return (
-        <SidebarMenu>
+        <SidebarMenu className="!font-nunito">
             <SidebarMenuItem>
                 <Dialog open={logoutDialogOpen} onOpenChange={(open) => !open ? setLogoutDialogOpen(false) : setLogoutDialogOpen(true)}>
                     <DropdownMenu modal={false}>
@@ -60,7 +96,7 @@ export const UserOptions = () => {
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                            className="w-[--radix-dropdown-menu-trigger-width] font-nunito min-w-56 rounded-lg"
                             side={isMobile ? "bottom" : "right"}
                             align="end"
                             sideOffset={4}
@@ -85,8 +121,13 @@ export const UserOptions = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
                                 <DropdownMenuItem>
-                                    <Sparkles />
-                                    Upgrade to Pro
+                                    <div className="flex items-center gap-4 justify-between">
+                                        <span>Two-Factor Authentication</span>
+                                        <Switch
+                                            checked={twoFaEnabled}
+                                            onCheckedChange={handleToggle2FA}
+                                        />
+                                    </div>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
@@ -94,10 +135,6 @@ export const UserOptions = () => {
                                 <DropdownMenuItem>
                                     <BadgeCheck />
                                     Account
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <CreditCard />
-                                    Billing
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <Bell />
