@@ -5,7 +5,7 @@ import { getXpThreshold } from "@/lib/UserUtils";
 import { motion } from "framer-motion";
 import { ConfettiFireworks } from "@/components/misc/animations/ConfettiFireworks";
 import { Button } from "@/components/ui/button";
-import { Award, Star, TrendingUp } from "lucide-react";
+import { Award, Heart, Star, TrendingUp } from "lucide-react";
 import { QuizType } from "@prisma/client";
 import { getFormattedType } from "@/lib/LearningPathManagementUtils";
 import { playSound } from "@/lib/AudioUtils";
@@ -13,6 +13,7 @@ import { EXAMINATION_COMPLETE_AUDIO, LEVEL_UP_AUDIO } from "@/exporters/AudioExp
 
 interface ExaminationCompleteModalProps {
     currentXp: number;
+    isLastLesson: boolean;
     currentLevel: number;
     onClose: () => void;
     examinationType: QuizType;
@@ -20,6 +21,7 @@ interface ExaminationCompleteModalProps {
 }
 
 export const ExaminationCompleteModal = ({
+    isLastLesson,
     currentXp,
     examinationType,
     prevStats,
@@ -212,6 +214,36 @@ export const ExaminationCompleteModal = ({
                             </motion.div>
                         )}
                     </motion.div>
+
+                    {isLastLesson &&
+                        <motion.div
+                            className="bg-gray-50 dark:bg-zinc-800/80 backdrop-blur-sm rounded-lg p-5 relative overflow-hidden mb-6 border border-gray-200/50 dark:border-zinc-700"
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 1.3, duration: 0.5 }}
+                        >
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="flex items-center">
+                                    <div className="bg-red-200 dark:bg-red-400 p-2 rounded-full mr-3">
+                                        <Heart className="h-5 w-5 text-[var(--pathlyzer-table-border)]" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Lives restored</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center">
+                                    <div>
+                                        <p className="text-sm text-muted-foreground text-right">Lives Reward</p>
+                                        <p className="font-bold text-lg text-right text-foreground">5 lives</p>
+                                    </div>
+                                    <div className="bg-red-500 dark:bg-red-600 text-white text-xs font-bold px-2 py-1 rounded ml-3">
+                                        +5 <Heart className="inline h-4 w-4" />
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    }
 
                     <div className="flex justify-center">
                         <Button
