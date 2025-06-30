@@ -387,11 +387,11 @@ export interface UserLearningCompletionDto {
 }
 
 export interface WeeklyActivityEntry {
-  day: string;
-  sessions: number;
-  duration: number;
-  xpGained: number;
-  lessonsCompleted: number;
+    day: string;
+    sessions: number;
+    duration: number;
+    xpGained: number;
+    lessonsCompleted: number;
 }
 
 export interface SkilsDistributionDto {
@@ -402,9 +402,10 @@ export interface SkilsDistributionDto {
 }
 
 export interface MonthlyXpProgressDto {
-  month: string;
-  xp: number;
-  level: number;
+    month: string;
+    xp: number;
+    level: number;
+    globalLevel?: number;
 }
 
 // #endregion
