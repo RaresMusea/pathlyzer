@@ -4,7 +4,7 @@ import { getCurrentlyLoggedInUserId, isValidSession } from "@/security/Security"
 import { LearningLessonItem, LearningPathItem, UserCourseUnitDto } from "@/types/types";
 import { redirect } from "next/navigation";
 
-export const getLearningPath = (async (courseId: string): Promise<LearningPathItem[]> => {
+export const getLearningPath = async (courseId: string): Promise<LearningPathItem[]> => {
     if (!await isValidSession()) {
         redirect(LOGIN_PAGE);
     }
@@ -61,30 +61,51 @@ export const getLearningPath = (async (courseId: string): Promise<LearningPathIt
         });
     }
 
-    const path: LearningPathItem[] = units.map((unit) => {
-        const isCurrentUnit = unit.id === currentUnitId;
+    let hasSetNextCurrent = false;
 
+    const path: LearningPathItem[] = units.map((unit) => {
         const lessons: LearningLessonItem[] = unit.Lesson.map((lesson) => {
             const progressInfo = lessonProgressMap.get(lesson.id);
-            const isCompleted = progressInfo?.completed ?? false;
-            const learningProgress = progressInfo?.progress ?? 0;
-
             return {
                 lessonInfo: lesson,
-                learningProgress,
-                isCompleted,
+                learningProgress: progressInfo?.progress ?? 0,
+                isCompleted: progressInfo?.completed ?? false,
                 isCurrent: false,
                 isAccessible: false,
             };
         });
 
-        if (isCurrentUnit) {
-            let foundCurrent = false;
+        const totalLessons = lessons.length;
+        const completedLessons = lessons.filter(l => l.isCompleted).length;
+        const isUnitCompleted = totalLessons > 0 && completedLessons === totalLessons;
+
+        let isCurrent = false;
+
+        if (unit.id === currentUnitId) {
+            if (isUnitCompleted) {
+                // unitatea marcată în DB ca curentă dar completă
+                // -> nu o setăm current, căutăm următoarea
+            } else {
+                isCurrent = true;
+                hasSetNextCurrent = true;
+            }
+        } else if (!hasSetNextCurrent && !isUnitCompleted) {
+            // prima unitate necompletă după cele complete
+            isCurrent = true;
+            hasSetNextCurrent = true;
+        } else if (!hasSetNextCurrent && currentUnitId === null) {
+            // fallback: nu există deloc currentUnitId în DB
+            isCurrent = true;
+            hasSetNextCurrent = true;
+        }
+
+        if (isCurrent) {
+            let found = false;
             for (const lesson of lessons) {
-                if (!lesson.isCompleted && !foundCurrent) {
+                if (!lesson.isCompleted && !found) {
                     lesson.isCurrent = true;
                     lesson.isAccessible = true;
-                    foundCurrent = true;
+                    found = true;
                 } else {
                     lesson.isAccessible = lesson.isCompleted;
                 }
@@ -94,9 +115,6 @@ export const getLearningPath = (async (courseId: string): Promise<LearningPathIt
                 lesson.isAccessible = lesson.isCompleted;
             }
         }
-
-        const totalLessons = lessons.length;
-        const completedLessons = lessons.filter(l => l.isCompleted).length;
 
         const userCourseUnitDto: UserCourseUnitDto = {
             id: unit.id,
@@ -109,8 +127,8 @@ export const getLearningPath = (async (courseId: string): Promise<LearningPathIt
         return {
             unit: userCourseUnitDto,
             lessons,
-            isCurrent: isCurrentUnit,
-            isCompleted: completedLessons === totalLessons && totalLessons > 0,
+            isCurrent,
+            isCompleted: isUnitCompleted,
             progress: {
                 completedLessons,
                 totalLessons,
@@ -119,4 +137,4 @@ export const getLearningPath = (async (courseId: string): Promise<LearningPathIt
     });
 
     return path;
-});
+};
