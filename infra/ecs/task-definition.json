@@ -1,0 +1,19 @@
+[
+  {
+    "name": "pathlyzer",
+    "image": "raresmusea/pathlyzer:latest",
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": 3000,
+        "hostPort": 3000
+      }
+    ],
+    "environment": [
+      {
+        "name": "DATABASE_URL",
+        "value": "postgresql://${db_username}:${db_password}@${db_endpoint}/pathlyzer"
+      }
+    ]
+  }
+]
